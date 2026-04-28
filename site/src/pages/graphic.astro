@@ -3,9 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Gallery from '../components/Gallery.astro';
 import items from '../content/graphics.json';
 ---
-<BaseLayout title="GRAPHIC DESIGNS — 流亡辛迪加">
+<BaseLayout title="GRAPHIC DESIGNS — Onovich" activePage="/graphic">
   {items.length > 0
     ? <Gallery items={items} />
-    : <p style="color: rgba(54,54,54,0.4); font-size: 0.9rem;">暂无内容</p>
-  }
+    : <p style="color: rgba(0,0,0,0.4); font-size: 1.1rem;">暂无内容</p>}
 </BaseLayout>
