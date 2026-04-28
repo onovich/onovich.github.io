@@ -31,6 +31,11 @@ const navLinks = [
   { href: '/links',       label: 'LINKS' },
   { href: '/contact',     label: 'MESSAGE' },
 ];
+
+// Original site splits the home navigation into two H2 blocks separated by a
+// blank line: content categories (CODES…POEMS) and outbound links (SNS…MESSAGE).
+const navMain   = navLinks.slice(0, 8);
+const navSocial = navLinks.slice(8);
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -69,10 +74,18 @@ const navLinks = [
               <div class="home-grid__col home-grid__col--nav">
                 <h1><a href="/">Onovich</a></h1>
                 <h2 class="home-nav">
-                  {navLinks.map((link, i) => (
+                  {navMain.map((link, i) => (
                     <>
                       <a href={link.href}>{link.label}</a>
-                      {i < navLinks.length - 1 && <br />}
+                      {i < navMain.length - 1 && <br />}
+                    </>
+                  ))}
+                </h2>
+                <h2 class="home-nav home-nav--social">
+                  {navSocial.map((link, i) => (
+                    <>
+                      <a href={link.href}>{link.label}</a>
+                      {i < navSocial.length - 1 && <br />}
                     </>
                   ))}
                 </h2>
@@ -91,7 +104,7 @@ const navLinks = [
     </main>
 
     <footer class="site-footer">
-      <span class="build-version">v2.1.0-astro · 2026-04-29</span>
+      <span class="build-version">v2.2.0-astro · 2026-04-29</span>
     </footer>
 
     <script>
