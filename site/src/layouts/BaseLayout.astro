@@ -7,8 +7,30 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  activePage?: string;
+  /** Home page uses the 4/8 grid with inline navigation; inner pages use a single-column gallery container */
+  variant?: 'home' | 'inner';
 }
-const { title = '流亡辛迪加', description = 'Onovich — creates games on a sofa.' } = Astro.props;
+const {
+  title = 'Onovich',
+  description = 'Onovich — creates games on a sofa.',
+  activePage = '',
+  variant = 'inner',
+} = Astro.props;
+
+const navLinks = [
+  { href: '/codes',       label: 'CODES' },
+  { href: '/game',        label: 'GAMES' },
+  { href: '/pixel',       label: 'PIXEL ARTS' },
+  { href: '/illustrator', label: 'ILLUSTRATIONS' },
+  { href: '/gif',         label: 'GIFS' },
+  { href: '/graphic',     label: 'GRAPHIC DESIGNS' },
+  { href: '/photo',       label: 'PHOTOS' },
+  { href: '/poem',        label: 'POEMS' },
+  { href: '/sns',         label: 'SNS' },
+  { href: '/links',       label: 'LINKS' },
+  { href: '/contact',     label: 'MESSAGE' },
+];
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -19,74 +41,85 @@ const { title = '流亡辛迪加', description = 'Onovich — creates games on a
     <title>{title}</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   </head>
-  <body>
-    <!-- Fixed Navbar -->
-    <header class="navbar">
-      <div class="navbar-title">
-        <a href="/">流亡辛迪加</a>
-      </div>
-      <button class="menu-btn" id="menuBtn" aria-label="Open menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </header>
+  <body class={`variant-${variant}`}>
+    <!-- Floating hamburger button (top-right) -->
+    <button class="site-menu-button" id="siteMenuBtn" aria-label="Open menu">≡</button>
 
-    <!-- Menu Overlay -->
-    <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <!-- Slide-in dark menu panel -->
+    <aside class="site-menu" id="siteMenu" aria-hidden="true">
+      <div class="site-menu__close" id="siteMenuClose">×</div>
       <nav>
-        <a href="/codes">CODES</a>
-        <a href="/game">GAMES</a>
-        <a href="/pixel">PIXEL ARTS</a>
-        <a href="/illustrator">ILLUSTRATIONS</a>
-        <a href="/gif">GIFS</a>
-        <a href="/graphic">GRAPHIC DESIGNS</a>
-        <a href="/photo">PHOTOS</a>
-        <a href="/poem">POEMS</a>
-        <a href="/sns">SNS</a>
-        <a href="/links">LINKS</a>
-        <a href="/contact">MESSAGE</a>
+        <a href="/" class={`page-link ${activePage === '/' ? 'active' : ''}`}>Homepage</a>
+        <div class="break"></div>
+        {navLinks.map(link => (
+          <a
+            href={link.href}
+            class={`page-link ${activePage === link.href ? 'active' : ''}`}
+          >{link.label}</a>
+        ))}
       </nav>
-    </div>
+    </aside>
+    <div class="site-menu__backdrop" id="siteMenuBackdrop"></div>
 
-    <!-- Main content -->
-    <main>
-      <div class="page-content">
-        <slot />
+    <main class="container">
+      <div class="container_width">
+        <bodycopy class="bodycopy content content_padding">
+          {variant === 'home' ? (
+            <div class="page_content home-grid">
+              <div class="home-grid__col home-grid__col--nav">
+                <h1><a href="/">Onovich</a></h1>
+                <h2 class="home-nav">
+                  {navLinks.map((link, i) => (
+                    <>
+                      <a href={link.href}>{link.label}</a>
+                      {i < navLinks.length - 1 && <br />}
+                    </>
+                  ))}
+                </h2>
+              </div>
+              <div class="home-grid__col home-grid__col--main">
+                <slot />
+              </div>
+            </div>
+          ) : (
+            <div class="page_content">
+              <slot />
+            </div>
+          )}
+        </bodycopy>
       </div>
     </main>
 
-    <!-- Fixed Footer -->
     <footer class="site-footer">
-      <span>© {new Date().getFullYear()} Onovich</span>
-      <span class="build-version">v2.0.1-astro · 2026-04-29</span>
+      <span class="build-version">v2.1.0-astro · 2026-04-29</span>
     </footer>
 
     <script>
-      const btn = document.getElementById('menuBtn')!;
-      const overlay = document.getElementById('menuOverlay')!;
+      const btn = document.getElementById('siteMenuBtn');
+      const menu = document.getElementById('siteMenu');
+      const close = document.getElementById('siteMenuClose');
+      const backdrop = document.getElementById('siteMenuBackdrop');
 
-      btn.addEventListener('click', () => {
-        document.body.classList.toggle('menu-open');
-        overlay.setAttribute('aria-hidden',
-          document.body.classList.contains('menu-open') ? 'false' : 'true');
-      });
+      const open = () => {
+        document.body.classList.add('menu-open');
+        menu?.setAttribute('aria-hidden', 'false');
+      };
+      const shut = () => {
+        document.body.classList.remove('menu-open');
+        menu?.setAttribute('aria-hidden', 'true');
+      };
+      btn?.addEventListener('click', open);
+      close?.addEventListener('click', shut);
+      backdrop?.addEventListener('click', shut);
+      menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', shut));
 
-      // Close on any nav link click
-      overlay.querySelectorAll('a').forEach(a =>
-        a.addEventListener('click', () => {
-          document.body.classList.remove('menu-open');
-          overlay.setAttribute('aria-hidden', 'true');
-        })
-      );
-
-      // Close on backdrop click
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-          document.body.classList.remove('menu-open');
-          overlay.setAttribute('aria-hidden', 'true');
-        }
-      });
+      // Cargo-style mobile body class: viewport <= 768
+      const setMobileClass = () => {
+        if (window.innerWidth <= 768) document.body.classList.add('mobile');
+        else document.body.classList.remove('mobile');
+      };
+      setMobileClass();
+      window.addEventListener('resize', setMobileClass);
     </script>
   </body>
 </html>

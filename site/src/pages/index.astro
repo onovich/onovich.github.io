@@ -1,19 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="流亡辛迪加">
-  <div class="home-hero">
-    <img
-      class="home-avatar"
-      src="/images/profile/avatar.jpg"
-      alt="Onovich"
-    />
-    <div class="home-bio">
-      <h1>流亡辛迪加</h1>
-      <p>
-        澳蛙奥诺维奇，在沙发上创作游戏。<br />
-        天生的法兰左和 BTV（但不会潜水）。
-      </p>
-    </div>
+<BaseLayout title="Onovich" activePage="/" variant="home">
+  <div class="home-bio">
+    <p>沼蛙奥诺维奇，在沙发上创作游戏。</p>
+    <p>天生的法兰左和 BTV（但不会潜水）。</p>
   </div>
 </BaseLayout>
+
+<style>
+  .home-bio p { margin: 0 0 0.4em 0; }
+</style>
