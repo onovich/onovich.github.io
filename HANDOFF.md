@@ -132,10 +132,13 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 ## 关联文档
 
-- `docs/CSS_SPEC.md` — **★ 原站样式规范（事实归档，#16 必读）**
+- `AGENT_HANDOFF.md` — **★ 给任何接手 agent（包括 GitHub Copilot）的入口指南**
+- `docs/CSS_SPEC.md` — **★ 原站样式规范（事实归档）**
+- `docs/RENDERING_REPORT.md` — **★ Playwright 实测渲染数据 + 自适应规则**
 - `docs/OPEN_ISSUES.md` — 当前所有未解决问题（断会话不丢）
 - `docs/LESSONS.md` — 经验教训（避免重蹈覆辙）
 - `docs/WORKFLOW.md` — 工作流（抓站 / 部署 / 截图对照 / Git）
 - `_reference-site/` — 原站 HTML + CSS 归档（事实之源）
+- `site/scripts/visual-diff.mjs` — Playwright 截图对照脚本
 - `MEMORY.md` 索引 → `~/.claude/projects/D--WebProjects-Onovich/memory/`（Claude 全局记忆）
 - 全局知识库 → `<GLOBAL_DOCS>`（跨项目的工作流方法）

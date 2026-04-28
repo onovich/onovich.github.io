@@ -10,36 +10,25 @@
 
 ## 🔴 1. 视觉复刻不到位（核心阻塞）
 
-**症状**：当前 `https://blog.onovich.com/` 的样式与 `https://onovich.com/` 差距巨大：
-- 字号、模块尺寸、自适应规则全错
-- 当前实现是顶部 navbar + 汉堡 overlay，原站是右上角浮动汉堡 + 右侧滑入面板（详见 `docs/CSS_SPEC.md` 第 1 节）
-- 我曾尝试改成 `_old-site/styles.css` 那种全站 sidebar，被否决（详见 `docs/LESSONS.md` 第 1 条）
+**症状**：当前 `https://blog.onovich.com/` 的样式与 `https://onovich.com/` 仍有可见残差：
+- v2.2.0 已修：左 4/8 grid、汉堡菜单、root font-size 12.96px、avatar+hr+bio
+- 残差：clone 字号略大、行高略松、列上下对齐略偏
+- 缩略图列数还没按断点对齐（原站列数由 Cargo runtime JS 注入 `[thumbnails-cols]` 属性）
 
-**根因**：
-- 早期没读 Cargo 真站源码就动手
-- 中期把 `_old-site/`（用户失败旧复刻）当成了规范
-- 始终缺少**真实浏览器渲染对照**环节
+**已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
 
-**下一步**（任务 #17 → #16）：
-1. ✅ #17：从原站 CSS 推断规范 → 已产出 `docs/CSS_SPEC.md`
-2. ⬜ #16：按 CSS_SPEC.md 重写 `BaseLayout.astro` + `global.css` + 各页面
-3. ⬜ Playwright 截图对照，5 个断点（375/768/1024/1440/1920）误差 < 5px
+**下一步**（任务 #18 后续 / P0）：
+1. 用 Playwright `getComputedStyle()` 对照原站 5 断点的关键元素（h1/h2/bodycopy/.thumb_image/.title/.tags），抽出精确像素值
+2. 调 `global.css` 直到 5 断点截图差异 < 5px
+3. 缩略图列数：实测原站每个断点显示几列后写进 `@media`
 
 ---
 
 ## 🔴 2. 工作区有错误方向的未提交改动
 
-**症状**：`git status` 显示这 4 个文件已修改但未提交：
-- `site/src/layouts/BaseLayout.astro`
-- `site/src/styles/global.css`
-- `site/src/pages/index.astro`
-- `site/src/pages/codes.astro`
+**症状**：早期会话留下来过的 working tree 改动已在 v2.2.0 commit 中清理。**当前没有遗留**。
 
-这些改动是上一轮"误把 `_old-site` 当规范"留下的中间产物，**不能 commit**。
-
-**下一步**：
-- 重写 #16 时直接覆盖这些文件（按 `docs/CSS_SPEC.md` 写新的版本）
-- 不需要主动 revert——新写入会覆盖旧 working tree 内容
+**下一步**：无需操作。如果再次出现"凭印象写"的中间产物，记得**新写入会覆盖**，不需要主动 revert。
 
 ---
 
