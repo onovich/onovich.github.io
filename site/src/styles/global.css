@@ -366,6 +366,14 @@ body.menu-open .menu-overlay {
   z-index: 100;
 }
 
+.build-version {
+  margin-left: 1.2em;
+  color: transparent;
+  user-select: text;
+  font-size: 0.55rem;
+  letter-spacing: 0.03em;
+}
+
 /* ============================================================
    PHOTOSWIPE overrides
    ============================================================ */
