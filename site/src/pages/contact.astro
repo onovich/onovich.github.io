@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="MESSAGE — 流亡辛迪加">
+  <form
+    class="contact-form"
+    action="https://formspree.io/f/YOUR_FORM_ID"
+    method="POST"
+  >
+    <label>
+      姓名
+      <input type="text" name="name" placeholder="你的名字" required />
+    </label>
+    <label>
+      邮箱
+      <input type="email" name="email" placeholder="your@email.com" required />
+    </label>
+    <label>
+      消息
+      <textarea name="message" placeholder="想说的话..." required></textarea>
+    </label>
+    <button type="submit">SEND</button>
+  </form>
+  <p style="font-size:0.78rem; color:rgba(54,54,54,0.45); margin-top:0.8rem;">
+    表单通过 Formspree 发送。请将 YOUR_FORM_ID 替换为实际 ID。
+  </p>
+</BaseLayout>

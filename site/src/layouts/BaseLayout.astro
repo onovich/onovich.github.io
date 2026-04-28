@@ -1,0 +1,91 @@
+---
+import '@fontsource/nunito/300.css';
+import '@fontsource/nunito/400.css';
+import '@fontsource/nunito/600.css';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = '流亡辛迪加', description = 'Onovich — creates games on a sofa.' } = Astro.props;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <!-- Fixed Navbar -->
+    <header class="navbar">
+      <div class="navbar-title">
+        <a href="/">流亡辛迪加</a>
+      </div>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </header>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+      <nav>
+        <a href="/codes">CODES</a>
+        <a href="/game">GAMES</a>
+        <a href="/pixel">PIXEL ARTS</a>
+        <a href="/illustrator">ILLUSTRATIONS</a>
+        <a href="/gif">GIFS</a>
+        <a href="/graphic">GRAPHIC DESIGNS</a>
+        <a href="/photo">PHOTOS</a>
+        <a href="/poem">POEMS</a>
+        <a href="/sns">SNS</a>
+        <a href="/links">LINKS</a>
+        <a href="/contact">MESSAGE</a>
+      </nav>
+    </div>
+
+    <!-- Main content -->
+    <main>
+      <div class="page-content">
+        <slot />
+      </div>
+    </main>
+
+    <!-- Fixed Footer -->
+    <footer class="site-footer">
+      <span>© {new Date().getFullYear()} Onovich</span>
+    </footer>
+
+    <script>
+      const btn = document.getElementById('menuBtn')!;
+      const overlay = document.getElementById('menuOverlay')!;
+
+      btn.addEventListener('click', () => {
+        document.body.classList.toggle('menu-open');
+        overlay.setAttribute('aria-hidden',
+          document.body.classList.contains('menu-open') ? 'false' : 'true');
+      });
+
+      // Close on any nav link click
+      overlay.querySelectorAll('a').forEach(a =>
+        a.addEventListener('click', () => {
+          document.body.classList.remove('menu-open');
+          overlay.setAttribute('aria-hidden', 'true');
+        })
+      );
+
+      // Close on backdrop click
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          document.body.classList.remove('menu-open');
+          overlay.setAttribute('aria-hidden', 'true');
+        }
+      });
+    </script>
+  </body>
+</html>

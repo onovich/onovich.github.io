@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import poems from '../content/poems.json';
+---
+<BaseLayout title="POEMS — 流亡辛迪加">
+  <div class="poem-list">
+    {poems.map(poem => (
+      <article class="poem-item">
+        <h2 class="poem-item__title">{poem.title}</h2>
+        {poem.year && <div class="poem-item__year">{poem.year}</div>}
+        {poem.body && <p class="poem-item__body">{poem.body}</p>}
+      </article>
+    ))}
+  </div>
+</BaseLayout>
