@@ -1,0 +1,79 @@
+---
+/**
+ * Gallery component — renders a responsive 3/2-column grid of items.
+ * Each item: { id, title, desc?, year?, src, width?, height?, links? }
+ * Set wide=true for 16:9 thumbnails (codes / games).
+ */
+interface GalleryLink {
+  label: string;
+  url: string;
+}
+
+interface GalleryItemData {
+  id: string;
+  title: string;
+  desc?: string;
+  year?: string;
+  src: string;
+  width?: number;
+  height?: number;
+  links?: GalleryLink[];
+}
+
+interface Props {
+  items: GalleryItemData[];
+  wide?: boolean;
+}
+
+const { items, wide = false } = Astro.props;
+---
+
+<div class="gallery pswp-gallery" id="gallery">
+  {items.map((item, index) => (
+    <figure class={`gallery-item${wide ? ' gallery-item--wide' : ''}`}>
+      <a
+        class="gallery-item__image-link"
+        href={item.src}
+        data-pswp-width={item.width ?? (wide ? 1780 : 1000)}
+        data-pswp-height={item.height ?? (wide ? 1000 : 1000)}
+        data-cropped="true"
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`Open ${item.title}`}
+      >
+        <img
+          class="gallery-item__thumb"
+          src={item.src}
+          alt={item.title}
+          loading={index < 6 ? 'eager' : 'lazy'}
+        />
+      </a>
+      <figcaption class="gallery-item__caption">
+        <div class="gallery-item__title">{item.title}</div>
+        {item.desc && <div class="gallery-item__desc">{item.desc}</div>}
+        {item.year && <div class="gallery-item__desc">{item.year}</div>}
+        {item.links && item.links.length > 0 && (
+          <div class="gallery-item__links">
+            {item.links.map(link => (
+              <a href={link.url} target="_blank" rel="noopener noreferrer">
+                {link.label}
+              </a>
+            ))}
+          </div>
+        )}
+      </figcaption>
+    </figure>
+  ))}
+</div>
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  const lightbox = new PhotoSwipeLightbox({
+    gallery: '.pswp-gallery',
+    children: '.gallery-item__image-link',
+    pswpModule: () => import('photoswipe'),
+  });
+  lightbox.init();
+</script>

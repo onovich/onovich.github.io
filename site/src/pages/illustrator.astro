@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Gallery from '../components/Gallery.astro';
+import items from '../content/illustrations.json';
+---
+<BaseLayout title="ILLUSTRATIONS — 流亡辛迪加">
+  {items.length > 0
+    ? <Gallery items={items} />
+    : <p style="color: rgba(54,54,54,0.4); font-size: 0.9rem;">暂无内容</p>
+  }
+</BaseLayout>

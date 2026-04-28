@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import sns from '../content/sns.json';
+---
+<BaseLayout title="SNS — 流亡辛迪加">
+  <div class="link-list">
+    {sns.map(item => (
+      <div class="link-item">
+        <a href={item.url} target="_blank" rel="noopener noreferrer">
+          {item.label}
+        </a>
+      </div>
+    ))}
+  </div>
+</BaseLayout>
