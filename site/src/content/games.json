@@ -90,6 +90,15 @@
     "links": []
   },
   {
+    "id": "narrow",
+    "title": "Narrow",
+    "desc": "已搁置",
+    "src": "/images/games/narrow.png",
+    "width": 1780,
+    "height": 1000,
+    "links": []
+  },
+  {
     "id": "silence",
     "title": "Silence",
     "desc": "2021.9-2021.10 · 已搁置",
@@ -121,6 +130,15 @@
     "title": "林中路",
     "desc": "2019 · 已搁置",
     "src": "/images/games/lzl.png",
+    "width": 1780,
+    "height": 1000,
+    "links": []
+  },
+  {
+    "id": "dicetiger",
+    "title": "镜虎与六面禅",
+    "desc": "2019 · 已搁置",
+    "src": "/images/games/dicetiger.png",
     "width": 1780,
     "height": 1000,
     "links": []
