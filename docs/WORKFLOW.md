@@ -171,3 +171,29 @@ curl -sL \
 | 通过 web.archive.org 看原站 | 直接抓 onovich.com |
 | `git add .` | `git add <具体文件>` |
 | 改 CNAME 不改 astro.config.mjs site 字段 | 两个一起改 |
+
+---
+
+## H. Pre-push 视觉验证门禁（必须）
+
+**任何**修改 BaseLayout、global.css、page 结构后，push 之前必须执行：
+
+```txt
+1. cd site && npm run build
+2. node node_modules/.bin/http-server dist -p 4350 -s &
+3. node scripts/visual-diff.mjs --clone=http://localhost:4350 --pages=home,codes,pixel
+4. Read 6 张关键截图（home/codes/pixel × desktop/mobile original/clone）
+5. 写出可见差异清单（量化或定性）
+6. 不通过 → 继续改 → 回到 1
+7. 通过 → commit + push → 等 Actions → curl 线上验 build-version
+```
+
+**绝对禁止的事**：
+
+- build 通过就 commit + push
+- 没读截图就声称样式 OK
+- 用 WebFetch 检测视觉
+- 用 _old-site 当样式参考
+- web.archive.org 替代原站
+
+任何样式变更不经过截图对照就 push，等同于回到 v2.0 初期"凭印象写"模式。这是 LESSONS.md 里反复强调的禁忌。

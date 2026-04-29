@@ -16,10 +16,11 @@
 
 打开这 4 个文件按顺序读，就够了：
 
-1. `HANDOFF.md` — 当前进度速览（项目状态表、文件路径）
-2. `docs/CSS_SPEC.md` — 原站样式规范（事实归档）
-3. `docs/RENDERING_REPORT.md` — Playwright 实测渲染数据
-4. `docs/OPEN_ISSUES.md` — 当前所有未解决问题
+1. `HANDOFF_NEXT.md` — **最新交接状态：当前工作区草稿、P0 问题、下一步操作**
+2. `HANDOFF.md` — 当前进度速览（项目状态表、文件路径）
+3. `docs/CSS_SPEC.md` — 原站样式规范（事实归档）
+4. `docs/RENDERING_REPORT.md` — Playwright 实测渲染数据
+5. `docs/OPEN_ISSUES.md` — 当前所有未解决问题
 
 读完之后：
 
