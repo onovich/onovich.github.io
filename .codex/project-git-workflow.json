@@ -1,0 +1,17 @@
+﻿{
+    "schemaVersion":  1,
+    "initializedMarker":  "codex-project-git-workflow: initialized",
+    "initializedAt":  "2026-06-09 04:58:26 +08:00",
+    "projectName":  "Onovich",
+    "repoRoot":  "<PROJECT_ROOT>",
+    "safeDirectory":  "<PROJECT_ROOT>",
+    "statusCommand":  "git -c safe.directory=<PROJECT_ROOT> status --short --branch",
+    "validationCommands":  [
+
+                           ],
+    "stagingPolicy":  "ask each time",
+    "commitCommand":  "",
+    "pushCommand":  "git -c safe.directory=<PROJECT_ROOT> push -u origin HEAD",
+    "docsRequirement":  "",
+    "forbiddenCommands":  ""
+}

@@ -2,23 +2,31 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="MESSAGE — Onovich" activePage="/contact">
-  <form
-    class="contact-form"
-    action="https://formspree.io/f/YOUR_FORM_ID"
-    method="POST"
-  >
-    <label>
-      姓名
-      <input type="text" name="name" placeholder="你的名字" required />
-    </label>
-    <label>
-      邮箱
-      <input type="email" name="email" placeholder="your@email.com" required />
-    </label>
-    <label>
-      消息
-      <textarea name="message" placeholder="想说的话..." required></textarea>
-    </label>
-    <button type="submit">SEND</button>
-  </form>
+  <img class="home-avatar" src="/images/profile/avatar.jpg" alt="Onovich" />
+  <hr class="home-divider" />
+  <div class="home-bio">
+    <p>沼蛙奥诺维奇，在沙发上创作游戏。</p>
+    <p>天生的法兰左和 BTV（但不会潜水）。</p>
+  </div>
+
+  <aside class="contact-drawer" aria-label="Message">
+    <form class="contact-drawer__form" action="mailto:" method="post" enctype="text/plain">
+      <div class="contact-drawer__row contact-drawer__to">
+        <span>To:</span>
+        <strong>流亡辛迪加</strong>
+      </div>
+
+      <label class="contact-drawer__row contact-drawer__from">
+        <span>From:&nbsp;</span>
+        <input type="email" name="sender" placeholder="Enter Your Email Address" />
+      </label>
+
+      <textarea name="message" placeholder="Message:" aria-label="Message"></textarea>
+
+      <div class="contact-drawer__footer">
+        <button type="submit">Send Email</button>
+        <a href="/">Cancel</a>
+      </div>
+    </form>
+  </aside>
 </BaseLayout>

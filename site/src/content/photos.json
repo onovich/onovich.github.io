@@ -1,9 +1,58 @@
 [
-  { "id": "photo-01", "title": "L1003541", "year": "2017.8", "src": "/images/photos/photo-01.jpg", "width": 1080, "height": 720 },
-  { "id": "photo-02", "title": "IMG_9519", "year": "2021",   "src": "/images/photos/photo-02.jpg", "width": 1080, "height": 810 },
-  { "id": "photo-03", "title": "IMG_7257", "year": "2021",   "src": "/images/photos/photo-03.jpg", "width": 1080, "height": 810 },
-  { "id": "photo-04", "title": "L1001570", "year": "2017",   "src": "/images/photos/photo-04.jpg", "width": 1080, "height": 720 },
-  { "id": "photo-05", "title": "L1002124", "year": "2017.7", "src": "/images/photos/photo-05.jpg", "width": 1080, "height": 720 },
-  { "id": "photo-06", "title": "L1002778", "year": "2017.7", "src": "/images/photos/photo-06.jpg", "width": 1080, "height": 720 },
-  { "id": "photo-07", "title": "摄影 07",  "year": "2021",   "src": "/images/photos/photo-07.jpg", "width": 1080, "height": 810 }
+  {
+    "id": "tokyo",
+    "title": "TOKYO",
+    "year": "2017.7-2017.8",
+    "src": "/images/photos/photo-01.jpg",
+    "width": 5952,
+    "height": 3968
+  },
+  {
+    "id": "kamakura",
+    "title": "KAMAKURA",
+    "year": "2017.7",
+    "src": "/images/photos/photo-02.jpg",
+    "width": 5952,
+    "height": 3968
+  },
+  {
+    "id": "fuji",
+    "title": "FUJI",
+    "year": "2017.8",
+    "src": "/images/photos/photo-03.jpg",
+    "width": 5952,
+    "height": 3968
+  },
+  {
+    "id": "hong-kong",
+    "title": "HONG KONG",
+    "year": "2017.7",
+    "src": "/images/photos/photo-04.jpg",
+    "width": 2160,
+    "height": 1440
+  },
+  {
+    "id": "shen-zhen",
+    "title": "SHEN ZHEN",
+    "year": "2017.5-2017.8",
+    "src": "/images/photos/photo-05.jpg",
+    "width": 5952,
+    "height": 3968
+  },
+  {
+    "id": "shang-hai",
+    "title": "SHANG HAI",
+    "year": "2017.9",
+    "src": "/images/photos/photo-06.jpg",
+    "width": 5952,
+    "height": 3968
+  },
+  {
+    "id": "bei-jing",
+    "title": "BEI JING",
+    "year": "2018.4",
+    "src": "/images/photos/photo-07.jpg",
+    "width": 1086,
+    "height": 724
+  }
 ]
