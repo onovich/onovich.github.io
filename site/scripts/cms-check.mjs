@@ -9,7 +9,7 @@ import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publish
 import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
-import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
+import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, formatCmsRestoreSummary, restoreCmsApplyBackup, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
@@ -483,6 +483,15 @@ function checkCmsApplyFileOps() {
     assert(!fs.existsSync(path.join(tempRoot, backup.backupRelativePath, 'src/content/new.json')), 'CMS apply backup must not invent backups for new files');
     assert(fs.readFileSync(path.join(tempRoot, 'src/content/codes.json'), 'utf8') === 'new codes\n', 'CMS apply file writer must write target content');
     assert(formatCmsApplyRollbackHint(backup).includes(backup.backupRelativePath), 'CMS apply rollback hint must include the backup path');
+
+    const dryRun = restoreCmsApplyBackup({ root: tempRoot, backupRelativePath: backup.backupRelativePath, dryRun: true });
+    assert(fs.readFileSync(path.join(tempRoot, 'src/content/codes.json'), 'utf8') === 'new codes\n', 'CMS restore dry run must not change files');
+    assert(dryRun.actions.some(action => action.action === 'restore'), 'CMS restore dry run must report restored files');
+
+    const restored = restoreCmsApplyBackup({ root: tempRoot, backupRelativePath: backup.backupRelativePath });
+    assert(fs.readFileSync(path.join(tempRoot, 'src/content/codes.json'), 'utf8') === 'old codes\n', 'CMS restore must copy backed-up files back to targets');
+    assert(!fs.existsSync(path.join(tempRoot, 'src/content/new.json')), 'CMS restore must remove files created by the apply step');
+    assert(formatCmsRestoreSummary(restored).includes('1 restored, 1 removed'), 'CMS restore summary must report restored and removed files');
   } finally {
     fs.rmSync(tempRoot, { recursive: true, force: true });
   }
@@ -501,6 +510,7 @@ const applyScriptSource = read('scripts/apply-cms-publish.mjs');
 const applyFileOpsSource = read('scripts/cms-apply-file-ops.mjs');
 const applySmokeSource = read('scripts/cms-apply-smoke.mjs');
 const publishSmokeSource = read('scripts/cms-publish-smoke.mjs');
+const restoreScriptSource = read('scripts/restore-cms-backup.mjs');
 const packageSource = read('package.json');
 
 for (const presetId of expectedPresets) {
@@ -541,12 +551,15 @@ assert(applyScriptSource.includes('collectCmsAssetPublishIssues'), 'CMS apply sc
 assert(applyScriptSource.includes('backupCmsApplyTargets'), 'CMS apply script must back up target files before writing');
 assert(applyScriptSource.includes('targets.length'), 'CMS apply script must report the actual number of written files');
 assert(applyFileOpsSource.includes('CMS publish backup'), 'CMS apply file ops must provide a rollback hint');
+assert(applyFileOpsSource.includes('restoreCmsApplyBackup'), 'CMS apply file ops must provide restore behavior');
+assert(restoreScriptSource.includes('cms:restore'), 'CMS restore script must expose npm usage text');
 assert(cmsApplyPlanSource.includes("section.type === 'gallery'"), 'CMS apply plan must publish gallery sections without GIF hero items');
 assert(applySmokeSource.includes('CMS apply smoke passed'), 'CMS apply smoke must provide a reusable dry-run check');
 assert(publishSmokeSource.includes('createCmsPublishPackage'), 'CMS publish smoke must exercise real publish package creation');
 assert(publishSmokeSource.includes('cms-seed'), 'CMS publish smoke must read the built CMS seed');
 assert(packageSource.includes('"cms:apply:smoke"'), 'CMS apply smoke must be available as an npm script');
 assert(packageSource.includes('"cms:publish:smoke"'), 'CMS publish smoke must be available as an npm script');
+assert(packageSource.includes('"cms:restore"'), 'CMS restore command must be available as an npm script');
 
 const codes = readJson('src/content/codes.json');
 const games = readJson('src/content/games.json');

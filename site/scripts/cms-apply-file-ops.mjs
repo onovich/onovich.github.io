@@ -48,8 +48,42 @@ export function writeCmsApplyTargets({ root, targets }) {
   }
 }
 
+export function restoreCmsApplyBackup({ root, backupRelativePath, dryRun = false }) {
+  const backupRoot = resolveInside(root, backupRelativePath);
+  const manifestPath = resolveInside(backupRoot, 'manifest.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const actions = [];
+
+  for (const entry of manifest.entries || []) {
+    const targetPath = resolveInside(root, entry.relativePath);
+    if (entry.existed) {
+      const backupPath = resolveInside(root, entry.backupPath);
+      actions.push({ action: 'restore', relativePath: entry.relativePath });
+      if (!dryRun) {
+        fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+        fs.copyFileSync(backupPath, targetPath);
+      }
+      continue;
+    }
+
+    const targetExists = fs.existsSync(targetPath);
+    actions.push({ action: targetExists ? 'remove-new' : 'skip-missing-new', relativePath: entry.relativePath });
+    if (!dryRun && targetExists) {
+      fs.rmSync(targetPath, { force: true });
+    }
+  }
+
+  return { backupRelativePath: toPosix(backupRelativePath), actions };
+}
+
 export function formatCmsApplyRollbackHint(backup) {
   return `CMS publish backup: ${backup.backupRelativePath}\nRestore by copying files back from this directory before committing.`;
+}
+
+export function formatCmsRestoreSummary(result) {
+  const restored = result.actions.filter(action => action.action === 'restore').length;
+  const removed = result.actions.filter(action => action.action === 'remove-new').length;
+  return `CMS backup restored: ${result.backupRelativePath} (${restored} restored, ${removed} removed).`;
 }
 
 function formatBackupTimestamp(date) {
