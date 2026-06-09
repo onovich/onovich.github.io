@@ -251,6 +251,14 @@ small {
   margin-bottom: 0.7rem;
 }
 
+body.page-inner.page-gallery-standard .home-grid__col--main {
+  padding-top: 5.85rem;
+}
+
+body.page-inner.page-gallery-standard .page-back {
+  margin-bottom: 3.5rem;
+}
+
 .home-avatar {
   width: 5.556rem;
   height: 5.556rem;
@@ -287,6 +295,14 @@ small {
 
   body.page-inner:not(.page-photo) .page-back {
     margin-bottom: 0.7rem;
+  }
+
+  body.page-inner.page-gallery-standard .home-grid__col--main {
+    padding-top: 5.23rem;
+  }
+
+  body.page-inner.page-gallery-standard .page-back {
+    margin-bottom: 2.82rem;
   }
 }
 
@@ -834,6 +850,12 @@ body.menu-open .site-menu__backdrop {
     --content-padding: 2.4rem;
     --thumbnails-width: 80%;
   }
+  body.page-inner.page-gallery-standard .home-grid__col--main {
+    padding-top: 7.18rem;
+  }
+  body.page-inner.page-gallery-standard .page-back {
+    margin-bottom: 4.13rem;
+  }
   .thumbnails { grid-template-columns: repeat(3, 1fr); }
   .site-menu-button { top: 2rem; right: 2rem; }
 }
@@ -847,6 +869,12 @@ body.menu-open .site-menu__backdrop {
   .home-grid { grid-template-columns: 4fr 8fr; gap: 0; }
   .page-home .home-grid__col--main,
   .page-inner .home-grid__col--main { padding-top: 5.5rem; }
+  body.page-inner.page-gallery-standard .home-grid__col--main {
+    padding-top: 7.12rem;
+  }
+  body.page-inner.page-gallery-standard .page-back {
+    margin-bottom: 2.04rem;
+  }
   .page-photo .home-grid__col--main { padding-top: 4.18rem; }
   .thumbnails-container {
     width: 100%;
@@ -870,6 +898,12 @@ body.menu-open .site-menu__backdrop {
 }
 
 @media (max-width: 420px) {
+  body.page-inner.page-gallery-standard .home-grid__col--main {
+    padding-top: 8.58rem;
+  }
+  body.page-inner.page-gallery-standard .page-back {
+    margin-bottom: 3.45rem;
+  }
   .thumbnails { grid-template-columns: repeat(2, 1fr); }
   .photo-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
