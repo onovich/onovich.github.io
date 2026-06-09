@@ -62,11 +62,19 @@
 
 ---
 
-## 🟡 5. 网页 CMS 需要拆分和发布链路打磨
+## 🟡 5. 网页 CMS 需要继续模块化和发布链路打磨
 
 **当前**：项目不再维护双后台。旧 `admin/` Electron 管理端已移除，后续只沿站内 `/cms` 网页 CMS 演进。
 
-**下一步**：把 `site/src/pages/cms.astro` 的样式、状态管理、预览、导入导出、富文本编辑逐步拆出；同时完善发布包应用脚本与 `npm run cms:check` 校验覆盖。
+**已完成**：
+- `site/src/pages/cms.astro` 已退回页面壳层，样式拆到 `site/src/styles/cms.css`
+- 浏览器主逻辑拆到 `site/src/cms/client.ts`
+- 状态 helper 拆到 `site/src/cms/state.js`
+- 预览渲染拆到 `site/src/cms/preview.js`
+- 草稿校验拆到 `site/src/cms/draftValidation.js`
+- `npm run cms:check` 已覆盖状态、预览、草稿校验等纯逻辑；`npm run cms:smoke` 已可复用做网页 CMS 冒烟
+
+**下一步**：优先把导出/发布包构造从 `client.ts` 拆成纯模块并补 `cms:check` 覆盖；随后完善发布包应用脚本、富文本编辑体验、更多真实发布场景 smoke。
 
 ---
 
