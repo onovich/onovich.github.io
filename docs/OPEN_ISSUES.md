@@ -11,8 +11,8 @@
 ## 当前 TODO 摘要（2026-06-10）
 
 1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
-2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 的 game/gif/illustrator mobile/tablet 列数已收敛；下一步继续处理 tight gallery 顶部与 graphic 长图尺寸，再处理 main width。
-3. P1：继续实测并复核 gallery 每个断点列数；codes、pixel 第二段、game/gif/illustrator 当前 mobile/tablet/laptop/desktop/wide 列数已对齐；graphic 保持 2 列但长图尺寸仍需单独收。
+2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 的 game/gif/illustrator mobile/tablet 列数、graphic 首张全栏图与长图顺序已收敛；下一步继续处理 tight gallery 顶部和 main width，再复核 graphic mobile/tablet 宽度残差。
+3. P1：继续实测并复核 gallery 每个断点列数；codes、pixel 第二段、game/gif/illustrator 当前 mobile/tablet/laptop/desktop/wide 列数已对齐；graphic 保持 2 列，首张 `graphic-06.jpg` 已恢复为全栏图。
 4. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
 
 ---
@@ -50,8 +50,9 @@
 - 已修：gallery grid item 增加 `min-width: 0`，pixel mobile 横向溢出已消除（375px viewport 下 `scrollWidth` 从约 626px 回到 375px），首屏方形缩略图尺寸也回到与 original 接近。
 - 已修：pixel 第二段 natural/flush gallery 已对齐 5 断点列数，desktop/wide 第二段图片宽高 delta 已收至约 `0.1px`；`visual:measure` 已新增 `g2` 输出，直接报告第二段列数、图片尺寸和段落高度。
 - 已修：tight dense gallery 在 mobile/tablet 重新保持 dense modifier 优先级，`game/gif/illustrator` 在移动和平板断点恢复 3 列；`graphic` 保持显式 2 列。
+- 已修：graphic 已恢复原站首张全栏图 `graphic-06.jpg`，通过 `span: "all"` 跨两列并隐藏 caption；后续两张长图顺序与原站一致。
 - 已修：关闭态 mobile site menu 增加 `visibility/pointer-events` 防护；thumbnail caption 增加安全换行，避免长中英混排标题撑出横向滚动或 full-page screenshot 黑边。
-- 残差：tight gallery 顶部仍偏高；graphic 长图尺寸仍偏；main width 仍略窄。
+- 残差：tight gallery 顶部仍偏高；graphic mobile/tablet 仍有主栏宽度/顶部位置残差；main width 仍略窄。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game/gif/illustrator 当前 mobile/tablet 也已恢复 3 列。
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
@@ -59,7 +60,7 @@
 **数值探针**：`site/scripts/visual-style-report.mjs` 已加入，npm 脚本为 `npm run visual:measure`；用于输出原站/clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns delta，并在多段 gallery 页面输出 `g2` 第二段列数、图片尺寸和段落高度。
 
 **下一步**（任务 #18 后续 / P0）：
-1. 用 `npm run visual:measure -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel --viewports=mobile,tablet,laptop,desktop,wide` 继续抽精确像素值；多段 gallery 优先看 `g2` 指标。
+1. 用 `npm run visual:measure -- --clone=http://127.0.0.1:4350 --pages=graphic,game,codes,pixel --viewports=mobile,tablet,laptop,desktop,wide` 继续抽精确像素值；多段 gallery 优先看 `g2` 指标。
 2. 调 `global.css` 直到 5 断点截图差异 < 5px。
 3. 缩略图列数：继续实测 game / pixel / illustrator / graphic 的断点列数，再决定是否写进 `@media`。
 

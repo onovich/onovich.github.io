@@ -94,7 +94,8 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：gallery grid item 增加 `min-width: 0`，pixel mobile 横向溢出已消除（375px viewport 下 `scrollWidth` 从约 626px 回到 375px），首屏方形缩略图尺寸也回到与 original 接近。
 - 2026-06-10 更新：pixel 第二段 natural/flush gallery 已按原站恢复 3 列与左右内缩；natural thumbnails 退出 `content-visibility:auto` 占位高度，避免第二段 grid 行高被 320px placeholder 压缩。`visual:measure` 已新增 `g2` 输出，desktop/wide 第二段图片宽高 delta 已收至约 `0.1px`。
 - 2026-06-10 更新：tight dense gallery 在 mobile/tablet 重新保持 dense modifier 优先级，`game/gif/illustrator` 移动和平板断点恢复 3 列；`graphic` 继续保持显式 2 列。
-- 残差：tight gallery 顶部、graphic 长图尺寸、main width 仍需后续节点继续收。
+- 2026-06-10 更新：graphic 恢复原站首张 `graphic-06.jpg` 全栏图，Gallery 支持 `span: "all"` 和 `hideCaption`；`visual:measure` 的默认 pick 改为按 y 再按 x，列数改为优先报告第一个非跨栏图片行，因此 graphic 会显示 `cols=2/first=1`。
+- 残差：tight gallery 顶部、graphic mobile/tablet 主栏宽度/顶部位置、main width 仍需后续节点继续收。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid
