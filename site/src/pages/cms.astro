@@ -227,6 +227,8 @@ const validationJson = JSON.stringify(seedIssues).replace(/</g, '\\u003c');
                   <label>说明<input id="itemDescInput" type="text" /></label>
                   <label>年份<input id="itemYearInput" type="text" /></label>
                   <label>图片路径<input id="itemSrcInput" type="text" /></label>
+                  <label class="cms-button cms-button--file cms-button--upload" for="itemUploadInput">选择上传图片</label>
+                  <input id="itemUploadInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
                   <label>条目链接<input id="itemHrefInput" type="text" /></label>
                   <label>目标页面 ID<input id="itemTargetPageInput" type="text" /></label>
                   <div class="cms-field-grid">

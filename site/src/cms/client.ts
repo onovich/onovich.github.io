@@ -4,6 +4,7 @@ import { collectCmsDraftIssues } from './draftValidation.js';
 import { createCmsPublishPackage } from './publishPackage.js';
 import { parseCmsPackageJson, parseCmsPackageJsonOrFallback } from './importPackage.js';
 import { bindCmsRichTextToolbar } from './richText.js';
+import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './uploadAssets.js';
 
 (() => {
   const STORAGE_KEY = 'onovich:cms:draft';
@@ -71,6 +72,7 @@ import { bindCmsRichTextToolbar } from './richText.js';
     itemSrc: document.getElementById('itemSrcInput'),
     itemHref: document.getElementById('itemHrefInput'),
     itemTargetPage: document.getElementById('itemTargetPageInput'),
+    itemUpload: document.getElementById('itemUploadInput'),
     itemWidth: document.getElementById('itemWidthInput'),
     itemHeight: document.getElementById('itemHeightInput'),
     itemCaptionHtml: document.getElementById('itemCaptionHtmlInput'),
@@ -255,7 +257,7 @@ import { bindCmsRichTextToolbar } from './richText.js';
     if (activeItemIndex >= items.length) activeItemIndex = Math.max(0, items.length - 1);
     els.itemList.innerHTML = items.length ? items.map((item, index) => `
       <button class="cms-item-row ${index === activeItemIndex ? 'is-active' : ''}" type="button" data-item="${index}">
-        <img class="cms-item-thumb" src="${escapeAttr(item.src || '')}" alt="" />
+        <img class="cms-item-thumb" src="${escapeAttr(cmsUploadPreviewSrc(item.src || '', state.assets))}" alt="" />
         <span class="cms-item-info">
           <span class="cms-item-title">${escapeHtml(item.title || item.id || 'Untitled')}</span>
           <span class="cms-item-sub">${escapeHtml(item.desc || item.year || item.href || item.src || item.targetPageId || '')}</span>
@@ -322,6 +324,7 @@ import { bindCmsRichTextToolbar } from './richText.js';
       page,
       nav: state.nav,
       site: state.site,
+      assets: state.assets,
     });
   }
 
@@ -411,6 +414,32 @@ import { bindCmsRichTextToolbar } from './richText.js';
     if (item.bodyHtml) section.bodyHtml = item.bodyHtml;
     saveDraft();
     render();
+  }
+
+  async function applyItemUpload(file) {
+    if (!file) return;
+    try {
+      saveItemFromInputs();
+      const asset = await readCmsUploadFile(file);
+      state.assets = upsertCmsUploadAsset(state.assets, asset);
+      const section = activeSection();
+      const items = section.items || [];
+      let item = items[activeItemIndex];
+      if (!item) {
+        item = { id: `item-${items.length + 1}` };
+        items.push(item);
+        activeItemIndex = items.length - 1;
+      }
+      item.src = asset.src;
+      item.width = asset.width;
+      item.height = asset.height;
+      item.originalUrl = asset.src;
+      if (!item.title) item.title = asset.alt || asset.id;
+      saveDraft(`图片已上传 ${asset.src}`);
+      render();
+    } catch {
+      setStatus('图片上传失败');
+    }
   }
 
   function addPage() {
@@ -646,6 +675,11 @@ import { bindCmsRichTextToolbar } from './richText.js';
   document.getElementById('saveSectionBtn').addEventListener('click', saveSectionFromInputs);
   document.getElementById('addItemBtn').addEventListener('click', addItem);
   document.getElementById('saveItemBtn').addEventListener('click', saveItemFromInputs);
+  els.itemUpload.addEventListener('change', event => {
+    const file = event.target.files?.[0];
+    if (file) applyItemUpload(file);
+    event.target.value = '';
+  });
   document.getElementById('deleteItemBtn').addEventListener('click', deleteItem);
   document.getElementById('moveItemUpBtn').addEventListener('click', () => moveItem(-1));
   document.getElementById('moveItemDownBtn').addEventListener('click', () => moveItem(1));

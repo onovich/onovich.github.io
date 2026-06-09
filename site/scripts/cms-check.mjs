@@ -10,7 +10,7 @@ import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
 import { cmsRichTextSelectionBelongsToEditor, collectCmsRichTextHtmlIssues, createCmsRichTextLinkPanel, createCmsRichTextSelectionStore, isCmsRichTextAllowedTag, isCmsRichTextCommand, normalizeCmsRichTextHref, pasteCmsRichText, runCmsRichTextCommand } from '../src/cms/richText.js';
-import { CMS_UPLOAD_TARGET_DIR, collectCmsUploadAssetIssues, createCmsUploadAsset, normalizeCmsUploadFileName } from '../src/cms/uploadAssets.js';
+import { CMS_UPLOAD_TARGET_DIR, cmsUploadPreviewSrc, collectCmsUploadAssetIssues, createCmsUploadAsset, normalizeCmsUploadFileName, upsertCmsUploadAsset } from '../src/cms/uploadAssets.js';
 import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, formatCmsRestoreSummary, restoreCmsApplyBackup, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -185,12 +185,22 @@ function checkCmsPreviewRenderer() {
           title: 'Work <One>',
           desc: 'Description',
           year: '2026',
-          src: '/images/codes/work.png',
+          src: '/images/uploads/work.png',
           targetPageId: 'work-one',
           links: [{ label: 'Play', url: 'https://example.com/play' }],
         }],
       }],
     },
+    assets: [{
+      id: 'work',
+      src: '/images/uploads/work.png',
+      targetPath: 'images/uploads/work.png',
+      width: 1,
+      height: 1,
+      mimeType: 'image/png',
+      source: 'upload',
+      dataUrl: 'data:image/png;base64,AAAA',
+    }],
   });
 
   assert(html.includes('preview-site'), 'CMS preview renderer must render the preview shell');
@@ -198,6 +208,7 @@ function checkCmsPreviewRenderer() {
   assert(html.includes('/codes') && !html.includes('/hidden'), 'CMS preview renderer must include visible nav links only');
   assert(html.includes('&lt; HOME'), 'CMS preview renderer must render the back label');
   assert(html.includes('preview-gallery'), 'CMS preview renderer must render gallery sections');
+  assert(html.includes('data:image/png;base64,AAAA'), 'CMS preview renderer must preview uploaded assets from data URLs');
   assert(html.includes('href="/work-one"'), 'CMS preview renderer must resolve internal item links');
   assert(html.includes('Work &lt;One&gt;') && html.includes('Description') && html.includes('2026'), 'CMS preview renderer must render escaped captions');
 }
@@ -311,6 +322,9 @@ function checkCmsUploadAssets() {
   assert(collectCmsUploadAssetIssues({ ...asset, width: 0 }).some(issue => issue.code === 'upload-asset-dimensions-missing'), 'CMS upload assets must require dimensions');
   assert(collectCmsUploadAssetIssues({ ...asset, src: '/images/elsewhere/hero.png' }).some(issue => issue.code === 'upload-asset-path-invalid'), 'CMS upload assets must stay under /images/uploads/');
   assert(collectCmsUploadAssetIssues({ ...asset, dataUrl: 'data:image/jpeg;base64,AAAA' }).some(issue => issue.code === 'upload-asset-data-invalid'), 'CMS upload assets must match data URLs to MIME type');
+  const upserted = upsertCmsUploadAsset([{ ...asset, width: 1 }], asset);
+  assert(upserted.length === 1 && upserted[0].width === 640, 'CMS upload assets must replace existing assets with the same src');
+  assert(cmsUploadPreviewSrc(asset.src, [asset]) === asset.dataUrl, 'CMS upload assets must provide data URLs for CMS previews');
 }
 
 function checkCmsPublishPackage() {
@@ -685,6 +699,7 @@ for (const page of expectedPages) {
 assert(cmsSource.includes('sectionPresetInput'), 'CMS UI must expose section preset controls');
 assert(cmsSource.includes('cms-validation-seed'), 'CMS UI must expose validation seed data');
 assert(cmsSource.includes('richLinkInput'), 'CMS UI must expose the rich text link panel');
+assert(cmsSource.includes('itemUploadInput'), 'CMS UI must expose image upload controls');
 assert(cmsSource.includes("import '../cms/client'"), 'CMS page must load the browser client module');
 assert(cmsClientSource.includes('activeSectionId'), 'CMS UI must keep section-level editing state');
 assert(cmsClientSource.includes('createCmsStateHelpers'), 'CMS client must use shared state helpers');
@@ -694,6 +709,9 @@ assert(cmsClientSource.includes('createCmsPublishPackage'), 'CMS client must use
 assert(cmsClientSource.includes('parseCmsPackageJson'), 'CMS client must use the shared import package parser');
 assert(cmsClientSource.includes('bindCmsRichTextToolbar'), 'CMS client must use the shared rich text toolbar binder');
 assert(!cmsClientSource.includes("prompt('链接 URL')"), 'CMS client must not use browser prompt for rich text links');
+assert(cmsClientSource.includes('readCmsUploadFile'), 'CMS client must use the shared upload file reader');
+assert(cmsClientSource.includes('upsertCmsUploadAsset'), 'CMS client must use the shared upload asset upsert helper');
+assert(cmsClientSource.includes('cmsUploadPreviewSrc'), 'CMS client must use upload data URLs for local previews');
 assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(cmsImportSource.includes('invalid cms package'), 'CMS import package must centralize invalid package handling');
 assert(cmsRichTextSource.includes('execCommand'), 'CMS rich text module must own rich text command execution');
@@ -701,6 +719,8 @@ assert(cmsRichTextSource.includes('createCmsRichTextSelectionStore'), 'CMS rich 
 assert(cmsRichTextSource.includes('sanitizeCmsRichTextHtml'), 'CMS rich text module must own paste HTML sanitization');
 assert(cmsRichTextSource.includes('createCmsRichTextLinkPanel'), 'CMS rich text module must own link panel behavior');
 assert(cmsUploadSource.includes('CMS_UPLOAD_TARGET_DIR'), 'CMS upload module must own upload target paths');
+assert(cmsUploadSource.includes('readCmsUploadFile'), 'CMS upload module must own browser file metadata reading');
+assert(cmsUploadSource.includes('cmsUploadPreviewSrc'), 'CMS upload module must own preview source resolution');
 assert(cmsDraftValidationSource.includes('collectCmsUploadAssetIssues'), 'CMS draft validation must use the shared upload asset validator');
 assert(cmsPublishSource.includes('collectCmsUploadAssets'), 'CMS publish package builder must use the shared upload asset collector');
 assert(cmsAssetSource.includes('/images/'), 'CMS asset validation must keep publishable image path rules centralized');

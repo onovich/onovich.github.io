@@ -133,7 +133,8 @@ body.cms-page textarea {
   color: #ffd3d3;
 }
 
-#importFile {
+#importFile,
+#itemUploadInput {
   display: none;
 }
 

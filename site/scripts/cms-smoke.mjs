@@ -66,6 +66,10 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 const errors = [];
 const dialogs = [];
+const smokePng = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
+  'base64',
+);
 
 page.on('console', (msg) => {
   if (msg.type() === 'error') errors.push(msg.text());
@@ -97,6 +101,28 @@ try {
     status: document.querySelector('#cmsStatus')?.textContent || '',
     draftSections: JSON.parse(localStorage.getItem('onovich:cms:draft') || 'null')?.pages?.[0]?.sections?.length ?? null,
   }));
+
+  await page.click('[data-tab="items"]');
+  await page.click('#addItemBtn');
+  await page.setInputFiles('#itemUploadInput', {
+    name: 'Smoke Upload.png',
+    mimeType: 'image/png',
+    buffer: smokePng,
+  });
+  await page.waitForFunction(() => document.querySelector('#itemSrcInput')?.value === '/images/uploads/smoke-upload.png');
+  const afterUpload = await page.evaluate(() => {
+    const draft = JSON.parse(localStorage.getItem('onovich:cms:draft') || 'null');
+    const asset = draft?.assets?.find(item => item.src === '/images/uploads/smoke-upload.png');
+    const page = draft?.pages?.find(item => item.id === 'home');
+    const uploadedItem = page?.sections?.flatMap(section => section.items || []).find(item => item.src === '/images/uploads/smoke-upload.png');
+    return {
+      src: document.querySelector('#itemSrcInput')?.value || '',
+      width: document.querySelector('#itemWidthInput')?.value || '',
+      height: document.querySelector('#itemHeightInput')?.value || '',
+      asset,
+      uploadedItem,
+    };
+  });
 
   await page.click('[data-tab="raw"]');
   await page.waitForTimeout(100);
@@ -158,6 +184,10 @@ try {
   assert(before.structurePanelActive, 'Structure panel was not active initially');
   assert(before.previewText.includes('Onovich'), 'Preview did not render Onovich content');
   assert(afterAdd.sectionRows > before.sectionRows && afterAdd.draftSections > before.sectionRows, 'Add section did not update section state');
+  assert(afterUpload.src === '/images/uploads/smoke-upload.png', 'Upload UI did not write the generated image path');
+  assert(afterUpload.width === '1' && afterUpload.height === '1', 'Upload UI did not read image dimensions');
+  assert(afterUpload.asset?.mimeType === 'image/png' && afterUpload.asset?.dataUrl?.startsWith('data:image/png;base64,'), 'Upload UI did not store upload asset metadata');
+  assert(afterUpload.uploadedItem?.src === afterUpload.src, 'Upload UI did not attach the uploaded image to the active item');
   assert(afterRaw.rawPanelActive && afterRaw.rawHasSchema, 'Raw JSON tab did not render state');
   assert(afterPaste.textPanelActive, 'Rich text tab did not activate');
   assert(afterPaste.html.includes('<strong>Safe</strong>'), 'Rich text paste did not preserve allowed formatting');
@@ -165,7 +195,7 @@ try {
   assert(afterLink.html.includes('<a href="https://example.com/smoke">link</a>'), 'Rich text link panel did not apply the selected link');
   assert(afterLink.panelHidden, 'Rich text link panel did not close after applying a link');
 
-  console.log(JSON.stringify({ before, afterAdd, afterRaw, afterPaste, afterLink, dialogs, errors }, null, 2));
+  console.log(JSON.stringify({ before, afterAdd, afterUpload, afterRaw, afterPaste, afterLink, dialogs, errors }, null, 2));
 } finally {
   await browser.close();
   await closeServer();

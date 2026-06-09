@@ -90,6 +90,61 @@ export function collectCmsUploadAssets(state) {
     .map(normalizeCmsUploadAsset);
 }
 
+export function upsertCmsUploadAsset(assets, asset) {
+  const normalized = normalizeCmsUploadAsset(asset);
+  return [
+    ...(assets || []).filter(item => normalizeCmsUploadAsset(item).src !== normalized.src),
+    normalized,
+  ];
+}
+
+export function cmsUploadPreviewSrc(src, assets = []) {
+  const publicSrc = (src ?? '').toString();
+  if (!publicSrc.startsWith(CMS_UPLOAD_PUBLIC_PREFIX)) return publicSrc;
+  const asset = collectCmsUploadAssets({ assets }).find(item => item.src === publicSrc);
+  return asset?.dataUrl || publicSrc;
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error || new Error('failed to read upload'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function readImageDimensions(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve({ width: image.naturalWidth, height: image.naturalHeight });
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('failed to read image dimensions'));
+    };
+    image.src = url;
+  });
+}
+
+export async function readCmsUploadFile(file) {
+  const [dataUrl, dimensions] = await Promise.all([
+    readFileAsDataUrl(file),
+    readImageDimensions(file),
+  ]);
+  return createCmsUploadAsset({
+    fileName: file.name,
+    mimeType: file.type,
+    width: dimensions.width,
+    height: dimensions.height,
+    size: file.size,
+    dataUrl,
+  });
+}
+
 export function collectCmsUploadAssetIssues(asset, { requireData = false } = {}) {
   const normalized = normalizeCmsUploadAsset(asset);
   const issues = [];
