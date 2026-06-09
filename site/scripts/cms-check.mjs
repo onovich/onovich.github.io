@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clone, createCmsStateHelpers } from '../src/cms/state.js';
 import { renderCmsPreview } from '../src/cms/preview.js';
+import { collectCmsDraftIssues } from '../src/cms/draftValidation.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
@@ -193,6 +194,44 @@ function checkCmsPreviewRenderer() {
   assert(html.includes('Work &lt;One&gt;') && html.includes('Description') && html.includes('2026'), 'CMS preview renderer must render escaped captions');
 }
 
+function checkCmsDraftValidation() {
+  const pageTemplateMap = new Map([['gallery-page', {}]]);
+  const sectionPresetMap = new Map([['gallery-roomy-3', {}]]);
+  const issues = collectCmsDraftIssues({
+    seedIssues: [{ level: 'warning', message: 'Seed warning', pageId: 'seed-page' }],
+    pageTemplateMap,
+    sectionPresetMap,
+    state: {
+      pages: [
+        {
+          id: 'broken',
+          title: 'Broken',
+          path: 'missing-slash',
+          templateId: 'unknown-template',
+          sections: [{
+            id: 'bad-gallery',
+            presetId: 'unknown-preset',
+            params: { clickMode: 'internal-page' },
+            items: [
+              { id: 'missing-dimensions', src: '/images/codes/work.png' },
+              { id: 'missing-target', targetPageId: 'missing-page' },
+            ],
+          }],
+        },
+      ],
+    },
+  });
+  const messages = issues.map(issue => issue.message).join('\n');
+
+  assert(issues.some(issue => issue.message === 'Seed warning'), 'CMS draft validation must include seed issues');
+  assert(messages.includes('路径需要以 / 开头'), 'CMS draft validation must reject paths without a leading slash');
+  assert(messages.includes('未知页面模板 unknown-template'), 'CMS draft validation must reject unknown page templates');
+  assert(messages.includes('未知分段预设 unknown-preset'), 'CMS draft validation must reject unknown section presets');
+  assert(messages.includes('图片缺少宽高'), 'CMS draft validation must warn on image items without dimensions');
+  assert(messages.includes('目标页面不存在'), 'CMS draft validation must reject missing internal targets');
+  assert(issues.filter(issue => issue.level === 'error').length >= 4, 'CMS draft validation must classify blocking issues as errors');
+}
+
 const presetsSource = read('src/cms/presets.ts');
 const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
@@ -222,6 +261,7 @@ assert(cmsSource.includes("import '../cms/client'"), 'CMS page must load the bro
 assert(cmsClientSource.includes('activeSectionId'), 'CMS UI must keep section-level editing state');
 assert(cmsClientSource.includes('createCmsStateHelpers'), 'CMS client must use shared state helpers');
 assert(cmsClientSource.includes('renderCmsPreview'), 'CMS client must use the shared preview renderer');
+assert(cmsClientSource.includes('collectCmsDraftIssues'), 'CMS client must use the shared draft validator');
 assert(cmsClientSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
@@ -239,6 +279,7 @@ const photoAlbums = readJson('src/content/photoAlbums.json');
 
 checkCmsStateHelpers();
 checkCmsPreviewRenderer();
+checkCmsDraftValidation();
 checkGalleryItems(codes, 'codes');
 checkGalleryItems(games, 'games');
 checkGalleryItems(pixel, 'pixel');
