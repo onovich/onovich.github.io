@@ -176,6 +176,7 @@ async function collectStyleMetrics(page) {
 
     const thumbnails = pick(selectors.thumbnails);
     const cargoCols = thumbnails?.getAttribute('thumbnails-cols') || thumbnails?.getAttribute('thumbnails-columns') || '';
+    const gallerySections = readGallerySections(selectors.thumbnails);
 
     return {
       pageTitle: document.title,
@@ -206,7 +207,28 @@ async function collectStyleMetrics(page) {
         cargoCols,
         itemCount: thumbRects.length,
       },
+      gallerySections,
     };
+
+    function readGallerySections(selector) {
+      return Array.from(document.querySelectorAll(selector)).filter(visible).map((galleryElement, index) => {
+        const thumbs = Array.from(galleryElement.querySelectorAll(selectors.thumb)).filter(visible);
+        const images = Array.from(galleryElement.querySelectorAll(selectors.thumbImage)).filter(visible);
+        const sectionThumbRects = thumbs.map((element) => element.getBoundingClientRect());
+        const rowTop = sectionThumbRects.length > 0 ? Math.min(...sectionThumbRects.map((rect) => rect.y)) : null;
+        const rowRects = rowTop === null ? [] : sectionThumbRects.filter((rect) => Math.abs(rect.y - rowTop) < 3);
+
+        return {
+          index,
+          className: galleryElement.className?.toString?.() || '',
+          columns: rowRects.length,
+          itemCount: thumbs.length,
+          gallery: read(galleryElement),
+          thumb: read(thumbs[0]),
+          thumbImage: read(images[0]),
+        };
+      });
+    }
 
     function findMainAnchor(mainElement) {
       const mainRect = mainElement?.getBoundingClientRect() || null;
@@ -264,6 +286,10 @@ function printTextReport(records) {
         console.log(`ERR ${record.target}: ${record.error}`);
         continue;
       }
+      const secondGallery = record.metrics.gallerySections?.[1];
+      const secondGallerySummary = secondGallery
+        ? `g2=${secondGallery.columns}c ${fmt(secondGallery.thumbImage?.width)}x${fmt(secondGallery.thumbImage?.height)} h=${fmt(secondGallery.gallery?.height)}`
+        : '';
       console.log(
         [
           record.target.padEnd(8),
@@ -275,7 +301,8 @@ function printTextReport(records) {
           `title=${fmt(record.metrics.title?.fontSize)}/${fmt(record.metrics.title?.lineHeight)}`,
           `tags=${fmt(record.metrics.tags?.fontSize)}/${fmt(record.metrics.tags?.lineHeight)}`,
           `cols=${record.metrics.gallery.columns}${record.metrics.gallery.cargoCols ? `(${record.metrics.gallery.cargoCols})` : ''}`,
-        ].join('  ')
+          secondGallerySummary,
+        ].filter(Boolean).join('  ')
       );
     }
 
@@ -300,6 +327,10 @@ function printDelta(original, clone) {
     ['tags.fontSize', original.tags?.fontSize, clone.tags?.fontSize],
     ['tags.lineHeight', original.tags?.lineHeight, clone.tags?.lineHeight],
     ['gallery.columns', original.gallery?.columns, clone.gallery?.columns],
+    ['gallery2.columns', original.gallerySections?.[1]?.columns, clone.gallerySections?.[1]?.columns],
+    ['gallery2.thumbImage.width', original.gallerySections?.[1]?.thumbImage?.width, clone.gallerySections?.[1]?.thumbImage?.width],
+    ['gallery2.thumbImage.height', original.gallerySections?.[1]?.thumbImage?.height, clone.gallerySections?.[1]?.thumbImage?.height],
+    ['gallery2.height', original.gallerySections?.[1]?.gallery?.height, clone.gallerySections?.[1]?.gallery?.height],
   ];
 
   const summary = lines

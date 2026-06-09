@@ -475,6 +475,11 @@ body.page-contact .site-footer {
   padding: 0.125rem;
 }
 
+.thumbnails--natural .thumb {
+  content-visibility: visible;
+  contain-intrinsic-size: none;
+}
+
 .thumbnails--flush .thumb {
   padding: 0;
 }
@@ -909,6 +914,21 @@ body.menu-open .site-menu__backdrop {
   }
   .thumbnails { grid-template-columns: repeat(2, 1fr); }
   .photo-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+body.page-pixel .thumbnails--natural.thumbnails--flush {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 2rem;
+}
+
+body.page-pixel .thumbnails--natural.thumbnails--flush .thumb {
+  padding: 0;
+}
+
+@media (max-width: 768px) {
+  body.page-pixel .thumbnails--natural.thumbnails--flush {
+    padding: 1rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

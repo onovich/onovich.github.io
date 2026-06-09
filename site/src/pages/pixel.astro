@@ -7,7 +7,7 @@ const sections = [1, 2]
   .map(section => items.filter(item => item.section === section))
   .filter(sectionItems => sectionItems.length > 0);
 ---
-<BaseLayout title="PIXEL ARTS — Onovich" activePage="/pixel" pageClass="page-gallery-standard">
+<BaseLayout title="PIXEL ARTS — Onovich" activePage="/pixel" pageClass="page-pixel page-gallery-standard">
   {sections.map((sectionItems, index) => (
     <>
       {index > 0 && <div class="gallery-section-gap" />}
