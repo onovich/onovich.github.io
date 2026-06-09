@@ -1,0 +1,50 @@
+---
+interface PhotoItem {
+  id: string;
+  title?: string;
+  year?: string;
+  href?: string;
+  src: string;
+  width?: number;
+  height?: number;
+}
+
+interface Props {
+  items: PhotoItem[];
+  showCaptions?: boolean;
+}
+
+const { items, showCaptions = false } = Astro.props;
+---
+
+<div class={`photo-columns${showCaptions ? ' photo-columns--captions' : ''}`}>
+  {items.map((item, index) => {
+    const media = (
+      <img
+        src={item.src}
+        alt={[item.title, item.year].filter(Boolean).join('')}
+        width={item.width}
+        height={item.height}
+        loading={index < 9 ? 'eager' : 'lazy'}
+      />
+    );
+
+    return (
+      <figure class="photo-card">
+        {item.href ? (
+          <a class="photo-card__image" href={item.href}>
+            {media}
+          </a>
+        ) : (
+          <div class="photo-card__image">{media}</div>
+        )}
+        {showCaptions && (
+          <figcaption>
+            {item.title && <div>{item.title}</div>}
+            {item.year && <div>{item.year}</div>}
+          </figcaption>
+        )}
+      </figure>
+    );
+  })}
+</div>

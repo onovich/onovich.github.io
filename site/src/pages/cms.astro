@@ -1,0 +1,1515 @@
+---
+import codes from '../content/codes.json';
+import games from '../content/games.json';
+import pixel from '../content/pixel.json';
+import illustrations from '../content/illustrations.json';
+import gifs from '../content/gifs.json';
+import graphics from '../content/graphics.json';
+import photoAlbums from '../content/photoAlbums.json';
+import poemHtml from '../content/poem.html?raw';
+
+const sidebar = [
+  { id: 'codes', path: '/codes', label: 'CODES', group: '作品' },
+  { id: 'game', path: '/game', label: 'GAMES', group: '作品' },
+  { id: 'pixel', path: '/pixel', label: 'PIXEL ARTS', group: '作品' },
+  { id: 'illustrator', path: '/illustrator', label: 'ILLUSTRATIONS', group: '作品' },
+  { id: 'gif', path: '/gif', label: 'GIFS', group: '作品' },
+  { id: 'graphic', path: '/graphic', label: 'GRAPHIC DESIGNS', group: '作品' },
+  { id: 'photo', path: '/photo', label: 'PHOTOS', group: '作品' },
+  { id: 'poem', path: '/poem', label: 'POEMS', group: '作品' },
+  { id: 'sns', path: '/sns', label: 'SNS', group: '链接' },
+  { id: 'links', path: '/links', label: 'LINKS', group: '链接' },
+  { id: 'contact', path: '/contact', label: 'MESSAGE', group: '链接' },
+];
+
+const pages = [
+  {
+    id: 'home',
+    title: 'Homepage',
+    path: '/',
+    type: 'home',
+    category: '站点',
+    sidebar: false,
+    layout: { columns: 1, imageRatio: '1 / 1', caption: 'none', width: 58, top: 7.3, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    bodyHtml: '<p>沼蛙奥诺维奇，在沙发上创作游戏。</p><p>天生的法兰左和 BTV（但不会潜水）。</p>',
+    items: [{ id: 'avatar', title: 'Avatar', src: '/images/profile/avatar.jpg', width: 400, height: 400, href: '' }],
+  },
+  {
+    id: 'codes',
+    title: 'CODES',
+    path: '/codes',
+    type: 'gallery',
+    category: '作品',
+    sidebar: true,
+    layout: { columns: 3, imageRatio: '16 / 9', caption: 'title-desc-links', width: 100, top: 5.5, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    items: codes,
+  },
+  {
+    id: 'game',
+    title: 'GAMES',
+    path: '/game',
+    type: 'gallery',
+    category: '作品',
+    sidebar: true,
+    layout: { columns: 3, imageRatio: '16 / 9', caption: 'title-desc-links', width: 100, top: 5.5, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    items: games,
+  },
+  {
+    id: 'pixel',
+    title: 'PIXEL ARTS',
+    path: '/pixel',
+    type: 'gallery',
+    category: '作品',
+    sidebar: true,
+    layout: { columns: 3, imageRatio: '1 / 1', caption: 'title-year', width: 100, top: 5.5, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    items: pixel,
+  },
+  {
+    id: 'illustrator',
+    title: 'ILLUSTRATIONS',
+    path: '/illustrator',
+    type: 'gallery',
+    category: '作品',
+    sidebar: true,
+    layout: { columns: 3, imageRatio: '1 / 1', caption: 'title-year', width: 100, top: 5.5, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    items: illustrations,
+  },
+  {
+    id: 'gif',
+    title: 'GIFS',
+    path: '/gif',
+    type: 'gallery',
+    category: '作品',
+    sidebar: true,
+    layout: { columns: 3, imageRatio: '1 / 1', caption: 'title-year', width: 100, top: 5.5, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    items: gifs,
+  },
+  {
+    id: 'graphic',
+    title: 'GRAPHIC DESIGNS',
+    path: '/graphic',
+    type: 'gallery',
+    category: '作品',
+    sidebar: true,
+    layout: { columns: 3, imageRatio: '1 / 1', caption: 'title-year', width: 100, top: 5.5, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    items: graphics,
+  },
+  {
+    id: 'photo',
+    title: 'PHOTOS',
+    path: '/photo',
+    type: 'photo-index',
+    category: '作品',
+    sidebar: true,
+    layout: { columns: 3, imageRatio: 'natural', caption: 'title-year', width: 100, top: 4.7, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    items: photoAlbums.index,
+    albums: photoAlbums.albums,
+  },
+  {
+    id: 'poem',
+    title: 'POEMS',
+    path: '/poem',
+    type: 'richtext',
+    category: '作品',
+    sidebar: true,
+    layout: { columns: 1, imageRatio: 'text', caption: 'none', width: 100, top: 5.5, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    bodyHtml: poemHtml,
+    items: [],
+  },
+  {
+    id: 'sns',
+    title: 'SNS',
+    path: '/sns',
+    type: 'links',
+    category: '链接',
+    sidebar: true,
+    layout: { columns: 1, imageRatio: 'text', caption: 'none', width: 100, top: 5.5, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    items: [
+      { id: 'twitter', title: 'Twitter', href: 'https://twitter.com/Umbra_Onovich' },
+      { id: 'steam', title: 'Steam', href: 'http://steamcommunity.com/id/onovich' },
+      { id: 'douban', title: '豆瓣', href: 'https://www.douban.com/people/hjn1110/' },
+      { id: 'github', title: 'GitHub', href: 'https://github.com/onovich' },
+    ],
+  },
+  {
+    id: 'links',
+    title: 'LINKS',
+    path: '/links',
+    type: 'links',
+    category: '链接',
+    sidebar: true,
+    layout: { columns: 1, imageRatio: 'text', caption: 'none', width: 100, top: 5.5, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    items: [{ id: 'placeholder', title: 'Onovich', href: 'https://onovich.com' }],
+  },
+  {
+    id: 'contact',
+    title: 'MESSAGE',
+    path: '/contact',
+    type: 'form',
+    category: '链接',
+    sidebar: true,
+    layout: { columns: 1, imageRatio: 'text', caption: 'none', width: 100, top: 7.3, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+    bodyHtml: '<p>MESSAGE</p>',
+    items: [],
+  },
+];
+
+const seed = {
+  schemaVersion: 1,
+  updatedAt: new Date().toISOString(),
+  site: {
+    title: 'Onovich',
+    description: 'Onovich creates games on a sofa.',
+    baseUrl: 'https://blog.onovich.com',
+  },
+  categories: ['站点', '作品', '链接'],
+  sidebar,
+  pages,
+};
+
+const seedJson = JSON.stringify(seed).replace(/</g, '\\u003c');
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Onovich CMS</title>
+  </head>
+  <body class="cms-page">
+    <script type="application/json" id="cms-seed" set:html={seedJson}></script>
+
+    <div class="cms-shell">
+      <aside class="cms-rail">
+        <div class="cms-brand">
+          <strong>Onovich</strong>
+          <span>CMS</span>
+        </div>
+        <div class="cms-rail__actions">
+          <button class="cms-button cms-button--primary" id="saveDraftBtn" type="button">保存草稿</button>
+          <button class="cms-button" id="publishBtn" type="button">发布预览</button>
+          <button class="cms-button" id="exportBtn" type="button">导出发布包</button>
+          <label class="cms-button cms-button--file" for="importFile">导入</label>
+          <input id="importFile" type="file" accept="application/json" />
+          <button class="cms-button cms-button--danger" id="resetBtn" type="button">重置</button>
+        </div>
+        <div class="cms-status" id="cmsStatus">Ready</div>
+      </aside>
+
+      <nav class="cms-tree">
+        <div class="cms-tree__bar">
+          <button class="cms-icon-button" id="addCategoryBtn" type="button" title="新增类目">类目+</button>
+          <button class="cms-icon-button" id="addPageBtn" type="button" title="新增页面">页面+</button>
+        </div>
+        <div class="cms-section-title">类目</div>
+        <div id="categoryList" class="cms-list"></div>
+        <div class="cms-section-title">页面</div>
+        <div id="pageList" class="cms-list cms-list--pages"></div>
+      </nav>
+
+      <main class="cms-editor">
+        <header class="cms-topbar">
+          <div>
+            <div class="cms-kicker" id="currentPath">/</div>
+            <h1 id="currentTitle">Homepage</h1>
+          </div>
+          <div class="cms-topbar__tools">
+            <button class="cms-button" id="addItemBtn" type="button">新增条目</button>
+            <button class="cms-button" id="duplicatePageBtn" type="button">复制页面</button>
+            <button class="cms-button cms-button--danger" id="deletePageBtn" type="button">删除页面</button>
+          </div>
+        </header>
+
+        <section class="cms-workbench">
+          <div class="cms-pane cms-pane--settings">
+            <div class="cms-pane__head">页面设置</div>
+            <div class="cms-fields">
+              <label>标题<input id="pageTitleInput" type="text" /></label>
+              <label>路径<input id="pagePathInput" type="text" /></label>
+              <label>类目<input id="pageCategoryInput" type="text" list="categoryOptions" /></label>
+              <datalist id="categoryOptions"></datalist>
+              <label>类型
+                <select id="pageTypeInput">
+                  <option value="gallery">gallery</option>
+                  <option value="photo-index">photo-index</option>
+                  <option value="richtext">richtext</option>
+                  <option value="links">links</option>
+                  <option value="home">home</option>
+                  <option value="form">form</option>
+                </select>
+              </label>
+              <label class="cms-check"><input id="pageSidebarInput" type="checkbox" /> 左边栏显示</label>
+              <div class="cms-field-grid">
+                <label>列数<input id="layoutColumnsInput" type="number" min="1" max="6" /></label>
+                <label>内容宽度<input id="layoutWidthInput" type="number" min="30" max="100" /></label>
+                <label>顶部间距<input id="layoutTopInput" type="number" min="0" step="0.1" /></label>
+                <label>分割线<input id="layoutDividerSizeInput" type="number" min="0" max="8" /></label>
+              </div>
+              <label>图片比例
+                <select id="layoutRatioInput">
+                  <option value="natural">natural</option>
+                  <option value="1 / 1">1 / 1</option>
+                  <option value="16 / 9">16 / 9</option>
+                  <option value="4 / 3">4 / 3</option>
+                  <option value="text">text</option>
+                </select>
+              </label>
+              <label>分割线颜色<input id="layoutDividerColorInput" type="text" /></label>
+            </div>
+
+            <div class="cms-pane__head cms-pane__head--spaced">左边栏</div>
+            <div id="sidebarEditor" class="cms-sidebar-editor"></div>
+            <button class="cms-button" id="addSidebarLinkBtn" type="button">新增左边栏</button>
+          </div>
+
+          <div class="cms-pane cms-pane--content">
+            <div class="cms-tabs">
+              <button class="cms-tab is-active" data-tab="items" type="button">条目</button>
+              <button class="cms-tab" data-tab="text" type="button">正文</button>
+              <button class="cms-tab" data-tab="raw" type="button">JSON</button>
+            </div>
+
+            <div class="cms-tab-panel is-active" data-panel="items">
+              <div id="itemList" class="cms-item-list"></div>
+              <div class="cms-item-editor">
+                <div class="cms-pane__head">条目编辑</div>
+                <div class="cms-fields">
+                  <label>ID<input id="itemIdInput" type="text" /></label>
+                  <label>标题<input id="itemTitleInput" type="text" /></label>
+                  <label>说明<input id="itemDescInput" type="text" /></label>
+                  <label>年份<input id="itemYearInput" type="text" /></label>
+                  <label>图片<input id="itemSrcInput" type="text" /></label>
+                  <label>点击链接<input id="itemHrefInput" type="text" /></label>
+                  <div class="cms-field-grid">
+                    <label>宽<input id="itemWidthInput" type="number" min="0" /></label>
+                    <label>高<input id="itemHeightInput" type="number" min="0" /></label>
+                  </div>
+                  <label>文字链接<textarea id="itemLinksInput" spellcheck="false"></textarea></label>
+                </div>
+                <div class="cms-row-actions">
+                  <button class="cms-button cms-button--primary" id="saveItemBtn" type="button">保存条目</button>
+                  <button class="cms-button" id="moveItemUpBtn" type="button">上移</button>
+                  <button class="cms-button" id="moveItemDownBtn" type="button">下移</button>
+                  <button class="cms-button cms-button--danger" id="deleteItemBtn" type="button">删除条目</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="cms-tab-panel" data-panel="text">
+              <div class="cms-rich-toolbar">
+                <button data-command="bold" type="button"><b>B</b></button>
+                <button data-command="italic" type="button"><i>I</i></button>
+                <button data-command="insertUnorderedList" type="button">列表</button>
+                <button id="makeLinkBtn" type="button">链接</button>
+                <button id="clearFormatBtn" type="button">清除</button>
+              </div>
+              <div id="richEditor" class="cms-rich-editor" contenteditable="true" spellcheck="false"></div>
+              <button class="cms-button cms-button--primary" id="saveBodyBtn" type="button">保存正文</button>
+            </div>
+
+            <div class="cms-tab-panel" data-panel="raw">
+              <textarea id="rawJson" class="cms-raw" spellcheck="false"></textarea>
+              <div class="cms-row-actions">
+                <button class="cms-button cms-button--primary" id="applyRawBtn" type="button">应用 JSON</button>
+                <button class="cms-button" id="copyRawBtn" type="button">复制 JSON</button>
+              </div>
+            </div>
+          </div>
+
+          <aside class="cms-pane cms-pane--preview">
+            <div class="cms-pane__head">预览</div>
+            <div id="previewFrame" class="cms-preview"></div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <style is:global>
+      :root {
+        --cms-bg: #f4f5f3;
+        --cms-surface: #ffffff;
+        --cms-ink: #1f2422;
+        --cms-muted: rgba(31, 36, 34, 0.55);
+        --cms-soft: rgba(31, 36, 34, 0.08);
+        --cms-line: rgba(31, 36, 34, 0.14);
+        --cms-deep: #273233;
+        --cms-accent: #2f766f;
+        --cms-warm: #b05f36;
+        --cms-danger: #b84242;
+        --cms-radius: 6px;
+        --cms-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      }
+
+      html,
+      body.cms-page {
+        width: 100%;
+        min-height: 100%;
+        margin: 0;
+      }
+
+      body.cms-page {
+        font-family: var(--cms-font);
+        font-size: 13px;
+        line-height: 1.45;
+        color: var(--cms-ink);
+        background: var(--cms-bg);
+      }
+
+      body.cms-page * {
+        box-sizing: border-box;
+      }
+
+      body.cms-page button,
+      body.cms-page input,
+      body.cms-page select,
+      body.cms-page textarea {
+        font: inherit;
+      }
+
+      .cms-shell {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 132px 244px minmax(760px, 1fr);
+      }
+
+      .cms-rail {
+        background: var(--cms-deep);
+        color: #fff;
+        padding: 18px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .cms-brand {
+        display: grid;
+        gap: 2px;
+      }
+
+      .cms-brand strong {
+        font-size: 15px;
+        letter-spacing: 0.02em;
+      }
+
+      .cms-brand span {
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .cms-rail__actions {
+        display: grid;
+        gap: 8px;
+      }
+
+      .cms-button,
+      .cms-icon-button,
+      .cms-tab,
+      .cms-rich-toolbar button {
+        min-height: 32px;
+        border: 1px solid var(--cms-line);
+        border-radius: var(--cms-radius);
+        background: #fff;
+        color: var(--cms-ink);
+        padding: 0 10px;
+        cursor: pointer;
+      }
+
+      .cms-button:hover,
+      .cms-icon-button:hover,
+      .cms-tab:hover,
+      .cms-rich-toolbar button:hover {
+        border-color: rgba(31, 36, 34, 0.32);
+      }
+
+      .cms-button--primary {
+        background: var(--cms-accent);
+        border-color: var(--cms-accent);
+        color: #fff;
+      }
+
+      .cms-button--danger {
+        border-color: rgba(184, 66, 66, 0.35);
+        color: var(--cms-danger);
+      }
+
+      .cms-rail .cms-button,
+      .cms-button--file {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .cms-rail .cms-button {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.16);
+        color: #fff;
+      }
+
+      .cms-rail .cms-button--primary {
+        background: var(--cms-accent);
+        border-color: var(--cms-accent);
+      }
+
+      .cms-rail .cms-button--danger {
+        color: #ffd3d3;
+      }
+
+      #importFile {
+        display: none;
+      }
+
+      .cms-status {
+        margin-top: auto;
+        min-height: 38px;
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+
+      .cms-tree {
+        border-right: 1px solid var(--cms-line);
+        background: #fbfbfa;
+        padding: 14px;
+        overflow-y: auto;
+      }
+
+      .cms-tree__bar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .cms-section-title {
+        margin: 14px 0 7px;
+        color: var(--cms-muted);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+      }
+
+      .cms-list {
+        display: grid;
+        gap: 5px;
+      }
+
+      .cms-list-item {
+        min-height: 34px;
+        border: 1px solid transparent;
+        border-radius: var(--cms-radius);
+        padding: 7px 9px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .cms-list-item:hover {
+        background: var(--cms-soft);
+      }
+
+      .cms-list-item.is-active {
+        background: #fff;
+        border-color: var(--cms-line);
+      }
+
+      .cms-list-item small {
+        color: var(--cms-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .cms-editor {
+        min-width: 0;
+        display: grid;
+        grid-template-rows: 74px minmax(0, 1fr);
+      }
+
+      .cms-topbar {
+        border-bottom: 1px solid var(--cms-line);
+        background: rgba(255, 255, 255, 0.72);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 0 18px;
+      }
+
+      .cms-kicker {
+        color: var(--cms-muted);
+        font-size: 12px;
+      }
+
+      .cms-topbar h1 {
+        margin: 2px 0 0;
+        font-size: 20px;
+        line-height: 1.1;
+        font-weight: 650;
+        letter-spacing: 0;
+      }
+
+      .cms-topbar__tools,
+      .cms-row-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .cms-workbench {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 292px minmax(360px, 1fr) 360px;
+      }
+
+      .cms-pane {
+        min-width: 0;
+        min-height: 0;
+        overflow: auto;
+        border-right: 1px solid var(--cms-line);
+        background: var(--cms-surface);
+        padding: 16px;
+      }
+
+      .cms-pane--content {
+        background: #fafafa;
+      }
+
+      .cms-pane--preview {
+        border-right: 0;
+      }
+
+      .cms-pane__head {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: var(--cms-muted);
+        margin-bottom: 12px;
+      }
+
+      .cms-pane__head--spaced {
+        margin-top: 22px;
+      }
+
+      .cms-fields {
+        display: grid;
+        gap: 10px;
+      }
+
+      .cms-fields label {
+        display: grid;
+        gap: 5px;
+        color: var(--cms-muted);
+        font-size: 12px;
+      }
+
+      .cms-fields input,
+      .cms-fields select,
+      .cms-fields textarea,
+      .cms-raw,
+      .cms-rich-editor {
+        width: 100%;
+        border: 1px solid var(--cms-line);
+        border-radius: var(--cms-radius);
+        background: #fff;
+        color: var(--cms-ink);
+        padding: 8px 9px;
+        outline: 0;
+      }
+
+      .cms-fields textarea {
+        min-height: 78px;
+        resize: vertical;
+      }
+
+      .cms-fields input:focus,
+      .cms-fields select:focus,
+      .cms-fields textarea:focus,
+      .cms-raw:focus,
+      .cms-rich-editor:focus {
+        border-color: var(--cms-accent);
+        box-shadow: 0 0 0 2px rgba(47, 118, 111, 0.12);
+      }
+
+      .cms-field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .cms-check {
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        justify-content: start;
+      }
+
+      .cms-check input {
+        width: auto;
+      }
+
+      .cms-sidebar-editor {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .cms-sidebar-row {
+        border: 1px solid var(--cms-line);
+        border-radius: var(--cms-radius);
+        padding: 8px;
+        display: grid;
+        gap: 7px;
+      }
+
+      .cms-sidebar-row .cms-field-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .cms-sidebar-row button {
+        justify-self: end;
+      }
+
+      .cms-tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+
+      .cms-tab.is-active {
+        border-color: var(--cms-accent);
+        color: var(--cms-accent);
+      }
+
+      .cms-tab-panel {
+        display: none;
+      }
+
+      .cms-tab-panel.is-active {
+        display: block;
+      }
+
+      .cms-item-list {
+        display: grid;
+        gap: 7px;
+        margin-bottom: 16px;
+      }
+
+      .cms-item-row {
+        border: 1px solid var(--cms-line);
+        border-radius: var(--cms-radius);
+        background: #fff;
+        min-height: 62px;
+        display: grid;
+        grid-template-columns: 54px minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        padding: 7px 9px;
+        cursor: pointer;
+      }
+
+      .cms-item-row:hover,
+      .cms-item-row.is-active {
+        border-color: var(--cms-accent);
+      }
+
+      .cms-item-thumb {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 4px;
+        background: var(--cms-soft);
+      }
+
+      .cms-item-info {
+        min-width: 0;
+      }
+
+      .cms-item-title {
+        font-weight: 650;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .cms-item-sub {
+        color: var(--cms-muted);
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .cms-item-index {
+        color: var(--cms-muted);
+        font-size: 12px;
+      }
+
+      .cms-item-editor {
+        border-top: 1px solid var(--cms-line);
+        padding-top: 14px;
+      }
+
+      .cms-rich-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .cms-rich-editor {
+        min-height: 430px;
+        overflow: auto;
+        margin-bottom: 10px;
+      }
+
+      .cms-rich-editor p {
+        margin: 0 0 0.7em;
+      }
+
+      .cms-raw {
+        min-height: 560px;
+        resize: vertical;
+        font-family: Consolas, "SFMono-Regular", monospace;
+        font-size: 12px;
+      }
+
+      .cms-preview {
+        border: 1px solid var(--cms-line);
+        border-radius: var(--cms-radius);
+        min-height: 620px;
+        background: #fff;
+        overflow: auto;
+      }
+
+      .preview-site {
+        width: 100%;
+        min-height: 620px;
+        padding: 30px;
+        display: grid;
+        grid-template-columns: 4fr 8fr;
+        gap: 0;
+        font-family: "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+        color: rgb(42, 42, 42);
+      }
+
+      .preview-nav h2,
+      .preview-nav a {
+        font-size: 12px;
+        line-height: 1.9;
+        color: rgba(67, 67, 67, 0.85);
+        text-decoration: none;
+      }
+
+      .preview-logo {
+        margin-bottom: 34px;
+        font-size: 16px;
+        color: rgb(26, 26, 26);
+      }
+
+      .preview-social {
+        margin-top: 18px;
+      }
+
+      .preview-main {
+        padding-top: calc(var(--preview-top, 5.5) * 13px);
+      }
+
+      .preview-back {
+        text-align: right;
+        margin-bottom: 10px;
+        color: rgba(67, 67, 67, 0.85);
+        font-size: 12px;
+      }
+
+      .preview-gallery {
+        display: grid;
+        grid-template-columns: repeat(var(--preview-columns, 3), minmax(0, 1fr));
+        gap: 10px;
+        max-width: calc(var(--preview-width, 100) * 1%);
+      }
+
+      .preview-card {
+        margin: 0;
+        min-width: 0;
+      }
+
+      .preview-card img {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+        aspect-ratio: var(--preview-ratio, 1 / 1);
+        background: rgba(0, 0, 0, 0.08);
+      }
+
+      .preview-card[data-ratio="natural"] img,
+      .preview-card[data-ratio="text"] img {
+        aspect-ratio: auto;
+        height: auto;
+        object-fit: contain;
+      }
+
+      .preview-card figcaption {
+        margin-top: 9px;
+        margin-bottom: 18px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 16px;
+        color: rgba(0, 0, 0, 0.3);
+      }
+
+      .preview-rich {
+        max-width: calc(var(--preview-width, 100) * 1%);
+        font-size: 13px;
+        line-height: 1.8;
+      }
+
+      .preview-rich hr {
+        height: var(--preview-divider-size, 1px);
+        border: 0;
+        background: var(--preview-divider-color, rgba(127, 127, 127, 0.4));
+      }
+
+      .preview-link-list {
+        display: grid;
+        gap: 8px;
+        font-size: 18px;
+      }
+
+      .preview-link-list a {
+        color: rgb(87, 87, 87);
+        text-decoration: underline;
+      }
+
+      @media (max-width: 1180px) {
+        .cms-shell {
+          grid-template-columns: 118px 220px minmax(680px, 1fr);
+        }
+
+        .cms-workbench {
+          grid-template-columns: 260px minmax(320px, 1fr);
+        }
+
+        .cms-pane--preview {
+          display: none;
+        }
+      }
+
+      @media (max-width: 860px) {
+        .cms-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .cms-rail,
+        .cms-tree,
+        .cms-editor {
+          min-height: auto;
+        }
+
+        .cms-workbench {
+          grid-template-columns: 1fr;
+        }
+
+        .cms-pane {
+          border-right: 0;
+          border-bottom: 1px solid var(--cms-line);
+        }
+      }
+    </style>
+
+    <script is:inline>
+      (() => {
+        const STORAGE_KEY = 'onovich:cms:draft';
+        const PUBLISHED_KEY = 'onovich:cms:published';
+
+        const clone = value => JSON.parse(JSON.stringify(value));
+        const seed = JSON.parse(document.getElementById('cms-seed').textContent);
+        let state = loadState();
+        let activePageId = state.pages[0]?.id || 'home';
+        let activeItemIndex = 0;
+
+        const els = {
+          status: document.getElementById('cmsStatus'),
+          categoryList: document.getElementById('categoryList'),
+          pageList: document.getElementById('pageList'),
+          categoryOptions: document.getElementById('categoryOptions'),
+          currentPath: document.getElementById('currentPath'),
+          currentTitle: document.getElementById('currentTitle'),
+          pageTitle: document.getElementById('pageTitleInput'),
+          pagePath: document.getElementById('pagePathInput'),
+          pageCategory: document.getElementById('pageCategoryInput'),
+          pageType: document.getElementById('pageTypeInput'),
+          pageSidebar: document.getElementById('pageSidebarInput'),
+          layoutColumns: document.getElementById('layoutColumnsInput'),
+          layoutWidth: document.getElementById('layoutWidthInput'),
+          layoutTop: document.getElementById('layoutTopInput'),
+          layoutDividerSize: document.getElementById('layoutDividerSizeInput'),
+          layoutRatio: document.getElementById('layoutRatioInput'),
+          layoutDividerColor: document.getElementById('layoutDividerColorInput'),
+          sidebarEditor: document.getElementById('sidebarEditor'),
+          itemList: document.getElementById('itemList'),
+          itemId: document.getElementById('itemIdInput'),
+          itemTitle: document.getElementById('itemTitleInput'),
+          itemDesc: document.getElementById('itemDescInput'),
+          itemYear: document.getElementById('itemYearInput'),
+          itemSrc: document.getElementById('itemSrcInput'),
+          itemHref: document.getElementById('itemHrefInput'),
+          itemWidth: document.getElementById('itemWidthInput'),
+          itemHeight: document.getElementById('itemHeightInput'),
+          itemLinks: document.getElementById('itemLinksInput'),
+          richEditor: document.getElementById('richEditor'),
+          rawJson: document.getElementById('rawJson'),
+          preview: document.getElementById('previewFrame'),
+        };
+
+        function loadState() {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (!stored) return clone(seed);
+          try {
+            const parsed = JSON.parse(stored);
+            if (!parsed.pages || !Array.isArray(parsed.pages)) return clone(seed);
+            return parsed;
+          } catch {
+            return clone(seed);
+          }
+        }
+
+        function setStatus(text) {
+          els.status.textContent = text;
+        }
+
+        function slugify(value, fallback = 'page') {
+          const slug = (value || '').toString().trim().toLowerCase()
+            .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+          return slug || fallback;
+        }
+
+        function activePage() {
+          return state.pages.find(page => page.id === activePageId) || state.pages[0];
+        }
+
+        function pageItems(page = activePage()) {
+          if (!page.items) page.items = [];
+          return page.items;
+        }
+
+        function ensureLayout(page) {
+          page.layout = {
+            columns: 3,
+            imageRatio: '1 / 1',
+            caption: 'title-year',
+            width: 100,
+            top: 5.5,
+            dividerColor: 'rgba(127, 127, 127, 0.4)',
+            dividerSize: 1,
+            ...(page.layout || {}),
+          };
+        }
+
+        function saveDraft() {
+          state.updatedAt = new Date().toISOString();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          setStatus('草稿已保存 ' + new Date().toLocaleTimeString());
+        }
+
+        function render() {
+          const page = activePage();
+          if (!page) return;
+          ensureLayout(page);
+          renderCategories();
+          renderPages();
+          renderPageSettings(page);
+          renderSidebarEditor();
+          renderItems(page);
+          renderRaw();
+          renderPreview(page);
+        }
+
+        function renderCategories() {
+          const categories = Array.from(new Set([...(state.categories || []), ...state.pages.map(page => page.category || '未分类')]));
+          state.categories = categories;
+          els.categoryOptions.innerHTML = categories.map(cat => `<option value="${escapeAttr(cat)}"></option>`).join('');
+          els.categoryList.innerHTML = categories.map(cat => {
+            const count = state.pages.filter(page => (page.category || '未分类') === cat).length;
+            return `<button class="cms-list-item" type="button" data-category="${escapeAttr(cat)}"><span>${escapeHtml(cat)}</span><small>${count}</small></button>`;
+          }).join('');
+          els.categoryList.querySelectorAll('[data-category]').forEach(button => {
+            button.addEventListener('click', () => {
+              const page = state.pages.find(item => (item.category || '未分类') === button.dataset.category);
+              if (page) {
+                activePageId = page.id;
+                activeItemIndex = 0;
+                render();
+              }
+            });
+          });
+        }
+
+        function renderPages() {
+          const page = activePage();
+          els.pageList.innerHTML = state.pages.map(item => `
+            <button class="cms-list-item ${item.id === page.id ? 'is-active' : ''}" type="button" data-page="${escapeAttr(item.id)}">
+              <span>${escapeHtml(item.title || item.id)}</span>
+              <small>${escapeHtml(item.path || '')}</small>
+            </button>
+          `).join('');
+          els.pageList.querySelectorAll('[data-page]').forEach(button => {
+            button.addEventListener('click', () => {
+              activePageId = button.dataset.page;
+              activeItemIndex = 0;
+              render();
+            });
+          });
+        }
+
+        function renderPageSettings(page) {
+          els.currentPath.textContent = page.path || '';
+          els.currentTitle.textContent = page.title || page.id;
+          els.pageTitle.value = page.title || '';
+          els.pagePath.value = page.path || '';
+          els.pageCategory.value = page.category || '';
+          els.pageType.value = page.type || 'gallery';
+          els.pageSidebar.checked = page.sidebar !== false;
+          els.layoutColumns.value = page.layout.columns ?? 3;
+          els.layoutWidth.value = page.layout.width ?? 100;
+          els.layoutTop.value = page.layout.top ?? 5.5;
+          els.layoutDividerSize.value = page.layout.dividerSize ?? 1;
+          els.layoutRatio.value = page.layout.imageRatio || '1 / 1';
+          els.layoutDividerColor.value = page.layout.dividerColor || 'rgba(127, 127, 127, 0.4)';
+          els.richEditor.innerHTML = page.bodyHtml || '';
+        }
+
+        function renderSidebarEditor() {
+          els.sidebarEditor.innerHTML = (state.sidebar || []).map((link, index) => `
+            <div class="cms-sidebar-row" data-sidebar-index="${index}">
+              <div class="cms-field-grid">
+                <label>名称<input data-sidebar-field="label" value="${escapeAttr(link.label || '')}" /></label>
+                <label>路径<input data-sidebar-field="path" value="${escapeAttr(link.path || '')}" /></label>
+              </div>
+              <div class="cms-field-grid">
+                <label>类目<input data-sidebar-field="group" value="${escapeAttr(link.group || '')}" /></label>
+                <label>ID<input data-sidebar-field="id" value="${escapeAttr(link.id || '')}" /></label>
+              </div>
+              <button class="cms-button cms-button--danger" data-remove-sidebar="${index}" type="button">删除</button>
+            </div>
+          `).join('');
+          els.sidebarEditor.querySelectorAll('[data-sidebar-field]').forEach(input => {
+            input.addEventListener('input', () => {
+              const row = input.closest('[data-sidebar-index]');
+              const index = Number(row.dataset.sidebarIndex);
+              state.sidebar[index][input.dataset.sidebarField] = input.value;
+              renderPreview(activePage());
+              saveDraft();
+            });
+          });
+          els.sidebarEditor.querySelectorAll('[data-remove-sidebar]').forEach(button => {
+            button.addEventListener('click', () => {
+              state.sidebar.splice(Number(button.dataset.removeSidebar), 1);
+              saveDraft();
+              render();
+            });
+          });
+        }
+
+        function renderItems(page) {
+          const items = pageItems(page);
+          if (activeItemIndex >= items.length) activeItemIndex = Math.max(0, items.length - 1);
+          els.itemList.innerHTML = items.length ? items.map((item, index) => `
+            <button class="cms-item-row ${index === activeItemIndex ? 'is-active' : ''}" type="button" data-item="${index}">
+              <img class="cms-item-thumb" src="${escapeAttr(item.src || '')}" alt="" />
+              <span class="cms-item-info">
+                <span class="cms-item-title">${escapeHtml(item.title || item.label || item.id || 'Untitled')}</span>
+                <span class="cms-item-sub">${escapeHtml(item.desc || item.year || item.href || item.src || '')}</span>
+              </span>
+              <span class="cms-item-index">${index + 1}</span>
+            </button>
+          `).join('') : '<div class="cms-list-item">暂无条目</div>';
+
+          els.itemList.querySelectorAll('[data-item]').forEach(button => {
+            button.addEventListener('click', () => {
+              activeItemIndex = Number(button.dataset.item);
+              renderItems(activePage());
+              renderPreview(activePage());
+            });
+          });
+
+          renderItemEditor(items[activeItemIndex] || {});
+        }
+
+        function renderItemEditor(item) {
+          els.itemId.value = item.id || '';
+          els.itemTitle.value = item.title || item.label || '';
+          els.itemDesc.value = item.desc || '';
+          els.itemYear.value = item.year || '';
+          els.itemSrc.value = item.src || '';
+          els.itemHref.value = item.href || '';
+          els.itemWidth.value = item.width || '';
+          els.itemHeight.value = item.height || '';
+          els.itemLinks.value = JSON.stringify(item.links || [], null, 2);
+        }
+
+        function renderRaw() {
+          els.rawJson.value = JSON.stringify(state, null, 2);
+        }
+
+        function renderPreview(page) {
+          ensureLayout(page);
+          const mainLinks = (state.sidebar || []).filter(link => link.group !== '链接');
+          const socialLinks = (state.sidebar || []).filter(link => link.group === '链接');
+          const ratio = page.layout.imageRatio === 'natural' ? 'auto' : page.layout.imageRatio;
+          const styleVars = [
+            `--preview-columns:${Math.max(1, Number(page.layout.columns) || 1)}`,
+            `--preview-width:${Math.max(30, Number(page.layout.width) || 100)}`,
+            `--preview-top:${Number(page.layout.top) || 0}`,
+            `--preview-ratio:${ratio}`,
+            `--preview-divider-size:${Number(page.layout.dividerSize) || 0}px`,
+            `--preview-divider-color:${escapeAttr(page.layout.dividerColor || 'rgba(127, 127, 127, 0.4)')}`,
+          ].join(';');
+
+          els.preview.innerHTML = `
+            <div class="preview-site" style="${styleVars}">
+              <div class="preview-nav">
+                <div class="preview-logo">${escapeHtml(state.site?.title || 'Onovich')}</div>
+                <h2>${mainLinks.map(link => `<a href="${escapeAttr(link.path || '#')}">${escapeHtml(link.label || link.id)}</a>`).join('<br>')}</h2>
+                <h2 class="preview-social">${socialLinks.map(link => `<a href="${escapeAttr(link.path || '#')}">${escapeHtml(link.label || link.id)}</a>`).join('<br>')}</h2>
+              </div>
+              <div class="preview-main">
+                ${page.id === 'home' ? '' : '<div class="preview-back">&lt; HOME</div>'}
+                ${previewBody(page)}
+              </div>
+            </div>
+          `;
+        }
+
+        function previewBody(page) {
+          if (page.type === 'richtext' || page.type === 'home' || page.type === 'form') {
+            const image = page.items?.[0]?.src ? `<img src="${escapeAttr(page.items[0].src)}" alt="" style="width:72px;height:72px;object-fit:cover;margin-bottom:12px">` : '';
+            const divider = page.type === 'home' ? '<hr>' : '';
+            return `<div class="preview-rich">${image}${divider}${page.bodyHtml || ''}</div>`;
+          }
+          if (page.type === 'links') {
+            return `<div class="preview-link-list">${pageItems(page).map(item => `<a href="${escapeAttr(item.href || '#')}">${escapeHtml(item.title || item.label || item.id)}</a>`).join('')}</div>`;
+          }
+          return `<div class="preview-gallery">${pageItems(page).map(item => `
+            <figure class="preview-card" data-ratio="${escapeAttr(page.layout.imageRatio || '')}">
+              ${item.href ? `<a href="${escapeAttr(item.href)}">` : ''}
+              <img src="${escapeAttr(item.src || '')}" alt="${escapeAttr(item.title || '')}">
+              ${item.href ? '</a>' : ''}
+              ${captionHtml(page, item)}
+            </figure>
+          `).join('')}</div>`;
+        }
+
+        function captionHtml(page, item) {
+          if (page.layout.caption === 'none') return '';
+          const links = (item.links || []).map(link => `<a href="${escapeAttr(link.url || '#')}">${escapeHtml(link.label || 'Link')}</a>`).join(' / ');
+          return `<figcaption>
+            ${item.title ? `<div>${escapeHtml(item.title)}</div>` : ''}
+            ${item.desc ? `<div>${escapeHtml(item.desc)}</div>` : ''}
+            ${item.year ? `<div>${escapeHtml(item.year)}</div>` : ''}
+            ${links ? `<div>${links}</div>` : ''}
+          </figcaption>`;
+        }
+
+        function updatePageFromInputs() {
+          const page = activePage();
+          ensureLayout(page);
+          page.title = els.pageTitle.value;
+          page.path = els.pagePath.value;
+          page.category = els.pageCategory.value || '未分类';
+          page.type = els.pageType.value;
+          page.sidebar = els.pageSidebar.checked;
+          page.layout.columns = Number(els.layoutColumns.value) || 1;
+          page.layout.width = Number(els.layoutWidth.value) || 100;
+          page.layout.top = Number(els.layoutTop.value) || 0;
+          page.layout.dividerSize = Number(els.layoutDividerSize.value) || 0;
+          page.layout.imageRatio = els.layoutRatio.value;
+          page.layout.dividerColor = els.layoutDividerColor.value;
+
+          const linked = state.sidebar.find(link => link.id === page.id);
+          if (linked) {
+            linked.label = page.title;
+            linked.path = page.path;
+            linked.group = page.category === '链接' ? '链接' : '作品';
+          } else if (page.sidebar) {
+            state.sidebar.push({ id: page.id, label: page.title, path: page.path, group: page.category === '链接' ? '链接' : '作品' });
+          }
+          saveDraft();
+          render();
+        }
+
+        function saveItemFromInputs() {
+          const page = activePage();
+          const items = pageItems(page);
+          const item = {
+            ...(items[activeItemIndex] || {}),
+            id: els.itemId.value || slugify(els.itemTitle.value, 'item-' + (items.length + 1)),
+            title: els.itemTitle.value,
+            desc: els.itemDesc.value,
+            year: els.itemYear.value,
+            src: els.itemSrc.value,
+            href: els.itemHref.value,
+            width: Number(els.itemWidth.value) || undefined,
+            height: Number(els.itemHeight.value) || undefined,
+          };
+          try {
+            item.links = JSON.parse(els.itemLinks.value || '[]');
+          } catch {
+            item.links = [];
+          }
+          if (!items.length) {
+            items.push(item);
+            activeItemIndex = 0;
+          } else {
+            items[activeItemIndex] = item;
+          }
+          saveDraft();
+          render();
+        }
+
+        function addPage() {
+          const id = uniqueId('page');
+          const page = {
+            id,
+            title: 'NEW PAGE',
+            path: '/' + id,
+            type: 'gallery',
+            category: state.categories?.[1] || '作品',
+            sidebar: true,
+            layout: { columns: 3, imageRatio: '1 / 1', caption: 'title-year', width: 100, top: 5.5, dividerColor: 'rgba(127, 127, 127, 0.4)', dividerSize: 1 },
+            bodyHtml: '',
+            items: [],
+          };
+          state.pages.push(page);
+          state.sidebar.push({ id, label: page.title, path: page.path, group: '作品' });
+          activePageId = id;
+          activeItemIndex = 0;
+          saveDraft();
+          render();
+        }
+
+        function duplicatePage() {
+          const source = activePage();
+          const copy = clone(source);
+          copy.id = uniqueId(source.id + '-copy');
+          copy.title = source.title + ' COPY';
+          copy.path = '/' + copy.id;
+          state.pages.push(copy);
+          if (copy.sidebar !== false) state.sidebar.push({ id: copy.id, label: copy.title, path: copy.path, group: copy.category === '链接' ? '链接' : '作品' });
+          activePageId = copy.id;
+          activeItemIndex = 0;
+          saveDraft();
+          render();
+        }
+
+        function deletePage() {
+          if (state.pages.length <= 1) return;
+          const page = activePage();
+          if (!confirm(`删除页面 ${page.title || page.id}?`)) return;
+          state.pages = state.pages.filter(item => item.id !== page.id);
+          state.sidebar = (state.sidebar || []).filter(link => link.id !== page.id);
+          activePageId = state.pages[0].id;
+          activeItemIndex = 0;
+          saveDraft();
+          render();
+        }
+
+        function addItem() {
+          const page = activePage();
+          const items = pageItems(page);
+          const next = items.length + 1;
+          items.push({ id: `item-${next}`, title: 'Untitled', desc: '', year: '', src: '', href: '', links: [] });
+          activeItemIndex = items.length - 1;
+          saveDraft();
+          render();
+        }
+
+        function deleteItem() {
+          const items = pageItems();
+          if (!items.length) return;
+          items.splice(activeItemIndex, 1);
+          activeItemIndex = Math.max(0, activeItemIndex - 1);
+          saveDraft();
+          render();
+        }
+
+        function moveItem(delta) {
+          const items = pageItems();
+          const next = activeItemIndex + delta;
+          if (next < 0 || next >= items.length) return;
+          [items[activeItemIndex], items[next]] = [items[next], items[activeItemIndex]];
+          activeItemIndex = next;
+          saveDraft();
+          render();
+        }
+
+        function uniqueId(base) {
+          let id = slugify(base);
+          let n = 2;
+          while (state.pages.some(page => page.id === id)) {
+            id = `${slugify(base)}-${n}`;
+            n += 1;
+          }
+          return id;
+        }
+
+        function exportPackage() {
+          const payload = {
+            ...state,
+            exportedAt: new Date().toISOString(),
+            publishTarget: 'site/src/content',
+          };
+          const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'onovich-cms-publish.json';
+          a.click();
+          URL.revokeObjectURL(url);
+          setStatus('发布包已导出');
+        }
+
+        function applyImported(file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const imported = JSON.parse(reader.result);
+              if (!Array.isArray(imported.pages)) throw new Error('pages missing');
+              state = imported;
+              activePageId = state.pages[0]?.id;
+              activeItemIndex = 0;
+              saveDraft();
+              render();
+              setStatus('导入完成');
+            } catch (error) {
+              setStatus('导入失败');
+            }
+          };
+          reader.readAsText(file);
+        }
+
+        function publishPreview() {
+          saveDraft();
+          localStorage.setItem(PUBLISHED_KEY, JSON.stringify(state));
+          setStatus('已发布到本地预览');
+        }
+
+        function escapeHtml(value) {
+          return (value ?? '').toString().replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+          }[char]));
+        }
+
+        function escapeAttr(value) {
+          return escapeHtml(value).replace(/`/g, '&#96;');
+        }
+
+        [
+          els.pageTitle,
+          els.pagePath,
+          els.pageCategory,
+          els.pageType,
+          els.pageSidebar,
+          els.layoutColumns,
+          els.layoutWidth,
+          els.layoutTop,
+          els.layoutDividerSize,
+          els.layoutRatio,
+          els.layoutDividerColor,
+        ].forEach(input => input.addEventListener('change', updatePageFromInputs));
+
+        document.getElementById('saveDraftBtn').addEventListener('click', saveDraft);
+        document.getElementById('publishBtn').addEventListener('click', publishPreview);
+        document.getElementById('exportBtn').addEventListener('click', exportPackage);
+        document.getElementById('resetBtn').addEventListener('click', () => {
+          if (!confirm('重置 CMS 草稿?')) return;
+          localStorage.removeItem(STORAGE_KEY);
+          state = clone(seed);
+          activePageId = state.pages[0].id;
+          activeItemIndex = 0;
+          render();
+          setStatus('已重置');
+        });
+        document.getElementById('importFile').addEventListener('change', event => {
+          const file = event.target.files?.[0];
+          if (file) applyImported(file);
+          event.target.value = '';
+        });
+        document.getElementById('addCategoryBtn').addEventListener('click', () => {
+          const name = prompt('类目名称');
+          if (!name) return;
+          state.categories = Array.from(new Set([...(state.categories || []), name.trim()]));
+          saveDraft();
+          render();
+        });
+        document.getElementById('addPageBtn').addEventListener('click', addPage);
+        document.getElementById('duplicatePageBtn').addEventListener('click', duplicatePage);
+        document.getElementById('deletePageBtn').addEventListener('click', deletePage);
+        document.getElementById('addSidebarLinkBtn').addEventListener('click', () => {
+          state.sidebar.push({ id: 'link-' + (state.sidebar.length + 1), label: 'NEW LINK', path: '/', group: '作品' });
+          saveDraft();
+          render();
+        });
+        document.getElementById('addItemBtn').addEventListener('click', addItem);
+        document.getElementById('saveItemBtn').addEventListener('click', saveItemFromInputs);
+        document.getElementById('deleteItemBtn').addEventListener('click', deleteItem);
+        document.getElementById('moveItemUpBtn').addEventListener('click', () => moveItem(-1));
+        document.getElementById('moveItemDownBtn').addEventListener('click', () => moveItem(1));
+        document.getElementById('saveBodyBtn').addEventListener('click', () => {
+          activePage().bodyHtml = els.richEditor.innerHTML;
+          saveDraft();
+          render();
+        });
+        document.getElementById('applyRawBtn').addEventListener('click', () => {
+          try {
+            const next = JSON.parse(els.rawJson.value);
+            if (!Array.isArray(next.pages)) throw new Error('pages missing');
+            state = next;
+            activePageId = state.pages[0]?.id;
+            activeItemIndex = 0;
+            saveDraft();
+            render();
+            setStatus('JSON 已应用');
+          } catch {
+            setStatus('JSON 无效');
+          }
+        });
+        document.getElementById('copyRawBtn').addEventListener('click', async () => {
+          await navigator.clipboard.writeText(els.rawJson.value);
+          setStatus('JSON 已复制');
+        });
+        document.querySelectorAll('.cms-tab').forEach(tab => {
+          tab.addEventListener('click', () => {
+            document.querySelectorAll('.cms-tab').forEach(item => item.classList.toggle('is-active', item === tab));
+            document.querySelectorAll('.cms-tab-panel').forEach(panel => panel.classList.toggle('is-active', panel.dataset.panel === tab.dataset.tab));
+            if (tab.dataset.tab === 'raw') renderRaw();
+          });
+        });
+        document.querySelectorAll('.cms-rich-toolbar [data-command]').forEach(button => {
+          button.addEventListener('click', () => {
+            document.execCommand(button.dataset.command, false);
+            els.richEditor.focus();
+          });
+        });
+        document.getElementById('makeLinkBtn').addEventListener('click', () => {
+          const href = prompt('链接 URL');
+          if (href) document.execCommand('createLink', false, href);
+          els.richEditor.focus();
+        });
+        document.getElementById('clearFormatBtn').addEventListener('click', () => {
+          document.execCommand('removeFormat', false);
+          els.richEditor.focus();
+        });
+
+        render();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,10 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Gallery from '../components/Gallery.astro';
-import items from '../content/photos.json';
+import PhotoColumns from '../components/PhotoColumns.astro';
+import photoAlbums from '../content/photoAlbums.json';
 ---
-<BaseLayout title="PHOTOS — Onovich" activePage="/photo">
-  {items.length > 0
-    ? <Gallery items={items} />
-    : <p style="color: rgba(0,0,0,0.4); font-size: 1.1rem;">暂无内容</p>}
+<BaseLayout title="PHOTOS — Onovich" activePage="/photo" pageClass="page-photo">
+  <PhotoColumns items={photoAlbums.index} showCaptions={true} />
 </BaseLayout>

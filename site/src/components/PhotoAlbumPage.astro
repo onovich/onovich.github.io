@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PhotoColumns from './PhotoColumns.astro';
+import photoAlbums from '../content/photoAlbums.json';
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const album = photoAlbums.albums.find(item => item.slug === slug);
+
+if (!album) {
+  throw new Error(`Missing photo album: ${slug}`);
+}
+---
+
+<BaseLayout
+  title={`${album.title || album.slug} — Onovich`}
+  activePage="/photo"
+  backHref={album.backHref}
+  backLabel={album.backLabel}
+  pageClass="page-photo page-photo-detail"
+>
+  <PhotoColumns items={album.items} />
+</BaseLayout>
