@@ -40,7 +40,13 @@
 html {
   scroll-behavior: smooth;
   /* Cargo's predefined preset sets root font-size to 12.96px (≈81% of 16). */
-  font-size: clamp(11.06px, 0.9vw, 18.43px);
+  font-size: clamp(11.06px, 0.9vw, 12.96px);
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: clamp(10.8px, calc(6.03px + 1.272vw), 15.7989px);
+  }
 }
 
 body {
@@ -428,10 +434,12 @@ body.page-contact .site-footer {
 
 .thumbnails .has_title .tags { margin-top: 0; }
 
-.thumbnails figcaption,
-.thumbnails .title {
+.thumbnails figcaption {
   margin-top: 0.9rem;
   margin-bottom: 0.1rem;
+}
+
+.thumbnails .caption {
   font-size: 12px;
   font-weight: 400;
   color: rgba(0, 0, 0, 0.3);
@@ -439,23 +447,36 @@ body.page-contact .site-footer {
   line-height: 1.3;
 }
 
-.thumbnails--dense figcaption,
-.thumbnails--dense .title {
+.thumbnails .title {
+  margin-top: 1.2rem;
+  margin-bottom: 0.3rem;
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--thumb-title);
+  font-family: var(--font-ui);
+  line-height: 1.1;
+}
+
+.thumbnails--dense figcaption {
   margin-top: 0.55rem;
 }
 
 .thumbnails .tags {
-  margin-top: 0;
+  margin-top: 1.2rem;
   margin-bottom: 0.5rem;
-  font-size: 12px;
+  font-size: 1.6rem;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.3);
-  font-family: var(--font-zh);
-  line-height: 1.3;
+  color: var(--thumb-tags);
+  font-family: var(--font-ui);
+  line-height: 1.2;
 }
 
-.thumbnails figcaption a,
 .thumbnails .tags a {
+  border-bottom: 0;
+  color: var(--thumb-tags);
+  text-decoration: none;
+}
+.thumbnails .caption a {
   border-bottom: 0;
   color: rgba(0, 0, 0, 0.85);
   text-decoration: underline;
@@ -766,7 +787,6 @@ body.menu-open .site-menu__backdrop {
     --container-width: 100%;
     --thumbnails-width: 100%;
   }
-  body { font-size: 1.15rem; }
   .home-grid { grid-template-columns: 4fr 8fr; gap: 0; }
   .page-home .home-grid__col--main,
   .page-inner .home-grid__col--main { padding-top: 5.5rem; }
@@ -780,8 +800,6 @@ body.menu-open .site-menu__backdrop {
     padding: 0.5rem;
   }
   .thumbnails .thumb { padding: 0.5rem; }
-  .thumbnails .title { font-size: 1.5rem; }
-  .thumbnails .tags  { font-size: 1.3rem; }
   .photo-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-left: 0.5rem;
@@ -792,8 +810,6 @@ body.menu-open .site-menu__backdrop {
     margin-bottom: 2rem;
   }
   .site-menu-button { top: 1.4rem; right: 1.4rem; }
-  h1 { font-size: 1.4rem; }
-  h2 { font-size: 1.1rem; }
 }
 
 @media (max-width: 420px) {
