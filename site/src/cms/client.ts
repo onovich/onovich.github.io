@@ -2,6 +2,7 @@ import { clone, createCmsStateHelpers } from './state.js';
 import { renderCmsPreview } from './preview.js';
 import { collectCmsDraftIssues } from './draftValidation.js';
 import { createCmsPublishPackage } from './publishPackage.js';
+import { parseCmsPackageJson, parseCmsPackageJsonOrFallback } from './importPackage.js';
 
 (() => {
   const STORAGE_KEY = 'onovich:cms:draft';
@@ -81,17 +82,7 @@ import { createCmsPublishPackage } from './publishPackage.js';
   };
 
   function loadState() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return clone(seed);
-    try {
-      const parsed = JSON.parse(stored);
-      if (!Array.isArray(parsed.pages) || !parsed.presets || !parsed.pages.every(page => Array.isArray(page.sections))) {
-        return clone(seed);
-      }
-      return parsed;
-    } catch {
-      return clone(seed);
-    }
+    return parseCmsPackageJsonOrFallback(localStorage.getItem(STORAGE_KEY), seed);
   }
 
   function setStatus(text) {
@@ -577,8 +568,7 @@ import { createCmsPublishPackage } from './publishPackage.js';
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const imported = JSON.parse(reader.result);
-        if (!Array.isArray(imported.pages) || !imported.presets) throw new Error('invalid cms package');
+        const imported = parseCmsPackageJson(reader.result);
         state = imported;
         activePageId = state.pages[0]?.id;
         activeSectionId = state.pages[0]?.sections?.[0]?.id || '';
@@ -661,8 +651,7 @@ import { createCmsPublishPackage } from './publishPackage.js';
   document.getElementById('saveBodyBtn').addEventListener('click', saveRichText);
   document.getElementById('applyRawBtn').addEventListener('click', () => {
     try {
-      const next = JSON.parse(els.rawJson.value);
-      if (!Array.isArray(next.pages) || !next.presets) throw new Error('invalid cms package');
+      const next = parseCmsPackageJson(els.rawJson.value);
       state = next;
       activePageId = state.pages[0]?.id;
       activeSectionId = state.pages[0]?.sections?.[0]?.id || '';
