@@ -1,3 +1,5 @@
+import { cmsUploadPreviewSrc } from './uploadAssets.js';
+
 function escapeHtml(value) {
   return (value ?? '').toString().replace(/[&<>"']/g, char => ({
     '&': '&amp;',
@@ -12,7 +14,7 @@ function escapeAttr(value) {
   return escapeHtml(value).replace(/`/g, '&#96;');
 }
 
-export function renderCmsPreview({ page, nav, site }) {
+export function renderCmsPreview({ page, nav, site, assets = [] }) {
   const topMap = { home: 7.3, inner: 5.5, tight: 5.5, photo: 4.7, contact: 7.3 };
   const mainLinks = nav?.groups?.find(group => group.id === 'main')?.items.filter(item => item.visible) || [];
   const socialLinks = nav?.groups?.find(group => group.id === 'social')?.items.filter(item => item.visible) || [];
@@ -27,13 +29,13 @@ export function renderCmsPreview({ page, nav, site }) {
       </div>
       <div class="preview-main">
         ${page.frame?.showBackLink ? `<div class="preview-back">&lt; ${escapeHtml(page.frame.backLabel || 'HOME')}</div>` : ''}
-        ${page.sections.map(section => renderPreviewSection(section)).join('')}
+        ${page.sections.map(section => renderPreviewSection(section, assets)).join('')}
       </div>
     </div>
   `;
 }
 
-export function renderPreviewSection(section) {
+export function renderPreviewSection(section, assets = []) {
   const params = section.params || {};
   const gap = params.sectionGap === 'large' ? 52 : params.sectionGap === 'normal' ? 34 : 0;
   const width = params.widthMode === 'custom' && params.customWidthPercent
@@ -42,16 +44,18 @@ export function renderPreviewSection(section) {
 
   if (section.type === 'profile') {
     const item = section.items?.[0] || {};
+    const src = cmsUploadPreviewSrc(item.src, assets);
     return `<div class="preview-section preview-rich" style="--section-gap:${gap}px;--preview-width:${width}">
-      ${item.src ? `<img class="preview-profile-image" src="${escapeAttr(item.src)}" alt="">` : ''}
+      ${src ? `<img class="preview-profile-image" src="${escapeAttr(src)}" alt="">` : ''}
       <hr>
       ${item.bodyHtml || section.bodyHtml || ''}
     </div>`;
   }
   if (section.type === 'gif-hero') {
     const item = section.items?.[0] || {};
+    const src = cmsUploadPreviewSrc(item.src, assets);
     return `<div class="preview-section preview-gif-hero" style="--section-gap:${gap}px;--preview-width:${width}">
-      ${item.src ? `<img src="${escapeAttr(item.src)}" alt="">` : ''}
+      ${src ? `<img src="${escapeAttr(src)}" alt="">` : ''}
     </div>`;
   }
   if (section.type === 'rich-text' || section.type === 'contact') {
@@ -63,10 +67,10 @@ export function renderPreviewSection(section) {
       ${(section.items || []).map(item => `<a href="${escapeAttr(item.href || '#')}">${escapeHtml(item.title || item.id)}</a>`).join('')}
     </div>`;
   }
-  return renderPreviewGallery(section, gap, width);
+  return renderPreviewGallery(section, gap, width, assets);
 }
 
-function renderPreviewGallery(section, gap, width) {
+function renderPreviewGallery(section, gap, width, assets = []) {
   const params = section.params || {};
   const columns = Math.max(1, Math.min(3, Number(params.columns) || 3));
   const spacing = params.spacing === 'flush' ? 0 : params.spacing === 'dense' ? 6 : 10;
@@ -78,8 +82,8 @@ function renderPreviewGallery(section, gap, width) {
   return `<div class="preview-section preview-gallery" style="--section-gap:${gap}px;--preview-columns:${columns};--preview-gap:${spacing}px;--preview-ratio:${ratio};--preview-width:${width}">
     ${(section.items || []).map(item => `
       <figure class="preview-card" data-fit="${escapeAttr(params.imageFit || 'natural')}">
-        ${previewItemOpen(section, item)}
-        ${item.src ? `<img src="${escapeAttr(item.src)}" alt="${escapeAttr(item.title || '')}">` : '<div style="height:72px;background:rgba(0,0,0,.08)"></div>'}
+        ${previewItemOpen(section, item, assets)}
+        ${item.src ? `<img src="${escapeAttr(cmsUploadPreviewSrc(item.src, assets))}" alt="${escapeAttr(item.title || '')}">` : '<div style="height:72px;background:rgba(0,0,0,.08)"></div>'}
         ${previewItemClose(section, item)}
         ${previewCaption(section, item)}
       </figure>
@@ -87,14 +91,14 @@ function renderPreviewGallery(section, gap, width) {
   </div>`;
 }
 
-function previewItemOpen(section, item) {
+function previewItemOpen(section, item, assets = []) {
   const mode = section.params?.clickMode;
   const href = mode === 'internal-page'
     ? (item.href || (item.targetPageId ? `/${item.targetPageId}` : ''))
     : mode === 'external-link'
       ? item.href
-      : mode === 'lightbox'
-        ? item.src
+    : mode === 'lightbox'
+        ? cmsUploadPreviewSrc(item.src, assets)
         : '';
   return href ? `<a href="${escapeAttr(href)}">` : '';
 }
