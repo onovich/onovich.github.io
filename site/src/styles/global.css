@@ -213,7 +213,7 @@ small {
   padding: 0;
 }
 
-.home-grid__col { padding: 0; }
+.home-grid__col { padding: 0; min-width: 0; }
 .home-grid__col--nav  { padding-top: 0; }
 .home-grid__col--main { font-size: 1.3rem; line-height: 16px; }
 
@@ -435,6 +435,7 @@ body.page-contact .site-footer {
 .thumbnails-container {
   width: calc(100% + 3.333rem);
   margin: -1.792rem 0 0 -1.333rem;
+  min-width: 0;
 }
 
 .thumbnails {
@@ -444,6 +445,7 @@ body.page-contact .site-footer {
   padding: 1rem;
   background: rgba(0, 0, 0, 0);
   list-style: none;
+  min-width: 0;
 }
 
 .thumbnails--columns-2 {
@@ -462,6 +464,7 @@ body.page-contact .site-footer {
   display: inline-block;
   width: 100%;
   padding: 1rem;
+  min-width: 0;
   break-inside: avoid;
   page-break-inside: avoid;
   content-visibility: auto;

@@ -11,7 +11,7 @@
 ## 当前 TODO 摘要（2026-06-10）
 
 1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
-2. P1：标准 gallery（codes/pixel）顶部已收敛；下一步继续处理 tight gallery（game/illustrator/gif/graphic）顶部与列数，再处理 main width。
+2. P1：标准 gallery（codes/pixel）顶部与 pixel mobile 横向溢出已收敛；下一步继续处理 tight gallery（game/illustrator/gif/graphic）顶部与列数，再处理 main width。
 3. P1：继续实测并复核 gallery 每个断点列数；codes 当前 5 断点列数已对齐，game mobile/tablet 仍少 1 列。
 4. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
 
@@ -47,7 +47,8 @@
 - 已澄清：旧 `main.y` 测到的是右栏列盒，不能代表首个可见内容；`visual:measure` 已新增 `mainAnchor`。桌面 home 首个内容 delta 约 `-0.62px`，codes/pixel `< HOME` delta 约 `-4.51px`，gallery 顶部 `thumbnails.y` delta 约 `-10.96px`。
 - 5 断点复核：wide root 修复前 codes 的 `mainAnchor.y` delta 约 mobile `-33.32px`、tablet `-25.54px`、laptop `-18.56px`、desktop `-4.51px`、wide `-27.44px`；wide root 修复后 wide `mainAnchor.y` 收到约 `-8.24px`。
 - 已修：codes/pixel 走 `page-gallery-standard` 变体，按 5 断点校准右栏顶部和 `< HOME` 到 gallery 的间距；codes/pixel 的 `mainAnchor.y` 与 `thumbnails.y` delta 在 mobile/tablet/laptop/desktop/wide 均约为 0。
-- 残差：tight gallery 顶部仍偏高；main width 仍略窄；pixel 缩略图尺寸/宽度仍需单独收，mobile 当前存在横向溢出（375px viewport 下 `scrollWidth` 约 626px）。
+- 已修：gallery grid item 增加 `min-width: 0`，pixel mobile 横向溢出已消除（375px viewport 下 `scrollWidth` 从约 626px 回到 375px），首屏方形缩略图尺寸也回到与 original 接近。
+- 残差：tight gallery 顶部仍偏高；main width 仍略窄；pixel 第二段 natural 缩略图尺寸/高度仍需单独收。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game mobile/tablet 仍是 clone 2 列 vs original 3 列。
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
