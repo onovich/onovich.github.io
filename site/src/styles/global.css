@@ -518,6 +518,7 @@ body.page-contact .site-footer {
 .thumbnails figcaption {
   margin-top: 0.9rem;
   margin-bottom: 0.1rem;
+  overflow-wrap: anywhere;
 }
 
 .thumbnails .caption {
@@ -713,12 +714,19 @@ body.menu-open .site-menu-button { display: none; }
   width: auto;
   z-index: 220;
   transform: translateX(100%);
-  transition: transform 0.28s ease;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.28s ease, visibility 0s linear 0.28s;
   display: flex;
   flex-direction: column;
   text-align: left;
 }
-body.menu-open .site-menu { transform: translateX(0); }
+body.menu-open .site-menu {
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
 body.mobile .site-menu { width: 100%; max-width: 100%; }
 
 .site-menu nav {
@@ -928,6 +936,26 @@ body.page-pixel .thumbnails--natural.thumbnails--flush .thumb {
 @media (max-width: 768px) {
   body.page-pixel .thumbnails--natural.thumbnails--flush {
     padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  body.page-game .thumbnails,
+  body.page-gif .thumbnails,
+  body.page-illustrator .thumbnails {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .thumbnails--dense {
+    padding: 0.125rem;
+  }
+
+  .thumbnails--dense .thumb {
+    padding: 0.125rem;
+  }
+
+  .thumbnails--flush .thumb {
+    padding: 0;
   }
 }
 
