@@ -4,6 +4,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { createCmsPublishPackage } from '../src/cms/publishPackage.js';
+import { createCmsUploadAsset } from '../src/cms/uploadAssets.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const cmsHtmlPath = path.join(root, 'dist', 'cms', 'index.html');
@@ -17,6 +18,7 @@ const expectedTargets = [
   'src/content/graphics.json',
   'src/content/photoAlbums.json',
   'src/content/poem.html',
+  'public/images/uploads/publish-smoke.png',
   'src/content/site.json',
 ];
 
@@ -34,10 +36,17 @@ if (!fs.existsSync(cmsHtmlPath)) {
 const html = fs.readFileSync(cmsHtmlPath, 'utf8');
 const seed = readEmbeddedJson(html, 'cms-seed');
 const seedIssues = readEmbeddedJson(html, 'cms-validation-seed');
+const uploadAsset = createCmsUploadAsset({
+  fileName: 'Publish Smoke.png',
+  mimeType: 'image/png',
+  width: 1,
+  height: 1,
+  dataUrl: 'data:image/png;base64,AAAA',
+});
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'onovich-cms-publish-'));
 const packagePath = path.join(tempDir, 'onovich-cms-publish.json');
 const payload = createCmsPublishPackage({
-  state: seed,
+  state: { ...seed, assets: [uploadAsset] },
   issues: seedIssues,
   exportedAt: '2026-06-09T00:00:00.000Z',
 });

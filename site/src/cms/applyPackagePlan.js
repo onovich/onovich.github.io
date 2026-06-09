@@ -1,3 +1,5 @@
+import { cmsUploadApplyRelativePath, cmsUploadAssetBase64, collectCmsUploadAssets } from './uploadAssets.js';
+
 export function createCmsApplyPlan(payload) {
   const pages = Array.isArray(payload.pages) ? payload.pages : [];
   const pageById = new Map(pages.map(page => [page.id, page]));
@@ -13,6 +15,10 @@ export function createCmsApplyPlan(payload) {
 
   function writeText(relativePath, value) {
     targets.push({ relativePath, content: value.endsWith('\n') ? value : `${value}\n` });
+  }
+
+  function writeBase64(relativePath, value) {
+    targets.push({ relativePath, content: value, encoding: 'base64' });
   }
 
   function sectionItems(pageId, sectionFilter = () => true) {
@@ -82,6 +88,13 @@ export function createCmsApplyPlan(payload) {
   publishGallery('graphic', 'graphics');
   publishPhotoAlbums();
   writeText('src/content/poem.html', bodyHtml('poem'));
+  for (const asset of collectCmsUploadAssets(payload)) {
+    const uploadPath = cmsUploadApplyRelativePath(asset);
+    const uploadContent = cmsUploadAssetBase64(asset);
+    assert(uploadPath, `Invalid CMS upload target: ${asset.src || asset.id}`);
+    assert(uploadContent, `CMS upload is missing publish data: ${asset.src || asset.id}`);
+    writeBase64(uploadPath, uploadContent);
+  }
   writeJson('src/content/site.json', payload);
 
   return targets;

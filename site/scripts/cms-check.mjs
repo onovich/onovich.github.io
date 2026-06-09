@@ -10,7 +10,7 @@ import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
 import { cmsRichTextSelectionBelongsToEditor, collectCmsRichTextHtmlIssues, createCmsRichTextLinkPanel, createCmsRichTextSelectionStore, isCmsRichTextAllowedTag, isCmsRichTextCommand, normalizeCmsRichTextHref, pasteCmsRichText, runCmsRichTextCommand } from '../src/cms/richText.js';
-import { CMS_UPLOAD_TARGET_DIR, cmsUploadPreviewSrc, collectCmsUploadAssetIssues, createCmsUploadAsset, normalizeCmsUploadFileName, upsertCmsUploadAsset } from '../src/cms/uploadAssets.js';
+import { CMS_UPLOAD_TARGET_DIR, cmsUploadApplyRelativePath, cmsUploadAssetBase64, cmsUploadPreviewSrc, collectCmsUploadAssetIssues, collectCmsUploadPublishIssues, createCmsUploadAsset, normalizeCmsUploadFileName, upsertCmsUploadAsset } from '../src/cms/uploadAssets.js';
 import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, formatCmsRestoreSummary, restoreCmsApplyBackup, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -325,6 +325,10 @@ function checkCmsUploadAssets() {
   const upserted = upsertCmsUploadAsset([{ ...asset, width: 1 }], asset);
   assert(upserted.length === 1 && upserted[0].width === 640, 'CMS upload assets must replace existing assets with the same src');
   assert(cmsUploadPreviewSrc(asset.src, [asset]) === asset.dataUrl, 'CMS upload assets must provide data URLs for CMS previews');
+  assert(cmsUploadApplyRelativePath(asset) === 'public/images/uploads/hero-image.png', 'CMS upload assets must resolve apply targets under public uploads');
+  assert(cmsUploadAssetBase64(asset) === 'AAAA', 'CMS upload assets must expose base64 publish content');
+  assert(collectCmsUploadPublishIssues({ assets: [asset] }).length === 0, 'CMS upload publish validation must accept complete upload assets');
+  assert(collectCmsUploadPublishIssues({ assets: [{ ...asset, dataUrl: '' }] }).some(issue => issue.code === 'upload-asset-data-missing'), 'CMS upload publish validation must require publish data');
 }
 
 function checkCmsPublishPackage() {
@@ -435,8 +439,16 @@ function checkCmsImportPackage() {
 }
 
 function checkCmsApplyPlan() {
+  const uploadAsset = createCmsUploadAsset({
+    fileName: 'Hero Upload.PNG',
+    mimeType: 'image/png',
+    width: 1,
+    height: 1,
+    dataUrl: 'data:image/png;base64,AAAA',
+  });
   const payload = {
     schemaVersion: 1,
+    assets: [uploadAsset],
     presets: {
       pageTemplates: [{ id: 'gallery-page' }],
       sectionPresets: [{ id: 'gallery-roomy-3' }],
@@ -502,7 +514,7 @@ function checkCmsApplyPlan() {
   const gifs = JSON.parse(byPath.get('src/content/gifs.json'));
   const photoAlbumsOutput = JSON.parse(byPath.get('src/content/photoAlbums.json'));
 
-  assert(targets.length === 9, 'CMS apply plan must write the expected content files');
+  assert(targets.length === 10, 'CMS apply plan must write the expected content and upload files');
   assert(codes.length === 1 && codes[0].id === 'code-one', 'CMS apply plan must publish gallery items');
   assert(!('targetPageId' in codes[0]) && !('hidden' in codes[0]) && !('bodyHtml' in codes[0]), 'CMS apply plan must strip CMS-only item fields');
   assert(gifs.length === 1 && gifs[0].id === 'gif-grid', 'CMS apply plan must publish GIF gallery items without GIF hero items');
@@ -510,6 +522,8 @@ function checkCmsApplyPlan() {
   assert(photoAlbumsOutput.albums[0].slug === 'photo_1', 'CMS apply plan must publish photo detail albums');
   assert(photoAlbumsOutput.albums[0].items[0].src === '/images/photos/photo-01.jpg', 'CMS apply plan must preserve photo detail items');
   assert(byPath.get('src/content/poem.html') === '<p>Poem</p>\n', 'CMS apply plan must publish rich text body HTML');
+  assert(byPath.get('public/images/uploads/hero-upload.png') === 'AAAA', 'CMS apply plan must publish upload asset bytes as base64 targets');
+  assert(targets.find(target => target.relativePath === 'public/images/uploads/hero-upload.png')?.encoding === 'base64', 'CMS apply plan must mark upload targets as base64');
   assert(JSON.parse(byPath.get('src/content/site.json')).pages.length === payload.pages.length, 'CMS apply plan must write the full CMS package to site.json');
 
   let rejected = false;
@@ -529,6 +543,7 @@ function checkCmsApplyFileOps() {
     const targets = [
       { relativePath: 'src/content/codes.json', content: 'new codes\n' },
       { relativePath: 'src/content/new.json', content: '[]\n' },
+      { relativePath: 'public/images/uploads/upload.png', content: 'AAAA', encoding: 'base64' },
     ];
 
     const backup = backupCmsApplyTargets({
@@ -542,6 +557,7 @@ function checkCmsApplyFileOps() {
     assert(fs.readFileSync(path.join(tempRoot, backup.backupRelativePath, 'src/content/codes.json'), 'utf8') === 'old codes\n', 'CMS apply backup must copy existing target files before writing');
     assert(!fs.existsSync(path.join(tempRoot, backup.backupRelativePath, 'src/content/new.json')), 'CMS apply backup must not invent backups for new files');
     assert(fs.readFileSync(path.join(tempRoot, 'src/content/codes.json'), 'utf8') === 'new codes\n', 'CMS apply file writer must write target content');
+    assert(fs.readFileSync(path.join(tempRoot, 'public/images/uploads/upload.png')).equals(Buffer.from('AAAA', 'base64')), 'CMS apply file writer must decode uploaded base64 targets');
     assert(formatCmsApplyRollbackHint(backup).includes(backup.backupRelativePath), 'CMS apply rollback hint must include the backup path');
 
     const dryRun = restoreCmsApplyBackup({ root: tempRoot, backupRelativePath: backup.backupRelativePath, dryRun: true });
@@ -551,7 +567,7 @@ function checkCmsApplyFileOps() {
     const restored = restoreCmsApplyBackup({ root: tempRoot, backupRelativePath: backup.backupRelativePath });
     assert(fs.readFileSync(path.join(tempRoot, 'src/content/codes.json'), 'utf8') === 'old codes\n', 'CMS restore must copy backed-up files back to targets');
     assert(!fs.existsSync(path.join(tempRoot, 'src/content/new.json')), 'CMS restore must remove files created by the apply step');
-    assert(formatCmsRestoreSummary(restored).includes('1 restored, 1 removed'), 'CMS restore summary must report restored and removed files');
+    assert(formatCmsRestoreSummary(restored).includes('1 restored, 2 removed'), 'CMS restore summary must report restored and removed files');
   } finally {
     fs.rmSync(tempRoot, { recursive: true, force: true });
   }
@@ -721,6 +737,9 @@ assert(cmsRichTextSource.includes('createCmsRichTextLinkPanel'), 'CMS rich text 
 assert(cmsUploadSource.includes('CMS_UPLOAD_TARGET_DIR'), 'CMS upload module must own upload target paths');
 assert(cmsUploadSource.includes('readCmsUploadFile'), 'CMS upload module must own browser file metadata reading');
 assert(cmsUploadSource.includes('cmsUploadPreviewSrc'), 'CMS upload module must own preview source resolution');
+assert(cmsApplyPlanSource.includes('cmsUploadApplyRelativePath'), 'CMS apply plan must use shared upload target resolution');
+assert(applyFileOpsSource.includes("encoding === 'base64'"), 'CMS apply file writer must support uploaded binary targets');
+assert(applyScriptSource.includes('collectCmsUploadPublishIssues'), 'CMS apply script must validate upload assets before writing');
 assert(cmsDraftValidationSource.includes('collectCmsUploadAssetIssues'), 'CMS draft validation must use the shared upload asset validator');
 assert(cmsPublishSource.includes('collectCmsUploadAssets'), 'CMS publish package builder must use the shared upload asset collector');
 assert(cmsAssetSource.includes('/images/'), 'CMS asset validation must keep publishable image path rules centralized');

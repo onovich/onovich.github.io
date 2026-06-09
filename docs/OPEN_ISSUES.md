@@ -13,8 +13,7 @@
 1. P0：内页左侧导航线上/截图回归确认，必须跑 visual-diff 并看 `codes.desktop.clone.png`。
 2. P0：继续建立视觉验证门禁，后续视觉改动不能只靠 build 通过。
 3. P1：用 Playwright `getComputedStyle()` 消除字号、行高、列对齐、gallery 断点列数残差。
-4. P2：CMS 资源上传落地：`cms:apply` 统一校验和落盘上传资源。
-5. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
+4. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
 
 ---
 
@@ -95,10 +94,11 @@
 - 富文本链接 UI 已替代浏览器 `prompt()`：`/cms` 里点击“链接”会打开内嵌 URL 面板，`cms:smoke` 会真实选择正文文本并验证 `<a href="https://example.com/smoke">link</a>`
 - 上传资源共享契约已拆到 `site/src/cms/uploadAssets.js`：统一生成 `/images/uploads/...` 路径、校验 MIME/宽高/data URL，并让发布包 manifest 携带 uploads 数量、目标目录和目标路径
 - 资源上传 UI 已接入 `/cms` 条目编辑：选择图片后读取 MIME、宽高、size、data URL，写入 `state.assets`，并回填当前条目的 `/images/uploads/...` 路径；CMS 预览会用 data URL，发布路径仍保持静态站目标路径
+- `cms:apply` 会校验上传资源、允许包内上传资源满足 `/images/uploads/...` 引用，并把 base64 内容落盘到 `public/images/uploads/...`；备份/恢复会覆盖这些新建上传文件
 - `npm run cms:check` 已覆盖状态、预览、草稿校验、导出包、导入包、应用计划、资产路径和缺失资产阻止等纯逻辑；`npm run cms:smoke`、`npm run cms:apply:smoke`、`npm run cms:publish:smoke` 已可复用做网页 CMS/发布链路冒烟
 
 **下一步（拆成小节点）**：
-1. 发布链路覆盖：让 `cms:apply` 统一校验/落盘上传资源，并把新资源路径纳入 `cms:apply:smoke` / `cms:publish:smoke`。
+1. CMS 后续增强暂缓，优先回到视觉 P0/P1：内页左侧导航线上/截图回归确认、字号/行高/列对齐和 gallery 断点列数。
 
 ---
 
