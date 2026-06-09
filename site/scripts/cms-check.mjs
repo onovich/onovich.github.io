@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { clone, createCmsStateHelpers } from '../src/cms/state.js';
 import { renderCmsPreview } from '../src/cms/preview.js';
 import { collectCmsDraftIssues } from '../src/cms/draftValidation.js';
+import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publishPackage.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
@@ -232,10 +233,74 @@ function checkCmsDraftValidation() {
   assert(issues.filter(issue => issue.level === 'error').length >= 4, 'CMS draft validation must classify blocking issues as errors');
 }
 
+function checkCmsPublishPackage() {
+  const state = {
+    schemaVersion: 2,
+    site: { title: 'Onovich' },
+    sidebar: [
+      { id: 'codes', path: '/codes' },
+      { id: 'game', path: '/game' },
+    ],
+    pages: [
+      {
+        id: 'codes',
+        title: 'Codes',
+        templateId: 'gallery-page',
+        sections: [
+          { id: 'gallery', presetId: 'gallery-roomy-3', items: [] },
+          { id: 'text', presetId: 'rich-text-poem', items: [] },
+        ],
+      },
+      {
+        id: 'home',
+        title: 'Home',
+        templateId: 'home-profile',
+        sections: [],
+      },
+      {
+        id: 'broken',
+        title: 'Broken',
+        sections: [{ id: 'missing-preset' }],
+      },
+    ],
+  };
+  const issues = [
+    { level: 'error', message: 'Blocking issue' },
+    { level: 'warning', message: 'Soft warning' },
+    { message: 'Implicit warning' },
+  ];
+
+  const payload = createCmsPublishPackage({
+    state,
+    issues,
+    exportedAt: '2026-06-09T00:00:00.000Z',
+  });
+  payload.pages[0].title = 'Changed';
+  payload.manifest.validation.issues[0].message = 'Changed';
+  payload.manifest.publishTargets.push('unexpected');
+
+  assert(payload.manifest.name === 'onovich-cms-publish', 'CMS publish package must include a stable manifest name');
+  assert(payload.exportedAt === '2026-06-09T00:00:00.000Z', 'CMS publish package must use the provided export timestamp');
+  assert(payload.manifest.schemaVersion === 2, 'CMS publish package must preserve the schema version');
+  assert(payload.manifest.pageCount === 3, 'CMS publish package must count pages');
+  assert(payload.manifest.visibleNavCount === 2, 'CMS publish package must count visible sidebar entries');
+  assert(payload.manifest.templates.join(',') === 'gallery-page,home-profile', 'CMS publish package must list known page templates');
+  assert(payload.manifest.sectionPresets.join(',') === 'gallery-roomy-3,rich-text-poem', 'CMS publish package must list known section presets');
+  assert(payload.manifest.validation.errors === 1, 'CMS publish package must count blocking validation issues');
+  assert(payload.manifest.validation.warnings === 2, 'CMS publish package must count non-blocking validation issues');
+  assert(state.pages[0].title === 'Codes', 'CMS publish package must not share page objects with editor state');
+  assert(issues[0].message === 'Blocking issue', 'CMS publish package must not share issue objects with editor state');
+  assert(CMS_PUBLISH_TARGETS.length === 4, 'CMS publish target list must remain focused');
+  assert(!CMS_PUBLISH_TARGETS.includes('unexpected'), 'CMS publish package must copy publish targets into each manifest');
+  assert(payload.manifest.publishTargets.includes('site/src/content/site.json'), 'CMS publish package must target site content');
+  assert(payload.manifest.publishTargets.includes('site/public/images/uploads'), 'CMS publish package must target uploaded images');
+}
+
 const presetsSource = read('src/cms/presets.ts');
 const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
 const cmsClientSource = read('src/cms/client.ts');
+const cmsPublishSource = read('src/cms/publishPackage.js');
 const dynamicRouteSource = read('src/pages/[...slug].astro');
 const applyScriptSource = read('scripts/apply-cms-publish.mjs');
 
@@ -262,7 +327,8 @@ assert(cmsClientSource.includes('activeSectionId'), 'CMS UI must keep section-le
 assert(cmsClientSource.includes('createCmsStateHelpers'), 'CMS client must use shared state helpers');
 assert(cmsClientSource.includes('renderCmsPreview'), 'CMS client must use the shared preview renderer');
 assert(cmsClientSource.includes('collectCmsDraftIssues'), 'CMS client must use the shared draft validator');
-assert(cmsClientSource.includes('manifest'), 'CMS export package must include a manifest');
+assert(cmsClientSource.includes('createCmsPublishPackage'), 'CMS client must use the shared publish package builder');
+assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
 assert(applyScriptSource.includes('CMS publish applied'), 'CMS apply script must write exported publish packages');
@@ -280,6 +346,7 @@ const photoAlbums = readJson('src/content/photoAlbums.json');
 checkCmsStateHelpers();
 checkCmsPreviewRenderer();
 checkCmsDraftValidation();
+checkCmsPublishPackage();
 checkGalleryItems(codes, 'codes');
 checkGalleryItems(games, 'games');
 checkGalleryItems(pixel, 'pixel');

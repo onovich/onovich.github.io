@@ -1,6 +1,7 @@
 import { clone, createCmsStateHelpers } from './state.js';
 import { renderCmsPreview } from './preview.js';
 import { collectCmsDraftIssues } from './draftValidation.js';
+import { createCmsPublishPackage } from './publishPackage.js';
 
 (() => {
   const STORAGE_KEY = 'onovich:cms:draft';
@@ -561,31 +562,7 @@ import { collectCmsDraftIssues } from './draftValidation.js';
     const issues = collectDraftIssues();
     const errors = issues.filter(issue => issue.level === 'error');
     if (errors.length && !confirm(`当前有 ${errors.length} 个错误，仍要导出吗？`)) return;
-    const exportedAt = new Date().toISOString();
-    const payload = {
-      ...state,
-      exportedAt,
-      manifest: {
-        name: 'onovich-cms-publish',
-        exportedAt,
-        schemaVersion: state.schemaVersion,
-        pageCount: state.pages.length,
-        visibleNavCount: state.sidebar.length,
-        templates: Array.from(new Set(state.pages.map(page => page.templateId))),
-        sectionPresets: Array.from(new Set(state.pages.flatMap(page => (page.sections || []).map(section => section.presetId)))),
-        validation: {
-          errors: errors.length,
-          warnings: issues.filter(issue => issue.level !== 'error').length,
-          issues,
-        },
-        publishTargets: [
-          'site/src/content/site.json',
-          'site/src/content/*.json',
-          'site/src/content/poem.html',
-          'site/public/images/uploads',
-        ],
-      },
-    };
+    const payload = createCmsPublishPackage({ state, issues });
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
