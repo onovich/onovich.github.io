@@ -120,12 +120,12 @@
 - ✅ Playwright 截图对照基础设施
 - ✅ 文档体系（HANDOFF / CSS_SPEC / RENDERING_REPORT / OPEN_ISSUES / LESSONS / WORKFLOW）
 - ✅ 旧 Electron admin 已移除；后续只沿站内 `/cms` 网页 CMS 演进
-- ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份
+- ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份、备份恢复命令
 
 ### 进行中 / 待做
 - 🟡 视觉残差消除（clone 字号略大、列对齐略偏；下一轮迭代用 `getComputedStyle` 对照清单逐项修）
 - 🟡 photos 02-07 缺图（用户说非关键路径，后期手动补）
-- 🟡 网页 CMS 继续演进：打磨富文本编辑、资源上传落地、`cms:restore` 便捷恢复命令
+- 🟡 网页 CMS 继续演进：打磨富文本编辑、资源上传落地
 
 ### 已知风险
 - Cargo runtime JS 注入的 inline style 单看 CSS 推不全
@@ -237,8 +237,8 @@ NODE
 - 保留 `site/src/pages/cms.astro` 作为唯一后台入口
 - 已拆出样式、状态管理、预览、草稿校验、导入/导出包、发布应用计划、资产路径校验和缺失资产阻止纯逻辑
 - `npm run cms:publish:smoke` 已覆盖真实构建 seed → 发布包 → apply dry-run
-- `cms:apply` 写入前会备份覆盖目标到 `site/.cms-backups/` 并输出回滚提示
-- 下一步打磨富文本编辑、资源上传落地和 `cms:restore` 便捷恢复命令
+- `cms:apply` 写入前会备份覆盖目标到 `site/.cms-backups/` 并输出回滚提示，`npm run cms:restore -- .cms-backups/<timestamp>` 可恢复
+- 下一步打磨富文本编辑和资源上传落地
 - 发布链路继续围绕 `site/scripts/apply-cms-publish.mjs`、`npm run cms:check`、`npm run cms:apply:smoke`、`npm run cms:publish:smoke` 完善
 
 ---
