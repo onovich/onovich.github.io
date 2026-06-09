@@ -72,9 +72,11 @@
 - 状态 helper 拆到 `site/src/cms/state.js`
 - 预览渲染拆到 `site/src/cms/preview.js`
 - 草稿校验拆到 `site/src/cms/draftValidation.js`
-- `npm run cms:check` 已覆盖状态、预览、草稿校验等纯逻辑；`npm run cms:smoke` 已可复用做网页 CMS 冒烟
+- 发布包构造拆到 `site/src/cms/publishPackage.js`
+- 导入包解析/校验拆到 `site/src/cms/importPackage.js`，浏览器导入、Raw JSON 和 `cms:apply` 共用
+- `npm run cms:check` 已覆盖状态、预览、草稿校验、导出包、导入包等纯逻辑；`npm run cms:smoke` 已可复用做网页 CMS 冒烟
 
-**下一步**：优先把导出/发布包构造从 `client.ts` 拆成纯模块并补 `cms:check` 覆盖；随后完善发布包应用脚本、富文本编辑体验、更多真实发布场景 smoke。
+**下一步**：打磨富文本编辑体验；完善发布包应用脚本的真实场景 smoke；补资源上传/发布前资产校验/回滚提示等发布链路细节。
 
 ---
 
