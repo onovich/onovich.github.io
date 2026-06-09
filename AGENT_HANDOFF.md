@@ -52,7 +52,8 @@
 │   │   ├── CNAME                ← blog.onovich.com（决定 Pages 域名）
 │   │   └── images/              ← 所有媒体文件，已 commit
 │   ├── scripts/
-│   │   └── visual-diff.mjs      ← Playwright 截图对照脚本
+│   │   ├── visual-diff.mjs      ← Playwright 截图对照脚本
+│   │   └── visual-layout-check.mjs ← 左侧导航/返回链接快速布局门禁
 │   └── src/
 │       ├── layouts/BaseLayout.astro    ← 全局壳子，home/inner 两 variant
 │       ├── components/Gallery.astro    ← 画廊组件（PhotoSwipe 集成）
@@ -117,7 +118,7 @@
 - ✅ 图片迁移（除 photos 02-07 缺）
 - ✅ Layout 重写为 Cargo 风格（右上角浮动汉堡 + 滑入黑色面板 + home 4/8 grid）
 - ✅ root font-size 设为 12.96px 与原站一致
-- ✅ Playwright 截图对照基础设施
+- ✅ Playwright 截图对照基础设施 + `visual:check` 布局门禁
 - ✅ 文档体系（HANDOFF / CSS_SPEC / RENDERING_REPORT / OPEN_ISSUES / LESSONS / WORKFLOW）
 - ✅ 旧 Electron admin 已移除；后续只沿站内 `/cms` 网页 CMS 演进
 - ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份、备份恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘
@@ -138,14 +139,17 @@
 每次动 `BaseLayout.astro` / `global.css` / 任何 page 后：
 
 ```bash
+cd site
+
 # 1. 本地 build 不能错
-cd site && npm run build
+npm run build
 
 # 2. 启 dist 静态预览
-node site/node_modules/.bin/http-server site/dist -p 4350 -s &
+npm run preview -- --host 127.0.0.1 --port 4350
 
 # 3. 跑 Playwright 截图对照（用本地预览作为 clone）
-cd site && node scripts/visual-diff.mjs --clone=http://localhost:4350
+npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
+npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 
 # 4. 用 Read 工具看 diff-screenshots/{slug}.{vp}.original.png 与 .clone.png
 #    至少检查 home.desktop / codes.desktop / pixel.desktop 三处

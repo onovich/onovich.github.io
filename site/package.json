@@ -15,6 +15,8 @@
     "cms:publish:smoke": "node scripts/cms-publish-smoke.mjs",
     "cms:restore": "node scripts/restore-cms-backup.mjs",
     "cms:smoke": "node scripts/cms-smoke.mjs",
+    "visual:check": "node scripts/visual-layout-check.mjs",
+    "visual:diff": "node scripts/visual-diff.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

@@ -11,6 +11,7 @@
 cd site && node scripts/visual-diff.mjs                # 全量截图
 cd site && node scripts/visual-diff.mjs --pages=home   # 单页截图
 cd site && node scripts/visual-diff.mjs --clone=http://localhost:4350  # 用本地 dist 对照
+cd site && npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
 ```
 
 视口（VIEWPORTS）：
@@ -25,6 +26,8 @@ cd site && node scripts/visual-diff.mjs --clone=http://localhost:4350  # 用本�
 每个视口对原站 + clone 各 fullPage screenshot，输出 `diff-screenshots/{slug}.{vp}.{label}.png`（gitignored）。
 
 页面（PAGES）：home, codes, game, pixel, illustrator, gif, graphic, photo, poem, sns, links, contact（contact 在原站路径是 `/contact-form`）。
+
+`visual:check` 是截图前的快速布局门禁：它用 Playwright 读取真实布局框，检查左侧 Onovich 导航、当前分类链接和内页 `< HOME` 返回链接是否仍在预期区域。它不能替代人工看截图，但能提前阻止内页导航消失这类 P0 回归。
 
 ---
 
