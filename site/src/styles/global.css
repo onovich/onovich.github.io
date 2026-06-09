@@ -40,7 +40,7 @@
 html {
   scroll-behavior: smooth;
   /* Cargo's predefined preset sets root font-size to 12.96px (≈81% of 16). */
-  font-size: 12.96px;
+  font-size: clamp(11.06px, 0.9vw, 18.43px);
 }
 
 body {
@@ -121,6 +121,7 @@ small {
   font-size: 14px;
   line-height: 25px;
   font-family: var(--font-ui);
+  font-weight: 400;
   color: rgba(18, 18, 18, 0.75);
 }
 
@@ -177,8 +178,8 @@ small {
 }
 
 .home-avatar {
-  width: 72px;
-  height: 72px;
+  width: 5.556rem;
+  height: 5.556rem;
   margin: 0 0 1.54rem 0;
   display: block;
   object-fit: cover;
@@ -200,6 +201,20 @@ small {
   font-weight: 400;
 }
 .home-bio p { margin: 0; }
+
+@media (min-width: 1600px) {
+  .page-home .home-grid__col--main {
+    padding-top: 5.5rem;
+  }
+
+  body.page-inner:not(.page-photo) .home-grid__col--main {
+    padding-top: 4.7rem;
+  }
+
+  body.page-inner:not(.page-photo) .page-back {
+    margin-bottom: 0.7rem;
+  }
+}
 
 body.page-contact .home-grid__col--nav,
 body.page-contact .home-grid__col--main > :not(.contact-drawer) {
