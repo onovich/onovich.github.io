@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clone, createCmsStateHelpers } from '../src/cms/state.js';
@@ -8,6 +9,7 @@ import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publish
 import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
+import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
@@ -459,6 +461,33 @@ function checkCmsApplyPlan() {
   assert(rejected, 'CMS apply plan must reject unsupported schema versions');
 }
 
+function checkCmsApplyFileOps() {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'onovich-cms-apply-file-ops-'));
+  try {
+    fs.mkdirSync(path.join(tempRoot, 'src', 'content'), { recursive: true });
+    fs.writeFileSync(path.join(tempRoot, 'src', 'content', 'codes.json'), 'old codes\n', 'utf8');
+    const targets = [
+      { relativePath: 'src/content/codes.json', content: 'new codes\n' },
+      { relativePath: 'src/content/new.json', content: '[]\n' },
+    ];
+
+    const backup = backupCmsApplyTargets({
+      root: tempRoot,
+      targets,
+      timestamp: '20260609-000000Z',
+    });
+    writeCmsApplyTargets({ root: tempRoot, targets });
+
+    assert(backup.backupRelativePath === `${CMS_APPLY_BACKUP_DIR}/20260609-000000Z`, 'CMS apply backup must use the configured backup directory');
+    assert(fs.readFileSync(path.join(tempRoot, backup.backupRelativePath, 'src/content/codes.json'), 'utf8') === 'old codes\n', 'CMS apply backup must copy existing target files before writing');
+    assert(!fs.existsSync(path.join(tempRoot, backup.backupRelativePath, 'src/content/new.json')), 'CMS apply backup must not invent backups for new files');
+    assert(fs.readFileSync(path.join(tempRoot, 'src/content/codes.json'), 'utf8') === 'new codes\n', 'CMS apply file writer must write target content');
+    assert(formatCmsApplyRollbackHint(backup).includes(backup.backupRelativePath), 'CMS apply rollback hint must include the backup path');
+  } finally {
+    fs.rmSync(tempRoot, { recursive: true, force: true });
+  }
+}
+
 const presetsSource = read('src/cms/presets.ts');
 const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
@@ -469,6 +498,7 @@ const cmsApplyPlanSource = read('src/cms/applyPackagePlan.js');
 const cmsAssetSource = read('src/cms/assetReferences.js');
 const dynamicRouteSource = read('src/pages/[...slug].astro');
 const applyScriptSource = read('scripts/apply-cms-publish.mjs');
+const applyFileOpsSource = read('scripts/cms-apply-file-ops.mjs');
 const applySmokeSource = read('scripts/cms-apply-smoke.mjs');
 const publishSmokeSource = read('scripts/cms-publish-smoke.mjs');
 const packageSource = read('package.json');
@@ -508,6 +538,9 @@ assert(applyScriptSource.includes('--dry-run'), 'CMS apply script must support -
 assert(applyScriptSource.includes('parseCmsPackageJson'), 'CMS apply script must use the shared import package parser');
 assert(applyScriptSource.includes('createCmsApplyPlan'), 'CMS apply script must use the shared apply plan builder');
 assert(applyScriptSource.includes('collectCmsAssetPublishIssues'), 'CMS apply script must block unpublishable assets before writing');
+assert(applyScriptSource.includes('backupCmsApplyTargets'), 'CMS apply script must back up target files before writing');
+assert(applyScriptSource.includes('targets.length'), 'CMS apply script must report the actual number of written files');
+assert(applyFileOpsSource.includes('CMS publish backup'), 'CMS apply file ops must provide a rollback hint');
 assert(cmsApplyPlanSource.includes("section.type === 'gallery'"), 'CMS apply plan must publish gallery sections without GIF hero items');
 assert(applySmokeSource.includes('CMS apply smoke passed'), 'CMS apply smoke must provide a reusable dry-run check');
 assert(publishSmokeSource.includes('createCmsPublishPackage'), 'CMS publish smoke must exercise real publish package creation');
@@ -530,6 +563,7 @@ checkCmsAssetReferences();
 checkCmsPublishPackage();
 checkCmsImportPackage();
 checkCmsApplyPlan();
+checkCmsApplyFileOps();
 checkGalleryItems(codes, 'codes');
 checkGalleryItems(games, 'games');
 checkGalleryItems(pixel, 'pixel');
