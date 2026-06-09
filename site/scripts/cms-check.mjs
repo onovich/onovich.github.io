@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clone, createCmsStateHelpers } from '../src/cms/state.js';
+import { renderCmsPreview } from '../src/cms/preview.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
@@ -141,6 +142,57 @@ function checkCmsStateHelpers() {
   assert(state.sidebar.length === 1 && state.sidebar[0].path === '/', 'CMS state helper must sync visible sidebar nav items');
 }
 
+function checkCmsPreviewRenderer() {
+  const html = renderCmsPreview({
+    site: { title: 'Onovich <CMS>' },
+    nav: {
+      groups: [
+        {
+          id: 'main',
+          items: [
+            { label: 'CODES', path: '/codes', visible: true },
+            { label: 'Hidden', path: '/hidden', visible: false },
+          ],
+        },
+        {
+          id: 'social',
+          items: [{ label: 'SNS', path: '/sns', visible: true }],
+        },
+      ],
+    },
+    page: {
+      frame: { topSpacingPreset: 'inner', showBackLink: true, backLabel: 'HOME' },
+      sections: [{
+        type: 'gallery',
+        params: {
+          columns: 3,
+          spacing: 'roomy',
+          imageFit: 'cover-16-9',
+          clickMode: 'internal-page',
+          captionMode: 'title-desc-links',
+          showCaptions: true,
+        },
+        items: [{
+          title: 'Work <One>',
+          desc: 'Description',
+          year: '2026',
+          src: '/images/codes/work.png',
+          targetPageId: 'work-one',
+          links: [{ label: 'Play', url: 'https://example.com/play' }],
+        }],
+      }],
+    },
+  });
+
+  assert(html.includes('preview-site'), 'CMS preview renderer must render the preview shell');
+  assert(html.includes('Onovich &lt;CMS&gt;'), 'CMS preview renderer must escape the site title');
+  assert(html.includes('/codes') && !html.includes('/hidden'), 'CMS preview renderer must include visible nav links only');
+  assert(html.includes('&lt; HOME'), 'CMS preview renderer must render the back label');
+  assert(html.includes('preview-gallery'), 'CMS preview renderer must render gallery sections');
+  assert(html.includes('href="/work-one"'), 'CMS preview renderer must resolve internal item links');
+  assert(html.includes('Work &lt;One&gt;') && html.includes('Description') && html.includes('2026'), 'CMS preview renderer must render escaped captions');
+}
+
 const presetsSource = read('src/cms/presets.ts');
 const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
@@ -169,6 +221,7 @@ assert(cmsSource.includes('cms-validation-seed'), 'CMS UI must expose validation
 assert(cmsSource.includes("import '../cms/client'"), 'CMS page must load the browser client module');
 assert(cmsClientSource.includes('activeSectionId'), 'CMS UI must keep section-level editing state');
 assert(cmsClientSource.includes('createCmsStateHelpers'), 'CMS client must use shared state helpers');
+assert(cmsClientSource.includes('renderCmsPreview'), 'CMS client must use the shared preview renderer');
 assert(cmsClientSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
@@ -185,6 +238,7 @@ const graphics = readJson('src/content/graphics.json');
 const photoAlbums = readJson('src/content/photoAlbums.json');
 
 checkCmsStateHelpers();
+checkCmsPreviewRenderer();
 checkGalleryItems(codes, 'codes');
 checkGalleryItems(games, 'games');
 checkGalleryItems(pixel, 'pixel');
