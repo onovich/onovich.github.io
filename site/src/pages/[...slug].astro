@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Gallery from '../components/Gallery.astro';
+import PhotoColumns from '../components/PhotoColumns.astro';
+import siteData from '../content/site.json';
+
+const reservedPaths = new Set([
+  '/',
+  '/codes',
+  '/game',
+  '/pixel',
+  '/illustrator',
+  '/gif',
+  '/graphic',
+  '/photo',
+  '/photo_1',
+  '/photo_2',
+  '/photo_3',
+  '/photo_4',
+  '/photo_5',
+  '/photo_6',
+  '/photo_7',
+  '/photo_8',
+  '/poem',
+  '/sns',
+  '/links',
+  '/contact',
+  '/cms',
+]);
+
+export function getStaticPaths() {
+  return (siteData.pages || [])
+    .filter((page) => page.path && !reservedPaths.has(page.path))
+    .map((page) => ({
+      params: { slug: page.path.replace(/^\/|\/$/g, '') },
+      props: { page },
+    }));
+}
+
+const { page } = Astro.props;
+const pageClass = [
+  'page-cms-generated',
+  ['gif-page', 'gallery-page'].includes(page.templateId) ? 'page-gallery-tight' : '',
+  page.templateId === 'photo-index' || page.templateId === 'photo-detail' ? 'page-photo' : '',
+].filter(Boolean).join(' ');
+
+function galleryProps(section) {
+  const params = section.params || {};
+  const spacing = params.spacing || 'roomy';
+  const imageFit = params.imageFit || 'natural';
+  return {
+    dense: spacing === 'dense' || spacing === 'flush',
+    natural: imageFit === 'natural' || imageFit === 'contain',
+    wide: imageFit === 'cover-16-9',
+    columns: params.columns === 2 ? 2 : 3,
+    showCaptions: params.showCaptions !== false && params.captionMode !== 'none',
+    className: spacing === 'flush' ? 'thumbnails--flush' : '',
+  };
+}
+
+function sectionGap(section, index) {
+  if (index === 0) return '';
+  return section.params?.sectionGap === 'large' || section.params?.sectionGap === 'normal'
+    ? 'gallery-section-gap'
+    : '';
+}
+
+function sectionBody(section) {
+  return section.bodyHtml || section.items?.find((item) => item.bodyHtml)?.bodyHtml || '';
+}
+---
+
+<BaseLayout
+  title={`${page.title} - Onovich`}
+  activePage={page.activeNavPath || page.path}
+  backHref={page.frame?.backHref || '/'}
+  backLabel={page.frame?.backLabel || 'HOME'}
+  pageClass={pageClass}
+>
+  {(page.sections || []).map((section, index) => (
+    <>
+      {sectionGap(section, index) && <div class={sectionGap(section, index)} />}
+
+      {(section.type === 'gallery') && (
+        <Gallery items={section.items || []} {...galleryProps(section)} />
+      )}
+
+      {(section.type === 'gif-hero') && section.items?.[0]?.src && (
+        <div class="gif-hero">
+          <img
+            src={section.items[0].src}
+            alt={section.items[0].title || ''}
+            width={section.items[0].width}
+            height={section.items[0].height}
+            loading="eager"
+          />
+        </div>
+      )}
+
+      {(section.type === 'photo-index' || section.type === 'photo-detail') && (
+        <PhotoColumns
+          items={section.items || []}
+          showCaptions={section.params?.showCaptions !== false && section.params?.captionMode !== 'none'}
+        />
+      )}
+
+      {(section.type === 'rich-text' || section.type === 'contact') && (
+        <div class="cms-generated-rich" set:html={sectionBody(section)} />
+      )}
+
+      {section.type === 'profile' && (
+        <div class="cms-generated-profile">
+          {section.items?.[0]?.src && (
+            <img
+              class="home-avatar"
+              src={section.items[0].src}
+              alt={section.items[0].title || ''}
+              width={section.items[0].width}
+              height={section.items[0].height}
+            />
+          )}
+          <hr class="home-divider" />
+          <div class="home-bio" set:html={sectionBody(section) || section.items?.[0]?.bodyHtml || ''} />
+        </div>
+      )}
+
+      {section.type === 'links' && (
+        <div class="cms-generated-links">
+          {(section.items || []).map((item) => (
+            <a href={item.href || '#'} target="_blank" rel="noopener noreferrer">{item.title || item.id}</a>
+          ))}
+        </div>
+      )}
+    </>
+  ))}
+</BaseLayout>
