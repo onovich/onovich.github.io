@@ -9,6 +9,7 @@ import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publish
 import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
+import { isCmsRichTextCommand, normalizeCmsRichTextHref, runCmsRichTextCommand } from '../src/cms/richText.js';
 import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, formatCmsRestoreSummary, restoreCmsApplyBackup, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -497,12 +498,42 @@ function checkCmsApplyFileOps() {
   }
 }
 
+function checkCmsRichTextTools() {
+  const calls = [];
+  const editor = {
+    focused: 0,
+    focus() {
+      this.focused += 1;
+    },
+  };
+  const documentRef = {
+    execCommand(command, showUi, value) {
+      calls.push({ command, showUi, value });
+    },
+  };
+
+  assert(isCmsRichTextCommand('bold'), 'CMS rich text tools must allow known commands');
+  assert(!isCmsRichTextCommand('fontSize'), 'CMS rich text tools must reject unknown commands');
+  assert(normalizeCmsRichTextHref(' https://example.com ') === 'https://example.com', 'CMS rich text links must trim URLs');
+  assert(normalizeCmsRichTextHref('javascript:alert(1)') === '', 'CMS rich text links must reject javascript URLs');
+
+  assert(runCmsRichTextCommand({ command: 'bold', documentRef, editor }), 'CMS rich text command runner must execute valid commands');
+  assert(calls[0].command === 'bold' && calls[0].showUi === false, 'CMS rich text command runner must call execCommand consistently');
+  assert(runCmsRichTextCommand({ command: 'createLink', documentRef, editor, value: ' https://example.com ' }), 'CMS rich text command runner must create links');
+  assert(calls[1].command === 'createLink' && calls[1].value === 'https://example.com', 'CMS rich text command runner must normalize link values');
+  assert(!runCmsRichTextCommand({ command: 'createLink', documentRef, editor, value: 'data:text/html,hi' }), 'CMS rich text command runner must skip unsafe links');
+  assert(!runCmsRichTextCommand({ command: 'fontSize', documentRef, editor }), 'CMS rich text command runner must skip unknown commands');
+  assert(calls.length === 2, 'CMS rich text command runner must not execute rejected commands');
+  assert(editor.focused >= 3, 'CMS rich text command runner must return focus to the editor');
+}
+
 const presetsSource = read('src/cms/presets.ts');
 const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
 const cmsClientSource = read('src/cms/client.ts');
 const cmsPublishSource = read('src/cms/publishPackage.js');
 const cmsImportSource = read('src/cms/importPackage.js');
+const cmsRichTextSource = read('src/cms/richText.js');
 const cmsApplyPlanSource = read('src/cms/applyPackagePlan.js');
 const cmsAssetSource = read('src/cms/assetReferences.js');
 const dynamicRouteSource = read('src/pages/[...slug].astro');
@@ -538,8 +569,10 @@ assert(cmsClientSource.includes('renderCmsPreview'), 'CMS client must use the sh
 assert(cmsClientSource.includes('collectCmsDraftIssues'), 'CMS client must use the shared draft validator');
 assert(cmsClientSource.includes('createCmsPublishPackage'), 'CMS client must use the shared publish package builder');
 assert(cmsClientSource.includes('parseCmsPackageJson'), 'CMS client must use the shared import package parser');
+assert(cmsClientSource.includes('bindCmsRichTextToolbar'), 'CMS client must use the shared rich text toolbar binder');
 assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(cmsImportSource.includes('invalid cms package'), 'CMS import package must centralize invalid package handling');
+assert(cmsRichTextSource.includes('execCommand'), 'CMS rich text module must own rich text command execution');
 assert(cmsAssetSource.includes('/images/'), 'CMS asset validation must keep publishable image path rules centralized');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
@@ -577,6 +610,7 @@ checkCmsPublishPackage();
 checkCmsImportPackage();
 checkCmsApplyPlan();
 checkCmsApplyFileOps();
+checkCmsRichTextTools();
 checkGalleryItems(codes, 'codes');
 checkGalleryItems(games, 'games');
 checkGalleryItems(pixel, 'pixel');
