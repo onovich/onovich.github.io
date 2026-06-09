@@ -101,6 +101,31 @@ try {
     rawHasSchema: document.querySelector('#rawJson')?.value?.includes('schemaVersion') || false,
   }));
 
+  await page.click('[data-tab="text"]');
+  await page.waitForTimeout(100);
+  const afterPaste = await page.evaluate(() => {
+    const editor = document.querySelector('#richEditor');
+    editor.innerHTML = '';
+    editor.focus();
+    const event = new Event('paste', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'clipboardData', {
+      value: {
+        getData(type) {
+          if (type === 'text/html') {
+            return '<p onclick="alert(1)"><strong>Safe</strong><script>alert(1)</script><a href="javascript:alert(1)">Bad</a></p>';
+          }
+          if (type === 'text/plain') return 'Safe Bad';
+          return '';
+        },
+      },
+    });
+    editor.dispatchEvent(event);
+    return {
+      html: editor.innerHTML,
+      textPanelActive: document.querySelector('[data-panel="text"]')?.classList.contains('is-active') || false,
+    };
+  });
+
   assert(errors.length === 0, `Console/page errors: ${errors.join(' | ')}`);
   assert(before.title === 'Onovich CMS', 'Bad CMS title');
   assert(before.pageButtons >= 10, `Too few CMS pages: ${before.pageButtons}`);
@@ -108,8 +133,11 @@ try {
   assert(before.previewText.includes('Onovich'), 'Preview did not render Onovich content');
   assert(afterAdd.sectionRows > before.sectionRows && afterAdd.draftSections > before.sectionRows, 'Add section did not update section state');
   assert(afterRaw.rawPanelActive && afterRaw.rawHasSchema, 'Raw JSON tab did not render state');
+  assert(afterPaste.textPanelActive, 'Rich text tab did not activate');
+  assert(afterPaste.html.includes('<strong>Safe</strong>'), 'Rich text paste did not preserve allowed formatting');
+  assert(!afterPaste.html.includes('onclick') && !afterPaste.html.includes('script') && !afterPaste.html.includes('javascript:'), 'Rich text paste did not sanitize unsafe HTML');
 
-  console.log(JSON.stringify({ before, afterAdd, afterRaw, errors }, null, 2));
+  console.log(JSON.stringify({ before, afterAdd, afterRaw, afterPaste, errors }, null, 2));
 } finally {
   await browser.close();
   await closeServer();

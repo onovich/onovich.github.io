@@ -9,7 +9,7 @@ import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publish
 import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
-import { cmsRichTextSelectionBelongsToEditor, createCmsRichTextSelectionStore, isCmsRichTextCommand, normalizeCmsRichTextHref, runCmsRichTextCommand } from '../src/cms/richText.js';
+import { cmsRichTextSelectionBelongsToEditor, collectCmsRichTextHtmlIssues, createCmsRichTextSelectionStore, isCmsRichTextAllowedTag, isCmsRichTextCommand, normalizeCmsRichTextHref, pasteCmsRichText, runCmsRichTextCommand } from '../src/cms/richText.js';
 import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, formatCmsRestoreSummary, restoreCmsApplyBackup, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -219,10 +219,12 @@ function checkCmsDraftValidation() {
             id: 'bad-gallery',
             presetId: 'unknown-preset',
             params: { clickMode: 'internal-page' },
+            bodyHtml: '<p onclick="alert(1)">Bad</p>',
             items: [
               { id: 'missing-dimensions', src: '/images/codes/work.png' },
               { id: 'remote-image', src: 'https://example.com/work.png', width: 100, height: 100 },
               { id: 'missing-target', targetPageId: 'missing-page' },
+              { id: 'unsafe-rich-text', bodyHtml: '<script>alert(1)</script>', captionHtml: '<a href="javascript:alert(1)">Bad</a>' },
             ],
           }],
         },
@@ -238,6 +240,7 @@ function checkCmsDraftValidation() {
   assert(messages.includes('图片缺少宽高'), 'CMS draft validation must warn on image items without dimensions');
   assert(messages.includes('图片路径需要在 /images/ 下'), 'CMS draft validation must warn on unpublishable image paths');
   assert(messages.includes('目标页面不存在'), 'CMS draft validation must reject missing internal targets');
+  assert(messages.includes('富文本包含不安全 HTML'), 'CMS draft validation must reject unsafe rich text HTML');
   assert(issues.filter(issue => issue.level === 'error').length >= 4, 'CMS draft validation must classify blocking issues as errors');
 }
 
@@ -546,6 +549,11 @@ function checkCmsRichTextTools() {
   assert(!isCmsRichTextCommand('fontSize'), 'CMS rich text tools must reject unknown commands');
   assert(normalizeCmsRichTextHref(' https://example.com ') === 'https://example.com', 'CMS rich text links must trim URLs');
   assert(normalizeCmsRichTextHref('javascript:alert(1)') === '', 'CMS rich text links must reject javascript URLs');
+  assert(isCmsRichTextAllowedTag('strong') && !isCmsRichTextAllowedTag('script'), 'CMS rich text tools must expose an explicit allowed tag list');
+  assert(collectCmsRichTextHtmlIssues('<p>Hello</p>').length === 0, 'CMS rich text HTML guard must allow safe paragraphs');
+  assert(collectCmsRichTextHtmlIssues('<script>alert(1)</script>').length > 0, 'CMS rich text HTML guard must reject scripts');
+  assert(collectCmsRichTextHtmlIssues('<p onclick="alert(1)">Hi</p>').length > 0, 'CMS rich text HTML guard must reject inline handlers');
+  assert(collectCmsRichTextHtmlIssues('<a href="javascript:alert(1)">Bad</a>').length > 0, 'CMS rich text HTML guard must reject unsafe links');
   assert(cmsRichTextSelectionBelongsToEditor({ editor, selection }), 'CMS rich text selection guard must allow editor selections');
   selection.focusNode = outsideNode;
   assert(!cmsRichTextSelectionBelongsToEditor({ editor, selection }), 'CMS rich text selection guard must reject outside selections');
@@ -561,6 +569,8 @@ function checkCmsRichTextTools() {
   assert(!runCmsRichTextCommand({ command: 'fontSize', documentRef, editor, selectionStore }), 'CMS rich text command runner must skip unknown commands');
   assert(calls.length === 2, 'CMS rich text command runner must not execute rejected commands');
   assert(editor.focused >= 3, 'CMS rich text command runner must return focus to the editor');
+  assert(pasteCmsRichText({ documentRef, editor, selectionStore, text: '<b>Hello</b>\nWorld' }), 'CMS rich text paste helper must insert safe plain text');
+  assert(calls[2].command === 'insertHTML' && calls[2].value.includes('&lt;b&gt;Hello&lt;/b&gt;') && calls[2].value.includes('<p>World</p>'), 'CMS rich text paste helper must escape pasted plain text as paragraphs');
   selectionStore.clear();
   assert(!selectionStore.restore(), 'CMS rich text selection store must not restore after being cleared');
 }
@@ -612,6 +622,7 @@ assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a
 assert(cmsImportSource.includes('invalid cms package'), 'CMS import package must centralize invalid package handling');
 assert(cmsRichTextSource.includes('execCommand'), 'CMS rich text module must own rich text command execution');
 assert(cmsRichTextSource.includes('createCmsRichTextSelectionStore'), 'CMS rich text module must own editor selection persistence');
+assert(cmsRichTextSource.includes('sanitizeCmsRichTextHtml'), 'CMS rich text module must own paste HTML sanitization');
 assert(cmsAssetSource.includes('/images/'), 'CMS asset validation must keep publishable image path rules centralized');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
