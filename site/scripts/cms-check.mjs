@@ -6,6 +6,7 @@ import { renderCmsPreview } from '../src/cms/preview.js';
 import { collectCmsDraftIssues } from '../src/cms/draftValidation.js';
 import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publishPackage.js';
 import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
+import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
@@ -327,12 +328,100 @@ function checkCmsImportPackage() {
   assert(rejected, 'CMS import package parser must reject invalid packages');
 }
 
+function checkCmsApplyPlan() {
+  const payload = {
+    schemaVersion: 1,
+    presets: {
+      pageTemplates: [{ id: 'gallery-page' }],
+      sectionPresets: [{ id: 'gallery-roomy-3' }],
+    },
+    pages: [
+      {
+        id: 'codes',
+        title: 'Codes',
+        templateId: 'gallery-page',
+        sections: [{
+          id: 'codes-gallery',
+          type: 'gallery',
+          presetId: 'gallery-roomy-3',
+          items: [{
+            id: 'code-one',
+            title: 'Code One',
+            src: '/images/codes/code-one.png',
+            targetPageId: 'detail',
+            hidden: true,
+            bodyHtml: '<p>CMS only</p>',
+          }],
+        }],
+      },
+      {
+        id: 'gif',
+        title: 'Gif',
+        templateId: 'gif-page',
+        sections: [
+          { id: 'gif-hero', type: 'gif-hero', presetId: 'gif-hero', items: [{ id: 'hero', src: '/images/gifs/hero.gif' }] },
+          { id: 'gif-gallery', type: 'gallery', presetId: 'gallery-dense-3', items: [{ id: 'gif-grid', src: '/images/gifs/grid.gif' }] },
+        ],
+      },
+      {
+        id: 'photo',
+        title: 'Photo',
+        templateId: 'photo-index',
+        sections: [{
+          id: 'photo-index',
+          type: 'photo-index',
+          presetId: 'photo-index-columns',
+          items: [{ id: 'photo-1', href: '/photo_1', targetPageId: 'photo_1' }],
+        }],
+      },
+      {
+        id: 'photo_1',
+        title: 'Photo 1',
+        path: '/photo_1',
+        templateId: 'photo-detail',
+        frame: { backHref: '/photo', backLabel: 'PHOTO' },
+        sections: [{ id: 'photo-detail', type: 'photo-detail', presetId: 'photo-detail-columns', items: [{ id: 'image-1', year: '2026', src: '/images/photos/photo-01.jpg' }] }],
+      },
+      {
+        id: 'poem',
+        title: 'Poem',
+        templateId: 'rich-text',
+        sections: [{ id: 'body', type: 'rich-text', presetId: 'rich-text-poem', bodyHtml: '<p>Poem</p>', items: [] }],
+      },
+    ],
+  };
+  const targets = createCmsApplyPlan(payload);
+  const byPath = new Map(targets.map(target => [target.relativePath, target.content]));
+  const codes = JSON.parse(byPath.get('src/content/codes.json'));
+  const gifs = JSON.parse(byPath.get('src/content/gifs.json'));
+  const photoAlbumsOutput = JSON.parse(byPath.get('src/content/photoAlbums.json'));
+
+  assert(targets.length === 9, 'CMS apply plan must write the expected content files');
+  assert(codes.length === 1 && codes[0].id === 'code-one', 'CMS apply plan must publish gallery items');
+  assert(!('targetPageId' in codes[0]) && !('hidden' in codes[0]) && !('bodyHtml' in codes[0]), 'CMS apply plan must strip CMS-only item fields');
+  assert(gifs.length === 1 && gifs[0].id === 'gif-grid', 'CMS apply plan must publish GIF gallery items without GIF hero items');
+  assert(photoAlbumsOutput.index[0].id === 'photo-1', 'CMS apply plan must publish photo index items');
+  assert(photoAlbumsOutput.albums[0].slug === 'photo_1', 'CMS apply plan must publish photo detail albums');
+  assert(photoAlbumsOutput.albums[0].items[0].src === '/images/photos/photo-01.jpg', 'CMS apply plan must preserve photo detail items');
+  assert(byPath.get('src/content/poem.html') === '<p>Poem</p>\n', 'CMS apply plan must publish rich text body HTML');
+  assert(JSON.parse(byPath.get('src/content/site.json')).pages.length === payload.pages.length, 'CMS apply plan must write the full CMS package to site.json');
+
+  let rejected = false;
+  try {
+    createCmsApplyPlan({ ...payload, schemaVersion: 99 });
+  } catch {
+    rejected = true;
+  }
+  assert(rejected, 'CMS apply plan must reject unsupported schema versions');
+}
+
 const presetsSource = read('src/cms/presets.ts');
 const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
 const cmsClientSource = read('src/cms/client.ts');
 const cmsPublishSource = read('src/cms/publishPackage.js');
 const cmsImportSource = read('src/cms/importPackage.js');
+const cmsApplyPlanSource = read('src/cms/applyPackagePlan.js');
 const dynamicRouteSource = read('src/pages/[...slug].astro');
 const applyScriptSource = read('scripts/apply-cms-publish.mjs');
 const applySmokeSource = read('scripts/cms-apply-smoke.mjs');
@@ -370,7 +459,8 @@ assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route m
 assert(applyScriptSource.includes('CMS publish applied'), 'CMS apply script must write exported publish packages');
 assert(applyScriptSource.includes('--dry-run'), 'CMS apply script must support --dry-run');
 assert(applyScriptSource.includes('parseCmsPackageJson'), 'CMS apply script must use the shared import package parser');
-assert(applyScriptSource.includes("section.type === 'gallery'"), 'CMS apply script must publish gallery sections without GIF hero items');
+assert(applyScriptSource.includes('createCmsApplyPlan'), 'CMS apply script must use the shared apply plan builder');
+assert(cmsApplyPlanSource.includes("section.type === 'gallery'"), 'CMS apply plan must publish gallery sections without GIF hero items');
 assert(applySmokeSource.includes('CMS apply smoke passed'), 'CMS apply smoke must provide a reusable dry-run check');
 assert(packageSource.includes('"cms:apply:smoke"'), 'CMS apply smoke must be available as an npm script');
 
@@ -387,6 +477,7 @@ checkCmsPreviewRenderer();
 checkCmsDraftValidation();
 checkCmsPublishPackage();
 checkCmsImportPackage();
+checkCmsApplyPlan();
 checkGalleryItems(codes, 'codes');
 checkGalleryItems(games, 'games');
 checkGalleryItems(pixel, 'pixel');
