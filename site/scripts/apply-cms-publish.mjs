@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseCmsPackageJson } from '../src/cms/importPackage.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -12,7 +13,7 @@ if (!packagePath) {
   process.exit(1);
 }
 
-const payload = JSON.parse(fs.readFileSync(path.resolve(packagePath), 'utf8'));
+const payload = parseCmsPackageJson(fs.readFileSync(path.resolve(packagePath), 'utf8'));
 const pages = Array.isArray(payload.pages) ? payload.pages : [];
 const pageById = new Map(pages.map((page) => [page.id, page]));
 const targets = new Map();

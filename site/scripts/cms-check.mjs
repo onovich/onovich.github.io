@@ -5,6 +5,7 @@ import { clone, createCmsStateHelpers } from '../src/cms/state.js';
 import { renderCmsPreview } from '../src/cms/preview.js';
 import { collectCmsDraftIssues } from '../src/cms/draftValidation.js';
 import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publishPackage.js';
+import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
@@ -296,11 +297,42 @@ function checkCmsPublishPackage() {
   assert(payload.manifest.publishTargets.includes('site/public/images/uploads'), 'CMS publish package must target uploaded images');
 }
 
+function checkCmsImportPackage() {
+  const fallback = {
+    schemaVersion: 1,
+    presets: { pageTemplates: [], sectionPresets: [] },
+    pages: [{ id: 'fallback', sections: [] }],
+  };
+  const source = {
+    schemaVersion: 1,
+    presets: { pageTemplates: [], sectionPresets: [] },
+    pages: [{ id: 'home', sections: [] }],
+  };
+
+  const parsed = parseCmsPackageJson(JSON.stringify(source));
+  parsed.pages[0].id = 'changed';
+
+  assert(isCmsPackage(source), 'CMS import package must accept pages, presets, and section arrays');
+  assert(!isCmsPackage({ presets: {}, pages: [{ id: 'broken' }] }), 'CMS import package must reject pages without section arrays');
+  assert(source.pages[0].id === 'home', 'CMS import package parser must not share page objects with the source object');
+  assert(parseCmsPackageJsonOrFallback('', fallback).pages[0].id === 'fallback', 'CMS import package parser must fallback on empty source');
+  assert(parseCmsPackageJsonOrFallback('{bad json', fallback).pages[0].id === 'fallback', 'CMS import package parser must fallback on malformed JSON');
+
+  let rejected = false;
+  try {
+    parseCmsPackageJson(JSON.stringify({ presets: {}, pages: [{ id: 'broken' }] }));
+  } catch {
+    rejected = true;
+  }
+  assert(rejected, 'CMS import package parser must reject invalid packages');
+}
+
 const presetsSource = read('src/cms/presets.ts');
 const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
 const cmsClientSource = read('src/cms/client.ts');
 const cmsPublishSource = read('src/cms/publishPackage.js');
+const cmsImportSource = read('src/cms/importPackage.js');
 const dynamicRouteSource = read('src/pages/[...slug].astro');
 const applyScriptSource = read('scripts/apply-cms-publish.mjs');
 
@@ -328,11 +360,14 @@ assert(cmsClientSource.includes('createCmsStateHelpers'), 'CMS client must use s
 assert(cmsClientSource.includes('renderCmsPreview'), 'CMS client must use the shared preview renderer');
 assert(cmsClientSource.includes('collectCmsDraftIssues'), 'CMS client must use the shared draft validator');
 assert(cmsClientSource.includes('createCmsPublishPackage'), 'CMS client must use the shared publish package builder');
+assert(cmsClientSource.includes('parseCmsPackageJson'), 'CMS client must use the shared import package parser');
 assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a manifest');
+assert(cmsImportSource.includes('invalid cms package'), 'CMS import package must centralize invalid package handling');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
 assert(applyScriptSource.includes('CMS publish applied'), 'CMS apply script must write exported publish packages');
 assert(applyScriptSource.includes('--dry-run'), 'CMS apply script must support --dry-run');
+assert(applyScriptSource.includes('parseCmsPackageJson'), 'CMS apply script must use the shared import package parser');
 assert(applyScriptSource.includes("section.type === 'gallery'"), 'CMS apply script must publish gallery sections without GIF hero items');
 
 const codes = readJson('src/content/codes.json');
@@ -347,6 +382,7 @@ checkCmsStateHelpers();
 checkCmsPreviewRenderer();
 checkCmsDraftValidation();
 checkCmsPublishPackage();
+checkCmsImportPackage();
 checkGalleryItems(codes, 'codes');
 checkGalleryItems(games, 'games');
 checkGalleryItems(pixel, 'pixel');
