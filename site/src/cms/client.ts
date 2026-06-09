@@ -3,6 +3,7 @@ import { renderCmsPreview } from './preview.js';
 import { collectCmsDraftIssues } from './draftValidation.js';
 import { createCmsPublishPackage } from './publishPackage.js';
 import { parseCmsPackageJson, parseCmsPackageJsonOrFallback } from './importPackage.js';
+import { bindCmsRichTextToolbar } from './richText.js';
 
 (() => {
   const STORAGE_KEY = 'onovich:cms:draft';
@@ -673,20 +674,11 @@ import { parseCmsPackageJson, parseCmsPackageJsonOrFallback } from './importPack
       if (tab.dataset.tab === 'raw') renderRaw();
     });
   });
-  document.querySelectorAll('.cms-rich-toolbar [data-command]').forEach(button => {
-    button.addEventListener('click', () => {
-      document.execCommand(button.dataset.command, false);
-      els.richEditor.focus();
-    });
-  });
-  document.getElementById('makeLinkBtn').addEventListener('click', () => {
-    const href = prompt('链接 URL');
-    if (href) document.execCommand('createLink', false, href);
-    els.richEditor.focus();
-  });
-  document.getElementById('clearFormatBtn').addEventListener('click', () => {
-    document.execCommand('removeFormat', false);
-    els.richEditor.focus();
+  bindCmsRichTextToolbar({
+    root: document,
+    documentRef: document,
+    editor: els.richEditor,
+    promptForHref: () => prompt('链接 URL'),
   });
 
   render();
