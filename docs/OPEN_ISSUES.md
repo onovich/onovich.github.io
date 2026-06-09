@@ -77,9 +77,10 @@
 - 发布应用计划拆到 `site/src/cms/applyPackagePlan.js`，`apply-cms-publish.mjs` 已退回 CLI IO
 - 资产引用/路径分类拆到 `site/src/cms/assetReferences.js`，草稿校验会提前警告非 `/images/` 图片路径，`cms:apply` 会阻止远程/相对/缺失本地图片
 - `npm run cms:publish:smoke` 会从构建后的 `/cms` 页面抽真实 seed、生成发布包、跑 apply dry-run
+- `cms:apply` 正式写入前会备份覆盖目标到 `site/.cms-backups/`，并输出回滚提示；备份目录已 gitignored
 - `npm run cms:check` 已覆盖状态、预览、草稿校验、导出包、导入包、应用计划、资产路径和缺失资产阻止等纯逻辑；`npm run cms:smoke`、`npm run cms:apply:smoke`、`npm run cms:publish:smoke` 已可复用做网页 CMS/发布链路冒烟
 
-**下一步**：打磨富文本编辑体验；补资源上传落地；完善回滚提示。
+**下一步**：打磨富文本编辑体验；补资源上传落地；可继续补 `cms:restore` 便捷恢复命令。
 
 ---
 
