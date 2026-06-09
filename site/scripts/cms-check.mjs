@@ -115,6 +115,7 @@ assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route 
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
 assert(applyScriptSource.includes('CMS publish applied'), 'CMS apply script must write exported publish packages');
 assert(applyScriptSource.includes('--dry-run'), 'CMS apply script must support --dry-run');
+assert(applyScriptSource.includes("section.type === 'gallery'"), 'CMS apply script must publish gallery sections without GIF hero items');
 
 const codes = readJson('src/content/codes.json');
 const games = readJson('src/content/games.json');
