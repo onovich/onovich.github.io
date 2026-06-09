@@ -8,11 +8,17 @@ interface Props {
   title?: string;
   description?: string;
   activePage?: string;
+  backHref?: string;
+  backLabel?: string;
+  pageClass?: string;
 }
 const {
   title = 'Onovich',
   description = 'Onovich — creates games on a sofa.',
   activePage = '',
+  backHref = '/',
+  backLabel = 'HOME',
+  pageClass = '',
 } = Astro.props;
 
 const navLinks = [
@@ -35,7 +41,10 @@ const navMain   = navLinks.slice(0, 8);
 const navSocial = navLinks.slice(8);
 const isHome    = activePage === '/';
 const isContact = activePage === '/contact';
-const bodyClass = isHome ? 'page-home' : isContact ? 'page-contact' : 'page-inner';
+const bodyClass = [
+  isHome ? 'page-home' : isContact ? 'page-contact' : 'page-inner',
+  pageClass,
+].filter(Boolean).join(' ');
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -101,7 +110,7 @@ const bodyClass = isHome ? 'page-home' : isContact ? 'page-contact' : 'page-inne
             <div class="home-grid__col home-grid__col--main">
               {!isHome && !isContact && (
                 <div class="page-back">
-                  <a href="/">&lt; HOME</a>
+                  <a href={backHref}>&lt; {backLabel}</a>
                 </div>
               )}
               <slot />
