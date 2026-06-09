@@ -74,9 +74,11 @@
 - 草稿校验拆到 `site/src/cms/draftValidation.js`
 - 发布包构造拆到 `site/src/cms/publishPackage.js`
 - 导入包解析/校验拆到 `site/src/cms/importPackage.js`，浏览器导入、Raw JSON 和 `cms:apply` 共用
-- `npm run cms:check` 已覆盖状态、预览、草稿校验、导出包、导入包等纯逻辑；`npm run cms:smoke` 已可复用做网页 CMS 冒烟
+- 发布应用计划拆到 `site/src/cms/applyPackagePlan.js`，`apply-cms-publish.mjs` 已退回 CLI IO
+- 资产引用/路径分类拆到 `site/src/cms/assetReferences.js`，草稿校验会提前警告非 `/images/` 图片路径
+- `npm run cms:check` 已覆盖状态、预览、草稿校验、导出包、导入包、应用计划、资产路径等纯逻辑；`npm run cms:smoke` 和 `npm run cms:apply:smoke` 已可复用做网页 CMS/发布应用冒烟
 
-**下一步**：打磨富文本编辑体验；完善发布包应用脚本的真实场景 smoke；补资源上传/发布前资产校验/回滚提示等发布链路细节。
+**下一步**：打磨富文本编辑体验；补资源上传落地；完善发布前资产存在性校验、真实内容包 smoke 和回滚提示。
 
 ---
 

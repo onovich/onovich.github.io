@@ -120,12 +120,12 @@
 - ✅ Playwright 截图对照基础设施
 - ✅ 文档体系（HANDOFF / CSS_SPEC / RENDERING_REPORT / OPEN_ISSUES / LESSONS / WORKFLOW）
 - ✅ 旧 Electron admin 已移除；后续只沿站内 `/cms` 网页 CMS 演进
-- ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析
+- ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验
 
 ### 进行中 / 待做
 - 🟡 视觉残差消除（clone 字号略大、列对齐略偏；下一轮迭代用 `getComputedStyle` 对照清单逐项修）
 - 🟡 photos 02-07 缺图（用户说非关键路径，后期手动补）
-- 🟡 网页 CMS 继续演进：打磨富文本编辑、资源上传、发布前资产校验、发布包应用真实场景 smoke
+- 🟡 网页 CMS 继续演进：打磨富文本编辑、资源上传落地、发布前资产存在性校验、回滚提示
 
 ### 已知风险
 - Cargo runtime JS 注入的 inline style 单看 CSS 推不全
@@ -235,9 +235,9 @@ NODE
 
 ### P3：网页 CMS 继续演进
 - 保留 `site/src/pages/cms.astro` 作为唯一后台入口
-- 已拆出样式、状态管理、预览、草稿校验、导入/导出包纯逻辑
-- 下一步打磨富文本编辑、资源上传、发布前资产校验
-- 发布链路继续围绕 `site/scripts/apply-cms-publish.mjs`、`npm run cms:check` 和真实场景 smoke 完善
+- 已拆出样式、状态管理、预览、草稿校验、导入/导出包、发布应用计划和资产路径校验纯逻辑
+- 下一步打磨富文本编辑、资源上传落地、发布前资产存在性校验和回滚提示
+- 发布链路继续围绕 `site/scripts/apply-cms-publish.mjs`、`npm run cms:check`、`npm run cms:apply:smoke` 和真实内容包 smoke 完善
 
 ---
 
