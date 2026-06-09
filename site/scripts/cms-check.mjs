@@ -7,7 +7,7 @@ import { collectCmsDraftIssues } from '../src/cms/draftValidation.js';
 import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publishPackage.js';
 import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
-import { classifyCmsAssetSrc, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
+import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
@@ -260,6 +260,23 @@ function checkCmsAssetReferences() {
   assert(classifyCmsAssetSrc('/images/codes/local.png').publishable, 'CMS asset classifier must accept site images');
   assert(!classifyCmsAssetSrc('https://example.com/remote.png').publishable, 'CMS asset classifier must reject remote images before publish');
   assert(!classifyCmsAssetSrc('images/relative.png').publishable, 'CMS asset classifier must reject relative image paths before publish');
+  assert(cmsAssetPublicPath('/images/codes/local.png') === 'images/codes/local.png', 'CMS asset classifier must resolve public image paths');
+
+  const publishIssues = collectCmsAssetPublishIssues(state, {
+    assetExists: publicPath => publicPath === 'images/codes/local.png',
+  });
+  const issueCodes = publishIssues.map(issue => issue.code).join('\n');
+  assert(issueCodes.includes('asset-path-unpublishable'), 'CMS asset publish issues must reject unpublishable paths');
+  assert(!issueCodes.includes('asset-file-missing'), 'CMS asset publish issues must accept existing local files');
+
+  const missingIssues = collectCmsAssetPublishIssues({
+    pages: [{
+      id: 'codes',
+      title: 'Codes',
+      sections: [{ id: 'gallery', items: [{ id: 'missing', src: '/images/codes/missing.png' }] }],
+    }],
+  }, { assetExists: () => false });
+  assert(missingIssues.some(issue => issue.code === 'asset-file-missing'), 'CMS asset publish issues must reject missing local files');
 }
 
 function checkCmsPublishPackage() {
@@ -489,6 +506,7 @@ assert(applyScriptSource.includes('CMS publish applied'), 'CMS apply script must
 assert(applyScriptSource.includes('--dry-run'), 'CMS apply script must support --dry-run');
 assert(applyScriptSource.includes('parseCmsPackageJson'), 'CMS apply script must use the shared import package parser');
 assert(applyScriptSource.includes('createCmsApplyPlan'), 'CMS apply script must use the shared apply plan builder');
+assert(applyScriptSource.includes('collectCmsAssetPublishIssues'), 'CMS apply script must block unpublishable assets before writing');
 assert(cmsApplyPlanSource.includes("section.type === 'gallery'"), 'CMS apply plan must publish gallery sections without GIF hero items');
 assert(applySmokeSource.includes('CMS apply smoke passed'), 'CMS apply smoke must provide a reusable dry-run check');
 assert(packageSource.includes('"cms:apply:smoke"'), 'CMS apply smoke must be available as an npm script');
