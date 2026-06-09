@@ -9,7 +9,7 @@ import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publish
 import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
-import { isCmsRichTextCommand, normalizeCmsRichTextHref, runCmsRichTextCommand } from '../src/cms/richText.js';
+import { cmsRichTextSelectionBelongsToEditor, createCmsRichTextSelectionStore, isCmsRichTextCommand, normalizeCmsRichTextHref, runCmsRichTextCommand } from '../src/cms/richText.js';
 import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, formatCmsRestoreSummary, restoreCmsApplyBackup, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -500,31 +500,69 @@ function checkCmsApplyFileOps() {
 
 function checkCmsRichTextTools() {
   const calls = [];
+  const insideNode = { insideEditor: true };
+  const outsideNode = { insideEditor: false };
+  const clonedRange = { cloned: true };
+  const selection = {
+    anchorNode: insideNode,
+    focusNode: insideNode,
+    rangeCount: 1,
+    addedRange: null,
+    removed: 0,
+    getRangeAt() {
+      return {
+        cloneRange() {
+          return clonedRange;
+        },
+      };
+    },
+    removeAllRanges() {
+      this.removed += 1;
+    },
+    addRange(range) {
+      this.addedRange = range;
+    },
+  };
   const editor = {
     focused: 0,
     focus() {
       this.focused += 1;
     },
+    contains(node) {
+      return node?.insideEditor === true;
+    },
   };
   const documentRef = {
+    getSelection() {
+      return selection;
+    },
     execCommand(command, showUi, value) {
       calls.push({ command, showUi, value });
     },
   };
+  const selectionStore = createCmsRichTextSelectionStore({ documentRef, editor });
 
   assert(isCmsRichTextCommand('bold'), 'CMS rich text tools must allow known commands');
   assert(!isCmsRichTextCommand('fontSize'), 'CMS rich text tools must reject unknown commands');
   assert(normalizeCmsRichTextHref(' https://example.com ') === 'https://example.com', 'CMS rich text links must trim URLs');
   assert(normalizeCmsRichTextHref('javascript:alert(1)') === '', 'CMS rich text links must reject javascript URLs');
+  assert(cmsRichTextSelectionBelongsToEditor({ editor, selection }), 'CMS rich text selection guard must allow editor selections');
+  selection.focusNode = outsideNode;
+  assert(!cmsRichTextSelectionBelongsToEditor({ editor, selection }), 'CMS rich text selection guard must reject outside selections');
+  selection.focusNode = insideNode;
+  assert(selectionStore.capture(), 'CMS rich text selection store must capture editor selections');
 
-  assert(runCmsRichTextCommand({ command: 'bold', documentRef, editor }), 'CMS rich text command runner must execute valid commands');
+  assert(runCmsRichTextCommand({ command: 'bold', documentRef, editor, selectionStore }), 'CMS rich text command runner must execute valid commands');
   assert(calls[0].command === 'bold' && calls[0].showUi === false, 'CMS rich text command runner must call execCommand consistently');
-  assert(runCmsRichTextCommand({ command: 'createLink', documentRef, editor, value: ' https://example.com ' }), 'CMS rich text command runner must create links');
+  assert(selection.addedRange === clonedRange && selection.removed >= 1, 'CMS rich text command runner must restore the saved selection before executing');
+  assert(runCmsRichTextCommand({ command: 'createLink', documentRef, editor, selectionStore, value: ' https://example.com ' }), 'CMS rich text command runner must create links');
   assert(calls[1].command === 'createLink' && calls[1].value === 'https://example.com', 'CMS rich text command runner must normalize link values');
-  assert(!runCmsRichTextCommand({ command: 'createLink', documentRef, editor, value: 'data:text/html,hi' }), 'CMS rich text command runner must skip unsafe links');
-  assert(!runCmsRichTextCommand({ command: 'fontSize', documentRef, editor }), 'CMS rich text command runner must skip unknown commands');
+  assert(!runCmsRichTextCommand({ command: 'createLink', documentRef, editor, selectionStore, value: 'data:text/html,hi' }), 'CMS rich text command runner must skip unsafe links');
+  assert(!runCmsRichTextCommand({ command: 'fontSize', documentRef, editor, selectionStore }), 'CMS rich text command runner must skip unknown commands');
   assert(calls.length === 2, 'CMS rich text command runner must not execute rejected commands');
   assert(editor.focused >= 3, 'CMS rich text command runner must return focus to the editor');
+  selectionStore.clear();
+  assert(!selectionStore.restore(), 'CMS rich text selection store must not restore after being cleared');
 }
 
 const presetsSource = read('src/cms/presets.ts');
@@ -573,6 +611,7 @@ assert(cmsClientSource.includes('bindCmsRichTextToolbar'), 'CMS client must use 
 assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(cmsImportSource.includes('invalid cms package'), 'CMS import package must centralize invalid package handling');
 assert(cmsRichTextSource.includes('execCommand'), 'CMS rich text module must own rich text command execution');
+assert(cmsRichTextSource.includes('createCmsRichTextSelectionStore'), 'CMS rich text module must own editor selection persistence');
 assert(cmsAssetSource.includes('/images/'), 'CMS asset validation must keep publishable image path rules centralized');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
