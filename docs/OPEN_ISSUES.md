@@ -93,10 +93,11 @@
 - 富文本选区保存/恢复已收进 `site/src/cms/richText.js`，toolbar 点击前会捕获编辑器选区，执行命令前恢复，避免点击按钮或弹出链接输入后丢失 selection
 - 富文本粘贴清洗和允许标签白名单已收进 `site/src/cms/richText.js`；`draftValidation.js` 会阻止导入/Raw JSON 里的危险标签、事件处理器和危险链接
 - 富文本链接 UI 已替代浏览器 `prompt()`：`/cms` 里点击“链接”会打开内嵌 URL 面板，`cms:smoke` 会真实选择正文文本并验证 `<a href="https://example.com/smoke">link</a>`
+- 上传资源共享契约已拆到 `site/src/cms/uploadAssets.js`：统一生成 `/images/uploads/...` 路径、校验 MIME/宽高/data URL，并让发布包 manifest 携带 uploads 数量、目标目录和目标路径
 - `npm run cms:check` 已覆盖状态、预览、草稿校验、导出包、导入包、应用计划、资产路径和缺失资产阻止等纯逻辑；`npm run cms:smoke`、`npm run cms:apply:smoke`、`npm run cms:publish:smoke` 已可复用做网页 CMS/发布链路冒烟
 
 **下一步（拆成小节点）**：
-1. 资源上传落地：按 `docs/CMS_ARCHITECTURE_GUIDE.md` 的 Asset Model 读取图片宽高和 MIME，写进发布包的 `site/public/images/uploads/...`。
+1. 资源上传 UI：在 `/cms` 中选择图片后读取 MIME、宽高、size 和 data URL，生成 `state.assets` 与条目 `/images/uploads/...` 路径。
 2. 发布链路覆盖：让 `cms:apply` 统一校验/落盘上传资源，并把新资源路径纳入 `cms:apply:smoke` / `cms:publish:smoke`。
 
 ---

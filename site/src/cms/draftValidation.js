@@ -1,5 +1,6 @@
 import { classifyCmsAssetSrc } from './assetReferences.js';
 import { collectCmsRichTextHtmlIssues } from './richText.js';
+import { collectCmsUploadAssetIssues } from './uploadAssets.js';
 
 function pushRichTextIssues({ issues, html, page, section, item, field }) {
   for (const reason of collectCmsRichTextHtmlIssues(html)) {
@@ -28,6 +29,15 @@ export function collectCmsDraftIssues({
       sectionId: issue.sectionId,
       itemId: issue.itemId,
     })));
+  }
+  for (const asset of state.assets || []) {
+    for (const issue of collectCmsUploadAssetIssues(asset)) {
+      issues.push({
+        level: 'error',
+        message: issue.message,
+        code: issue.code,
+      });
+    }
   }
   for (const page of state.pages) {
     if (!page.path?.startsWith('/')) {

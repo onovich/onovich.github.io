@@ -10,6 +10,7 @@ import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
 import { cmsRichTextSelectionBelongsToEditor, collectCmsRichTextHtmlIssues, createCmsRichTextLinkPanel, createCmsRichTextSelectionStore, isCmsRichTextAllowedTag, isCmsRichTextCommand, normalizeCmsRichTextHref, pasteCmsRichText, runCmsRichTextCommand } from '../src/cms/richText.js';
+import { CMS_UPLOAD_TARGET_DIR, collectCmsUploadAssetIssues, createCmsUploadAsset, normalizeCmsUploadFileName } from '../src/cms/uploadAssets.js';
 import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, formatCmsRestoreSummary, restoreCmsApplyBackup, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -209,6 +210,9 @@ function checkCmsDraftValidation() {
     pageTemplateMap,
     sectionPresetMap,
     state: {
+      assets: [
+        { id: 'bad-upload', src: '/images/uploads/bad.bmp', targetPath: 'images/uploads/bad.bmp', mimeType: 'image/bmp' },
+      ],
       pages: [
         {
           id: 'broken',
@@ -241,6 +245,7 @@ function checkCmsDraftValidation() {
   assert(messages.includes('图片路径需要在 /images/ 下'), 'CMS draft validation must warn on unpublishable image paths');
   assert(messages.includes('目标页面不存在'), 'CMS draft validation must reject missing internal targets');
   assert(messages.includes('富文本包含不安全 HTML'), 'CMS draft validation must reject unsafe rich text HTML');
+  assert(messages.includes('不支持的图片类型'), 'CMS draft validation must reject unsupported upload asset types');
   assert(issues.filter(issue => issue.level === 'error').length >= 4, 'CMS draft validation must classify blocking issues as errors');
 }
 
@@ -285,10 +290,42 @@ function checkCmsAssetReferences() {
   assert(missingIssues.some(issue => issue.code === 'asset-file-missing'), 'CMS asset publish issues must reject missing local files');
 }
 
+function checkCmsUploadAssets() {
+  const asset = createCmsUploadAsset({
+    fileName: 'Hero Image.PNG',
+    mimeType: 'image/png',
+    width: 640,
+    height: 480,
+    size: 1024,
+    dataUrl: 'data:image/png;base64,AAAA',
+    alt: 'Hero',
+  });
+
+  assert(normalizeCmsUploadFileName('Hero Image.PNG') === 'hero-image', 'CMS upload assets must normalize file names');
+  assert(asset.id === 'hero-image', 'CMS upload assets must derive stable ids from file names');
+  assert(asset.src === '/images/uploads/hero-image.png', 'CMS upload assets must target the public uploads path');
+  assert(asset.targetPath === 'images/uploads/hero-image.png', 'CMS upload assets must expose a public target path');
+  assert(asset.source === 'upload', 'CMS upload assets must mark uploaded source');
+  assert(collectCmsUploadAssetIssues(asset).length === 0, 'CMS upload assets must accept valid image metadata');
+  assert(collectCmsUploadAssetIssues({ ...asset, mimeType: 'image/bmp' }).some(issue => issue.code === 'upload-asset-mime-unsupported'), 'CMS upload assets must reject unsupported MIME types');
+  assert(collectCmsUploadAssetIssues({ ...asset, width: 0 }).some(issue => issue.code === 'upload-asset-dimensions-missing'), 'CMS upload assets must require dimensions');
+  assert(collectCmsUploadAssetIssues({ ...asset, src: '/images/elsewhere/hero.png' }).some(issue => issue.code === 'upload-asset-path-invalid'), 'CMS upload assets must stay under /images/uploads/');
+  assert(collectCmsUploadAssetIssues({ ...asset, dataUrl: 'data:image/jpeg;base64,AAAA' }).some(issue => issue.code === 'upload-asset-data-invalid'), 'CMS upload assets must match data URLs to MIME type');
+}
+
 function checkCmsPublishPackage() {
+  const uploadAsset = createCmsUploadAsset({
+    fileName: 'Hero Image.PNG',
+    mimeType: 'image/png',
+    width: 640,
+    height: 480,
+    size: 1024,
+    dataUrl: 'data:image/png;base64,AAAA',
+  });
   const state = {
     schemaVersion: 2,
     site: { title: 'Onovich' },
+    assets: [uploadAsset],
     sidebar: [
       { id: 'codes', path: '/codes' },
       { id: 'game', path: '/game' },
@@ -340,6 +377,11 @@ function checkCmsPublishPackage() {
   assert(payload.manifest.sectionPresets.join(',') === 'gallery-roomy-3,rich-text-poem', 'CMS publish package must list known section presets');
   assert(payload.manifest.validation.errors === 1, 'CMS publish package must count blocking validation issues');
   assert(payload.manifest.validation.warnings === 2, 'CMS publish package must count non-blocking validation issues');
+  assert(payload.assets[0].targetPath === 'images/uploads/hero-image.png', 'CMS publish package must preserve upload asset targets');
+  assert(payload.manifest.uploads.count === 1, 'CMS publish package must count uploaded assets');
+  assert(payload.manifest.uploads.totalBytes === 1024, 'CMS publish package must sum uploaded asset bytes');
+  assert(payload.manifest.uploads.targetDir === CMS_UPLOAD_TARGET_DIR, 'CMS publish package must expose the upload target directory');
+  assert(payload.manifest.uploads.paths.includes('images/uploads/hero-image.png'), 'CMS publish package must list uploaded asset targets');
   assert(state.pages[0].title === 'Codes', 'CMS publish package must not share page objects with editor state');
   assert(issues[0].message === 'Blocking issue', 'CMS publish package must not share issue objects with editor state');
   assert(CMS_PUBLISH_TARGETS.length === 4, 'CMS publish target list must remain focused');
@@ -612,8 +654,10 @@ const cmsClientSource = read('src/cms/client.ts');
 const cmsPublishSource = read('src/cms/publishPackage.js');
 const cmsImportSource = read('src/cms/importPackage.js');
 const cmsRichTextSource = read('src/cms/richText.js');
+const cmsUploadSource = read('src/cms/uploadAssets.js');
 const cmsApplyPlanSource = read('src/cms/applyPackagePlan.js');
 const cmsAssetSource = read('src/cms/assetReferences.js');
+const cmsDraftValidationSource = read('src/cms/draftValidation.js');
 const dynamicRouteSource = read('src/pages/[...slug].astro');
 const applyScriptSource = read('scripts/apply-cms-publish.mjs');
 const applyFileOpsSource = read('scripts/cms-apply-file-ops.mjs');
@@ -656,6 +700,9 @@ assert(cmsRichTextSource.includes('execCommand'), 'CMS rich text module must own
 assert(cmsRichTextSource.includes('createCmsRichTextSelectionStore'), 'CMS rich text module must own editor selection persistence');
 assert(cmsRichTextSource.includes('sanitizeCmsRichTextHtml'), 'CMS rich text module must own paste HTML sanitization');
 assert(cmsRichTextSource.includes('createCmsRichTextLinkPanel'), 'CMS rich text module must own link panel behavior');
+assert(cmsUploadSource.includes('CMS_UPLOAD_TARGET_DIR'), 'CMS upload module must own upload target paths');
+assert(cmsDraftValidationSource.includes('collectCmsUploadAssetIssues'), 'CMS draft validation must use the shared upload asset validator');
+assert(cmsPublishSource.includes('collectCmsUploadAssets'), 'CMS publish package builder must use the shared upload asset collector');
 assert(cmsAssetSource.includes('/images/'), 'CMS asset validation must keep publishable image path rules centralized');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
@@ -689,6 +736,7 @@ checkCmsStateHelpers();
 checkCmsPreviewRenderer();
 checkCmsDraftValidation();
 checkCmsAssetReferences();
+checkCmsUploadAssets();
 checkCmsPublishPackage();
 checkCmsImportPackage();
 checkCmsApplyPlan();
