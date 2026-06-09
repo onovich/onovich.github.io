@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { clone, createCmsStateHelpers } from '../src/cms/state.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
@@ -85,6 +86,61 @@ function checkGalleryItems(items, context) {
   items.forEach((item, index) => checkImageItem(item, `${context}[${index}] ${item.id || ''}`));
 }
 
+function checkCmsStateHelpers() {
+  const templates = new Map([
+    ['gallery-page', { id: 'gallery-page', defaultFrame: { showLeftNav: true, showBackLink: true } }],
+    ['rich-text', { id: 'rich-text', defaultFrame: { showLeftNav: true, showBackLink: true } }],
+  ]);
+  const sectionPresets = new Map([
+    ['gallery-roomy-3', {
+      id: 'gallery-roomy-3',
+      label: 'Roomy 3-column gallery',
+      type: 'gallery',
+      defaults: { columns: 3, spacing: 'roomy', captionMode: 'html' },
+    }],
+    ['rich-text-poem', {
+      id: 'rich-text-poem',
+      label: 'Poem rich text',
+      type: 'rich-text',
+      defaults: { columns: 1, captionMode: 'none' },
+    }],
+  ]);
+  const state = {
+    nav: { title: 'Onovich' },
+    pages: [{
+      id: 'home',
+      title: 'Home',
+      path: '/',
+      templateId: 'gallery-page',
+      sidebar: true,
+      navGroupId: 'main',
+      sections: [],
+    }],
+  };
+  const helpers = createCmsStateHelpers({
+    getState: () => state,
+    getActivePage: () => state.pages[0],
+    pageTemplateMap: templates,
+    sectionPresetMap: sectionPresets,
+  });
+
+  const original = { nested: [{ value: 1 }] };
+  const copied = clone(original);
+  copied.nested[0].value = 2;
+  assert(original.nested[0].value === 1, 'CMS state clone must deep-copy plain data');
+
+  helpers.ensurePage(state.pages[0]);
+  assert(state.pages[0].sections.length === 1, 'CMS state helper must add a default section for empty pages');
+  assert(state.pages[0].sections[0].presetId === 'gallery-roomy-3', 'CMS state helper must use the template default section preset');
+  assert(state.pages[0].items.length === 1, 'CMS state helper must sync page.items from section items');
+
+  const extraSection = helpers.createSectionFromPreset('gallery-roomy-3');
+  assert(extraSection.id === 'gallery-roomy-3-2', 'CMS state helper must generate unique section ids');
+
+  helpers.syncNav();
+  assert(state.sidebar.length === 1 && state.sidebar[0].path === '/', 'CMS state helper must sync visible sidebar nav items');
+}
+
 const presetsSource = read('src/cms/presets.ts');
 const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
@@ -112,6 +168,7 @@ assert(cmsSource.includes('sectionPresetInput'), 'CMS UI must expose section pre
 assert(cmsSource.includes('cms-validation-seed'), 'CMS UI must expose validation seed data');
 assert(cmsSource.includes("import '../cms/client'"), 'CMS page must load the browser client module');
 assert(cmsClientSource.includes('activeSectionId'), 'CMS UI must keep section-level editing state');
+assert(cmsClientSource.includes('createCmsStateHelpers'), 'CMS client must use shared state helpers');
 assert(cmsClientSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
@@ -127,6 +184,7 @@ const gifs = readJson('src/content/gifs.json');
 const graphics = readJson('src/content/graphics.json');
 const photoAlbums = readJson('src/content/photoAlbums.json');
 
+checkCmsStateHelpers();
 checkGalleryItems(codes, 'codes');
 checkGalleryItems(games, 'games');
 checkGalleryItems(pixel, 'pixel');
