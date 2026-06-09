@@ -8,7 +8,7 @@
 
 ## 0. 一句话项目目标
 
-把 `https://onovich.com`（用户的 Cargo 个人作品集）**像素级**复刻到一个独立的 Astro 静态站点，部署到 GitHub Pages 的 `https://blog.onovich.com`，并配套一个 Electron 本地后台用于编辑内容 + 一键 git push 发布。**主域名 `onovich.com` 仍由 Cargo 提供服务，不要动。**
+把 `https://onovich.com`（用户的 Cargo 个人作品集）**像素级**复刻到一个独立的 Astro 静态站点，部署到 GitHub Pages 的 `https://blog.onovich.com`，并以站内 `/cms` 网页 CMS 作为内容编辑与发布演进主线。**主域名 `onovich.com` 仍由 Cargo 提供服务，不要动。**
 
 ---
 
@@ -59,7 +59,6 @@
 │       ├── styles/global.css           ← 全局样式
 │       ├── content/*.json              ← 内容数据（codes/games/pixel/...）
 │       └── pages/*.astro               ← 12 个路由页面
-├── admin/                       ← Electron 发布后台（已写未端到端验证）
 ├── diff-screenshots/            ← 截图对照输出（gitignored）
 └── .github/workflows/deploy.yml ← Node 22, build site/, deploy to GitHub Pages
 ```
@@ -120,11 +119,12 @@
 - ✅ root font-size 设为 12.96px 与原站一致
 - ✅ Playwright 截图对照基础设施
 - ✅ 文档体系（HANDOFF / CSS_SPEC / RENDERING_REPORT / OPEN_ISSUES / LESSONS / WORKFLOW）
+- ✅ 旧 Electron admin 已移除；后续只沿站内 `/cms` 网页 CMS 演进
 
 ### 进行中 / 待做
 - 🟡 视觉残差消除（clone 字号略大、列对齐略偏；下一轮迭代用 `getComputedStyle` 对照清单逐项修）
 - 🟡 photos 02-07 缺图（用户说非关键路径，后期手动补）
-- 🟡 Electron admin 端到端验证（代码写完，未跑通完整流程）
+- 🟡 网页 CMS 继续演进：拆分 `site/src/pages/cms.astro` 单体、完善预览/导出/发布链路
 
 ### 已知风险
 - Cargo runtime JS 注入的 inline style 单看 CSS 推不全
@@ -232,8 +232,10 @@ NODE
 - 按 `docs/WORKFLOW.md` E 节方法，从 `_reference-site/photo.html` 提取 freight.cargo.site URL
 - curl 下载到 `site/public/images/photos/`
 
-### P3：Electron admin 端到端验证
-- 启动 admin → 编辑 JSON → 导入图片 → publish → 看 Actions 触发
+### P3：网页 CMS 继续演进
+- 保留 `site/src/pages/cms.astro` 作为唯一后台入口
+- 优先拆分当前单体页面：样式、状态管理、预览、导入导出、富文本编辑
+- 发布链路继续围绕 `site/scripts/apply-cms-publish.mjs` 与 `npm run cms:check` 完善
 
 ---
 
