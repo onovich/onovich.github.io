@@ -103,15 +103,3 @@ const galleryClass = [
     ))}
   </div>
 </div>
-
-<script>
-  import PhotoSwipeLightbox from 'photoswipe/lightbox';
-  import 'photoswipe/style.css';
-
-  const lightbox = new PhotoSwipeLightbox({
-    gallery: '.pswp-gallery',
-    children: '.thumb_image_link',
-    pswpModule: () => import('photoswipe'),
-  });
-  lightbox.init();
-</script>
