@@ -1311,22 +1311,46 @@ const validationJson = JSON.stringify(seedIssues).replace(/</g, '\\u003c');
           els.rawJson.value = JSON.stringify(state, null, 2);
         }
 
-        function renderValidation() {
-          const warnings = [];
-          if (seedIssues.length) warnings.push(...seedIssues.map(issue => `${issue.level}: ${issue.message}`));
+        function collectDraftIssues() {
+          const issues = [];
+          if (seedIssues.length) {
+            issues.push(...seedIssues.map(issue => ({
+              level: issue.level || 'warning',
+              message: issue.message,
+              pageId: issue.pageId,
+              sectionId: issue.sectionId,
+              itemId: issue.itemId,
+            })));
+          }
           for (const page of state.pages) {
-            if (!page.path?.startsWith('/')) warnings.push(`${page.title}: 路径需要以 / 开头`);
+            if (!page.path?.startsWith('/')) {
+              issues.push({ level: 'error', message: `${page.title}: 路径需要以 / 开头`, pageId: page.id });
+            }
+            if (!pageTemplateMap.has(page.templateId)) {
+              issues.push({ level: 'error', message: `${page.title}: 未知页面模板 ${page.templateId}`, pageId: page.id });
+            }
             for (const section of page.sections || []) {
-              if (!sectionPresetMap.has(section.presetId)) warnings.push(`${page.title}: 未知分段预设 ${section.presetId}`);
+              if (!sectionPresetMap.has(section.presetId)) {
+                issues.push({ level: 'error', message: `${page.title}: 未知分段预设 ${section.presetId}`, pageId: page.id, sectionId: section.id });
+              }
               for (const item of section.items || []) {
-                if (item.src && (!item.width || !item.height)) warnings.push(`${page.title}/${section.id}/${item.id}: 图片缺少宽高`);
+                if (item.src && (!item.width || !item.height)) {
+                  issues.push({ level: 'warning', message: `${page.title}/${section.id}/${item.id}: 图片缺少宽高`, pageId: page.id, sectionId: section.id, itemId: item.id });
+                }
                 if (section.params?.clickMode === 'internal-page' && item.targetPageId && !state.pages.some(target => target.id === item.targetPageId)) {
-                  warnings.push(`${page.title}/${item.id}: 目标页面不存在`);
+                  issues.push({ level: 'error', message: `${page.title}/${item.id}: 目标页面不存在`, pageId: page.id, sectionId: section.id, itemId: item.id });
                 }
               }
             }
           }
-          els.validationList.innerHTML = warnings.slice(0, 5).map(text => `<div class="cms-issue">${escapeHtml(text)}</div>`).join('');
+          return issues;
+        }
+
+        function renderValidation() {
+          const issues = collectDraftIssues();
+          els.validationList.innerHTML = issues.slice(0, 5).map(issue =>
+            `<div class="cms-issue">${escapeHtml(issue.level)}: ${escapeHtml(issue.message)}</div>`
+          ).join('');
         }
 
         function renderPreview(page) {
@@ -1659,11 +1683,33 @@ const validationJson = JSON.stringify(seedIssues).replace(/</g, '\\u003c');
         }
 
         function exportPackage() {
+          const issues = collectDraftIssues();
+          const errors = issues.filter(issue => issue.level === 'error');
+          if (errors.length && !confirm(`当前有 ${errors.length} 个错误，仍要导出吗？`)) return;
+          const exportedAt = new Date().toISOString();
           const payload = {
             ...state,
-            exportedAt: new Date().toISOString(),
-            publishTarget: 'site/src/content',
-            notes: 'Generated from Onovich CMS template/section model.',
+            exportedAt,
+            manifest: {
+              name: 'onovich-cms-publish',
+              exportedAt,
+              schemaVersion: state.schemaVersion,
+              pageCount: state.pages.length,
+              visibleNavCount: state.sidebar.length,
+              templates: Array.from(new Set(state.pages.map(page => page.templateId))),
+              sectionPresets: Array.from(new Set(state.pages.flatMap(page => (page.sections || []).map(section => section.presetId)))),
+              validation: {
+                errors: errors.length,
+                warnings: issues.filter(issue => issue.level !== 'error').length,
+                issues,
+              },
+              publishTargets: [
+                'site/src/content/site.json',
+                'site/src/content/*.json',
+                'site/src/content/poem.html',
+                'site/public/images/uploads',
+              ],
+            },
           };
           const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
@@ -1695,9 +1741,15 @@ const validationJson = JSON.stringify(seedIssues).replace(/</g, '\\u003c');
         }
 
         function publishPreview() {
+          const issues = collectDraftIssues();
+          const errors = issues.filter(issue => issue.level === 'error');
+          if (errors.length) {
+            setStatus(`发布预览已阻止：${errors.length} 个错误`);
+            return;
+          }
           saveDraft();
           localStorage.setItem(PUBLISHED_KEY, JSON.stringify(state));
-          setStatus('已发布到本地预览');
+          setStatus(`已发布到本地预览，${issues.length} 个提醒`);
         }
 
         [

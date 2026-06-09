@@ -41,7 +41,12 @@ git -c safe.directory=<PROJECT_ROOT> status --short --branch
 
 Run these before commit or push, in order:
 
-No validation commands were configured. Ask before committing or pushing if validation matters for this repo.
+```
+powershell
+npm --prefix site run build
+```
+
+`site` build runs `prebuild -> npm run cms:check` first, so commits are blocked if the CMS template/preset/content invariants drift.
 ## Staging Policy
 
 ask each time
