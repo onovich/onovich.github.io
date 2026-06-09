@@ -414,6 +414,48 @@ body.cms-page textarea {
   gap: 6px;
 }
 
+.cms-rich-link-panel {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 10px;
+  padding: 10px;
+  border: 1px solid var(--cms-line);
+  border-radius: var(--cms-radius);
+  background: var(--cms-soft);
+}
+
+.cms-rich-link-panel[hidden] {
+  display: none;
+}
+
+.cms-rich-link-panel label {
+  display: grid;
+  gap: 5px;
+  color: var(--cms-muted);
+  font-size: 12px;
+}
+
+.cms-rich-link-panel input {
+  width: 100%;
+  border: 1px solid var(--cms-line);
+  border-radius: var(--cms-radius);
+  background: #fff;
+  color: var(--cms-ink);
+  padding: 8px 9px;
+  outline: 0;
+}
+
+.cms-rich-link-panel input:focus {
+  border-color: var(--cms-accent);
+  box-shadow: 0 0 0 2px rgba(47, 118, 111, 0.12);
+}
+
+.cms-rich-link-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .cms-rich-editor {
   min-height: 430px;
   overflow: auto;

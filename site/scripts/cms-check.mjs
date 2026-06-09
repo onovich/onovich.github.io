@@ -9,7 +9,7 @@ import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publish
 import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
-import { cmsRichTextSelectionBelongsToEditor, collectCmsRichTextHtmlIssues, createCmsRichTextSelectionStore, isCmsRichTextAllowedTag, isCmsRichTextCommand, normalizeCmsRichTextHref, pasteCmsRichText, runCmsRichTextCommand } from '../src/cms/richText.js';
+import { cmsRichTextSelectionBelongsToEditor, collectCmsRichTextHtmlIssues, createCmsRichTextLinkPanel, createCmsRichTextSelectionStore, isCmsRichTextAllowedTag, isCmsRichTextCommand, normalizeCmsRichTextHref, pasteCmsRichText, runCmsRichTextCommand } from '../src/cms/richText.js';
 import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, formatCmsRestoreSummary, restoreCmsApplyBackup, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -571,6 +571,36 @@ function checkCmsRichTextTools() {
   assert(editor.focused >= 3, 'CMS rich text command runner must return focus to the editor');
   assert(pasteCmsRichText({ documentRef, editor, selectionStore, text: '<b>Hello</b>\nWorld' }), 'CMS rich text paste helper must insert safe plain text');
   assert(calls[2].command === 'insertHTML' && calls[2].value.includes('&lt;b&gt;Hello&lt;/b&gt;') && calls[2].value.includes('<p>World</p>'), 'CMS rich text paste helper must escape pasted plain text as paragraphs');
+
+  const linkPanelElement = { hidden: true };
+  const linkInput = {
+    value: '',
+    focused: 0,
+    addEventListener() {},
+    focus() {
+      this.focused += 1;
+    },
+  };
+  const linkButton = { addEventListener() {} };
+  const linkPanel = createCmsRichTextLinkPanel({
+    root: {
+      getElementById(id) {
+        return {
+          richLinkPanel: linkPanelElement,
+          richLinkInput: linkInput,
+          applyRichLinkBtn: linkButton,
+          cancelRichLinkBtn: linkButton,
+        }[id];
+      },
+    },
+    documentRef,
+    editor,
+    selectionStore,
+  });
+  assert(linkPanel.open() && linkPanelElement.hidden === false, 'CMS rich text link panel must open without browser prompts');
+  linkInput.value = ' https://example.com/from-panel ';
+  assert(linkPanel.apply(), 'CMS rich text link panel must apply valid links');
+  assert(linkPanelElement.hidden && calls[3].command === 'createLink' && calls[3].value === 'https://example.com/from-panel', 'CMS rich text link panel must normalize and execute links');
   selectionStore.clear();
   assert(!selectionStore.restore(), 'CMS rich text selection store must not restore after being cleared');
 }
@@ -610,6 +640,7 @@ for (const page of expectedPages) {
 
 assert(cmsSource.includes('sectionPresetInput'), 'CMS UI must expose section preset controls');
 assert(cmsSource.includes('cms-validation-seed'), 'CMS UI must expose validation seed data');
+assert(cmsSource.includes('richLinkInput'), 'CMS UI must expose the rich text link panel');
 assert(cmsSource.includes("import '../cms/client'"), 'CMS page must load the browser client module');
 assert(cmsClientSource.includes('activeSectionId'), 'CMS UI must keep section-level editing state');
 assert(cmsClientSource.includes('createCmsStateHelpers'), 'CMS client must use shared state helpers');
@@ -618,11 +649,13 @@ assert(cmsClientSource.includes('collectCmsDraftIssues'), 'CMS client must use t
 assert(cmsClientSource.includes('createCmsPublishPackage'), 'CMS client must use the shared publish package builder');
 assert(cmsClientSource.includes('parseCmsPackageJson'), 'CMS client must use the shared import package parser');
 assert(cmsClientSource.includes('bindCmsRichTextToolbar'), 'CMS client must use the shared rich text toolbar binder');
+assert(!cmsClientSource.includes("prompt('链接 URL')"), 'CMS client must not use browser prompt for rich text links');
 assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(cmsImportSource.includes('invalid cms package'), 'CMS import package must centralize invalid package handling');
 assert(cmsRichTextSource.includes('execCommand'), 'CMS rich text module must own rich text command execution');
 assert(cmsRichTextSource.includes('createCmsRichTextSelectionStore'), 'CMS rich text module must own editor selection persistence');
 assert(cmsRichTextSource.includes('sanitizeCmsRichTextHtml'), 'CMS rich text module must own paste HTML sanitization');
+assert(cmsRichTextSource.includes('createCmsRichTextLinkPanel'), 'CMS rich text module must own link panel behavior');
 assert(cmsAssetSource.includes('/images/'), 'CMS asset validation must keep publishable image path rules centralized');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');

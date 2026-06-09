@@ -251,6 +251,13 @@ const validationJson = JSON.stringify(seedIssues).replace(/</g, '\\u003c');
                 <button id="makeLinkBtn" type="button">链接</button>
                 <button id="clearFormatBtn" type="button">清除</button>
               </div>
+              <div id="richLinkPanel" class="cms-rich-link-panel" hidden>
+                <label>链接 URL<input id="richLinkInput" type="url" inputmode="url" placeholder="https://" /></label>
+                <div class="cms-rich-link-actions">
+                  <button class="cms-button cms-button--primary" id="applyRichLinkBtn" type="button">应用链接</button>
+                  <button class="cms-button" id="cancelRichLinkBtn" type="button">取消</button>
+                </div>
+              </div>
               <div id="richEditor" class="cms-rich-editor" contenteditable="true" spellcheck="false"></div>
               <button class="cms-button cms-button--primary" id="saveBodyBtn" type="button">保存正文</button>
             </div>

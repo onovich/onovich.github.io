@@ -678,7 +678,6 @@ import { bindCmsRichTextToolbar } from './richText.js';
     root: document,
     documentRef: document,
     editor: els.richEditor,
-    promptForHref: () => prompt('链接 URL'),
   });
 
   render();
