@@ -90,7 +90,8 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：`visual:measure` 已新增 `mainAnchor`。旧 `main.y` 是右栏列盒位置，不再单独作为视觉残差依据；桌面 codes/pixel 的 `< HOME` anchor delta 约 `-4.51px`，gallery 顶部 `thumbnails.y` delta 约 `-10.96px`。
 - 2026-06-10 5 断点复核：codes `mainAnchor.y` delta 约 mobile `-33.32px`、tablet `-25.54px`、laptop `-18.56px`、desktop `-4.51px`、wide `-27.44px`。
 - 2026-06-10 更新：wide 断点 root font-size 上限已调到原站实测 `15.55px`；desktop 仍为 `12.96px`，wide `html.fontSize` / `bodycopy.fontSize` delta 均为 0，wide `mainAnchor.y` 从约 `-27.44px` 收到 `-8.24px`。
-- 残差：内页 gallery 顶部、main width 仍需后续节点继续收。
+- 2026-06-10 更新：codes/pixel 已标记为 `page-gallery-standard`，并按 5 断点校准右栏顶部与 `< HOME` 到 gallery 的间距；标准 gallery 的 `mainAnchor.y` / `thumbnails.y` delta 在 5 断点均约为 0。
+- 残差：tight gallery 顶部、game mobile/tablet 列数、pixel 缩略图尺寸/宽度、pixel mobile 横向溢出、main width 仍需后续节点继续收。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid

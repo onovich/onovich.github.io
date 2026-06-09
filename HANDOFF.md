@@ -117,7 +117,7 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 ## 推荐继续工作的步骤
 
-1. **视觉回归**：本地 build 后跑 `visual:check`、`visual:measure` 和 `visual:diff`，再处理列对齐和断点残差。`visual:measure` 已新增 `mainAnchor`；优先看 `mainAnchor.y` / `thumbnails.y`，不要再把旧 `main.y` 列盒位置当成首个内容起点。Codes caption 已切到 Cargo 风格 12px HTML caption，bodycopy 行高已同步为原站 `16px`。
+1. **视觉回归**：本地 build 后跑 `visual:check`、`visual:measure` 和 `visual:diff`，再处理列对齐和断点残差。`visual:measure` 已新增 `mainAnchor`；优先看 `mainAnchor.y` / `thumbnails.y`，不要再把旧 `main.y` 列盒位置当成首个内容起点。Codes caption、bodycopy 行高、wide root font-size、codes/pixel 标准 gallery 顶部已收敛。
 
 2. **gallery 断点列数**：用 Playwright 实测原站 375 / 768 / 1024 / 1440 / 1920 每个断点列数，写入 CSS 媒体查询。
 

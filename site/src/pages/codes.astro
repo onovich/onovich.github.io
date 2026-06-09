@@ -3,6 +3,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Gallery from '../components/Gallery.astro';
 import items from '../content/codes.json';
 ---
-<BaseLayout title="CODES — Onovich" activePage="/codes">
+<BaseLayout title="CODES — Onovich" activePage="/codes" pageClass="page-gallery-standard">
   <Gallery items={items} wide={true} captionMode="title-desc-links" />
 </BaseLayout>
