@@ -58,7 +58,7 @@
 **TaskList 当前任务**（按优先级）：
 
 - P0：执行并扩展视觉验证门禁
-- P1：消除整体缩放、行高、列对齐残差，实测 gallery 断点列数
+- P1：消除整体缩放、列对齐残差，实测 gallery 断点列数
 - P2：迁移 photos 02-07 缺失图片（用户说后期手动补）
 - P3：继续扩展发布/恢复校验覆盖
 
@@ -117,7 +117,7 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 ## 推荐继续工作的步骤
 
-1. **视觉回归**：本地 build 后跑 `visual:check`、`visual:measure` 和 `visual:diff`，再处理行高、列对齐和断点残差。Codes caption 已切到 Cargo 风格 12px HTML caption。
+1. **视觉回归**：本地 build 后跑 `visual:check`、`visual:measure` 和 `visual:diff`，再处理列对齐和断点残差。Codes caption 已切到 Cargo 风格 12px HTML caption，bodycopy 行高已同步为原站 `16px`。
 
 2. **gallery 断点列数**：用 Playwright 实测原站 375 / 768 / 1024 / 1440 / 1920 每个断点列数，写入 CSS 媒体查询。
 
