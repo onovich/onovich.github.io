@@ -15,7 +15,7 @@ function escapeAttr(value) {
 }
 
 export function renderCmsPreview({ page, nav, site, assets = [] }) {
-  const topMap = { home: 7.3, inner: 5.5, tight: 5.5, photo: 4.7, contact: 7.3 };
+  const topMap = { home: 7.3, inner: 5.5, tight: 5.85, photo: 4.7, contact: 7.3 };
   const mainLinks = nav?.groups?.find(group => group.id === 'main')?.items.filter(item => item.visible) || [];
   const socialLinks = nav?.groups?.find(group => group.id === 'social')?.items.filter(item => item.visible) || [];
   const top = topMap[page.frame?.topSpacingPreset] ?? 5.5;
