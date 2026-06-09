@@ -3,8 +3,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseCmsPackageJson } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
+import { collectCmsAssetPublishIssues } from '../src/cms/assetReferences.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const publicDir = path.join(root, 'public');
 const args = process.argv.slice(2);
 const packagePath = args.find((arg) => !arg.startsWith('--'));
 const dryRun = args.includes('--dry-run');
@@ -15,6 +17,12 @@ if (!packagePath) {
 }
 
 const payload = parseCmsPackageJson(fs.readFileSync(path.resolve(packagePath), 'utf8'));
+const assetIssues = collectCmsAssetPublishIssues(payload, {
+  assetExists: publicPath => fs.existsSync(path.join(publicDir, publicPath)),
+});
+if (assetIssues.length) {
+  throw new Error(`CMS package has unpublishable assets:\n${assetIssues.map(issue => `- ${issue.message}`).join('\n')}`);
+}
 const targets = createCmsApplyPlan(payload);
 
 if (dryRun) {

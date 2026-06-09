@@ -35,7 +35,7 @@ const payload = {
         id: 'codes-gallery',
         type: 'gallery',
         presetId: 'gallery-roomy-3',
-        items: [],
+        items: [{ id: 'hero', src: '/images/gifs/hero.gif', width: 750, height: 553 }],
       }],
     },
     { id: 'photo', title: 'Photo', templateId: 'photo-index', sections: [] },
