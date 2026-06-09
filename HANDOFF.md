@@ -54,7 +54,7 @@
 | 内容数据（codes/games/pixel/illustrations/gifs/graphics/sns/poems） | ✅ 已填 |
 | 图片迁移 | ⚠️ photos 02-07 仍缺，需从原站抓 |
 | **CSS / 布局** | ⚠️ 已按 Cargo 左侧导航方向重写，仍需线上/截图回归确认和视觉残差修正 |
-| 网页 CMS | ✅ 保留为唯一后台演进方向，旧 Electron admin 已移除；已拆出样式、状态、预览、校验、导入/导出包、发布应用计划和资产路径模块 |
+| 网页 CMS | ✅ 保留为唯一后台演进方向，旧 Electron admin 已移除；已拆出样式、状态、预览、校验、导入/导出包、发布应用计划、资产路径和缺失资产阻止模块 |
 
 **TaskList 当前任务**（按优先级）：
 
@@ -62,7 +62,7 @@
 - P0：建立并执行视觉验证门禁
 - P1：消除整体缩放、字号、行高、列对齐残差，实测 gallery 断点列数
 - P2：迁移 photos 02-07 缺失图片（用户说后期手动补）
-- P2/P3：CMS 富文本编辑、资源上传落地、发布前资产存在性校验、回滚提示、真实内容包 smoke
+- P2/P3：CMS 富文本编辑、资源上传落地、回滚提示、真实内容包 smoke
 
 ---
 
@@ -125,7 +125,7 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 3. **photos 02-07**：从 `_reference-site/photo.html` 提取 `freight.cargo.site` 的真实图片 URL，curl 下载。
 
-4. **网页 CMS 演进**：围绕 `/cms` 打磨富文本编辑、资源上传落地、发布前资产存在性校验、回滚提示和真实内容包 smoke；不再维护旧 Electron admin。
+4. **网页 CMS 演进**：围绕 `/cms` 打磨富文本编辑、资源上传落地、回滚提示和真实内容包 smoke；不再维护旧 Electron admin。
 
 ---
 
