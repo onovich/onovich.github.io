@@ -1,5 +1,6 @@
 export const CMS_UPLOAD_PUBLIC_PREFIX = '/images/uploads/';
 export const CMS_UPLOAD_PUBLIC_DIR = 'images/uploads';
+export const CMS_UPLOAD_APPLY_DIR = 'public/images/uploads';
 export const CMS_UPLOAD_TARGET_DIR = 'site/public/images/uploads';
 
 const CMS_UPLOAD_MIME_EXTENSIONS = new Map([
@@ -34,6 +35,12 @@ export function cmsUploadPublicPath({ fileName, id, mimeType }) {
 
 export function cmsUploadTargetPath(src) {
   return (src ?? '').toString().startsWith(CMS_UPLOAD_PUBLIC_PREFIX) ? src.slice(1) : '';
+}
+
+export function cmsUploadApplyRelativePath(asset) {
+  const normalized = normalizeCmsUploadAsset(asset);
+  if (!normalized.targetPath?.startsWith(CMS_UPLOAD_PUBLIC_DIR + '/')) return '';
+  return `${CMS_UPLOAD_APPLY_DIR}/${normalized.targetPath.slice(CMS_UPLOAD_PUBLIC_DIR.length + 1)}`;
 }
 
 export function createCmsUploadAsset({
@@ -168,4 +175,21 @@ export function collectCmsUploadAssetIssues(asset, { requireData = false } = {})
     issues.push({ code: 'upload-asset-data-invalid', message: `${normalized.id}: 上传资源 data URL 与 MIME 不匹配` });
   }
   return issues;
+}
+
+export function collectCmsUploadPublishIssues(state) {
+  return collectCmsUploadAssets(state).flatMap(asset =>
+    collectCmsUploadAssetIssues(asset, { requireData: true }).map(issue => ({
+      level: 'error',
+      src: asset.src,
+      targetPath: asset.targetPath,
+      ...issue,
+    })),
+  );
+}
+
+export function cmsUploadAssetBase64(asset) {
+  const dataUrl = (asset?.dataUrl ?? '').toString();
+  const prefix = `data:${asset?.mimeType};base64,`;
+  return dataUrl.startsWith(prefix) ? dataUrl.slice(prefix.length) : '';
 }

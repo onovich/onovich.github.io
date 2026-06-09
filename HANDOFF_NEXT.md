@@ -14,7 +14,7 @@
 
 ### 本地工作区状态
 
-旧 Electron `admin/` 后台已移除，后续只沿站内 `/cms` 网页 CMS 演进。CMS 已拆出样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、富文本工具栏命令、富文本选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约和上传 UI；`cms:publish:smoke` 已能用真实构建 seed 跑发布包 dry-run；`cms:apply` 写入前会备份覆盖目标到 `site/.cms-backups/`，`cms:restore` 可按备份恢复。下一步优先做上传资源 apply 落盘。提交前仍要注意：`.claude/settings.local.json` 是本地设置变化，不要随手提交。
+旧 Electron `admin/` 后台已移除，后续只沿站内 `/cms` 网页 CMS 演进。CMS 已拆出样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、富文本工具栏命令、富文本选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘；`cms:publish:smoke` 已能用真实构建 seed 跑发布包 dry-run；`cms:apply` 写入前会备份覆盖目标到 `site/.cms-backups/`，`cms:restore` 可按备份恢复。下一步优先回到视觉 P0/P1。提交前仍要注意：`.claude/settings.local.json` 是本地设置变化，不要随手提交。
 
 ---
 
@@ -250,7 +250,6 @@ node scripts/visual-diff.mjs --clone=http://localhost:4350 --pages=home,codes,pi
 - P1：消除整体缩放、字号、行高、列对齐残差
 - P1：实测并复刻 gallery 每个断点列数
 - P2：photos 02-07 缺图（用户说后期手动补）
-- P2：CMS 资源上传落地：apply 落盘、上传资源 smoke 覆盖
 - P3：继续扩展发布/恢复校验覆盖
 
 ---

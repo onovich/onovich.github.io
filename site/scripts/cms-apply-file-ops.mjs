@@ -41,9 +41,13 @@ export function backupCmsApplyTargets({
 }
 
 export function writeCmsApplyTargets({ root, targets }) {
-  for (const { relativePath, content } of targets) {
+  for (const { relativePath, content, encoding } of targets) {
     const absolutePath = resolveInside(root, relativePath);
     fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+    if (encoding === 'base64') {
+      fs.writeFileSync(absolutePath, Buffer.from(content, 'base64'));
+      continue;
+    }
     fs.writeFileSync(absolutePath, content, 'utf8');
   }
 }

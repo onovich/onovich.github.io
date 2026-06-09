@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { parseCmsPackageJson } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { collectCmsAssetPublishIssues } from '../src/cms/assetReferences.js';
+import { collectCmsUploadAssets, collectCmsUploadPublishIssues } from '../src/cms/uploadAssets.js';
 import { backupCmsApplyTargets, formatCmsApplyRollbackHint, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -18,11 +19,14 @@ if (!packagePath) {
 }
 
 const payload = parseCmsPackageJson(fs.readFileSync(path.resolve(packagePath), 'utf8'));
+const uploadPublicPaths = new Set(collectCmsUploadAssets(payload).map(asset => asset.targetPath));
+const uploadIssues = collectCmsUploadPublishIssues(payload);
 const assetIssues = collectCmsAssetPublishIssues(payload, {
-  assetExists: publicPath => fs.existsSync(path.join(publicDir, publicPath)),
+  assetExists: publicPath => uploadPublicPaths.has(publicPath) || fs.existsSync(path.join(publicDir, publicPath)),
 });
-if (assetIssues.length) {
-  throw new Error(`CMS package has unpublishable assets:\n${assetIssues.map(issue => `- ${issue.message}`).join('\n')}`);
+if (uploadIssues.length || assetIssues.length) {
+  const issues = [...uploadIssues, ...assetIssues];
+  throw new Error(`CMS package has unpublishable assets:\n${issues.map(issue => `- ${issue.message}`).join('\n')}`);
 }
 const targets = createCmsApplyPlan(payload);
 

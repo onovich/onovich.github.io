@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { createCmsUploadAsset } from '../src/cms/uploadAssets.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'onovich-cms-apply-'));
@@ -17,11 +18,20 @@ const expectedTargets = [
   'src/content/graphics.json',
   'src/content/photoAlbums.json',
   'src/content/poem.html',
+  'public/images/uploads/smoke-upload.png',
   'src/content/site.json',
 ];
+const uploadAsset = createCmsUploadAsset({
+  fileName: 'Smoke Upload.png',
+  mimeType: 'image/png',
+  width: 1,
+  height: 1,
+  dataUrl: 'data:image/png;base64,AAAA',
+});
 
 const payload = {
   schemaVersion: 1,
+  assets: [uploadAsset],
   presets: {
     pageTemplates: [{ id: 'gallery-page' }],
     sectionPresets: [{ id: 'gallery-roomy-3' }],
@@ -35,7 +45,7 @@ const payload = {
         id: 'codes-gallery',
         type: 'gallery',
         presetId: 'gallery-roomy-3',
-        items: [{ id: 'hero', src: '/images/gifs/hero.gif', width: 750, height: 553 }],
+        items: [{ id: 'hero', src: uploadAsset.src, width: 1, height: 1 }],
       }],
     },
     { id: 'photo', title: 'Photo', templateId: 'photo-index', sections: [] },
