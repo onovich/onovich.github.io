@@ -10,14 +10,14 @@
 
 ## 当前 TODO 摘要（2026-06-10）
 
-1. P0：内页左侧导航线上/截图回归确认，必须跑 visual-diff 并看 `codes.desktop.clone.png`。
-2. P0：继续建立视觉验证门禁，后续视觉改动不能只靠 build 通过。
-3. P1：用 Playwright `getComputedStyle()` 消除字号、行高、列对齐、gallery 断点列数残差。
+1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
+2. P1：用 Playwright `getComputedStyle()` 消除字号、行高、列对齐、gallery 断点列数残差。
+3. P1：把 gallery 每个断点真实列数实测后写进 CSS。
 4. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
 
 ---
 
-## 🔴 1. 内页左侧导航需要线上回归确认（当前 P0）
+## ✅ 1. 内页左侧导航已完成线上/截图回归确认
 
 **症状**：早期线上 `blog.onovich.com/codes` 等子页面进入后，左侧 Onovich 分类导航消失；原站 `onovich.com/codes` 会保留左侧导航列，并在右侧显示 `< HOME` + 内容。
 
@@ -27,9 +27,13 @@
 - GAMES / PIXEL / ... / MESSAGE 都在左列
 - 右侧内容区从 x≈514 开始
 
-**当前状态**：代码侧已经进入 v2.3.0 风格，`BaseLayout.astro` 会在首页和内页渲染左侧 Onovich 分类导航；但仍需要对线上部署结果和 visual-diff 截图做一次回归确认。
+**回归证据（2026-06-10）**：
+- `npm run visual:diff -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel`：30/30 screenshots saved。
+- 已人工查看 `diff-screenshots/codes.desktop.clone.png`：左侧 Onovich 分类导航存在，`< HOME` 在右侧内容区。
+- `npm run visual:check -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel --viewports=desktop --targets=clone`：19 assertions passed。
+- `npm run visual:check -- --pages=codes --viewports=desktop --targets=original,clone`：线上 `blog.onovich.com/codes` 与原站 `onovich.com/codes` 均通过左导航位置检查。
 
-**下一步**：执行 visual-diff 门禁，确认 `codes.desktop.clone.png` 与线上 `blog.onovich.com/codes` 都有左侧导航，再把本项降级为已解决。
+**当前状态**：本项已解决；后续任何布局/样式改动继续跑视觉门禁，避免回归。
 
 ---
 
@@ -41,6 +45,7 @@
 - 缩略图列数还没按断点对齐（原站列数由 Cargo runtime JS 注入 `[thumbnails-cols]` 属性）
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
+**自动门禁**：`site/scripts/visual-layout-check.mjs` 已加入，npm 脚本为 `npm run visual:check`；用于快速阻止左导航/返回链接消失这类 P0 回归。
 
 **下一步**（任务 #18 后续 / P0）：
 1. 用 Playwright `getComputedStyle()` 对照原站 5 断点的关键元素（h1/h2/bodycopy/.thumb_image/.title/.tags），抽出精确像素值
@@ -98,7 +103,7 @@
 - `npm run cms:check` 已覆盖状态、预览、草稿校验、导出包、导入包、应用计划、资产路径和缺失资产阻止等纯逻辑；`npm run cms:smoke`、`npm run cms:apply:smoke`、`npm run cms:publish:smoke` 已可复用做网页 CMS/发布链路冒烟
 
 **下一步（拆成小节点）**：
-1. CMS 后续增强暂缓，优先回到视觉 P0/P1：内页左侧导航线上/截图回归确认、字号/行高/列对齐和 gallery 断点列数。
+1. CMS 后续增强暂缓，优先回到视觉 P0/P1：字号/行高/列对齐和 gallery 断点列数。
 
 ---
 

@@ -52,13 +52,12 @@
 | DNS / CNAME | ✅ 主域名继续 Cargo，blog 子域名指向 GitHub Pages |
 | 内容数据（codes/games/pixel/illustrations/gifs/graphics/sns/poems） | ✅ 已填 |
 | 图片迁移 | ⚠️ photos 02-07 仍缺，需从原站抓 |
-| **CSS / 布局** | ⚠️ 已按 Cargo 左侧导航方向重写，仍需线上/截图回归确认和视觉残差修正 |
+| **CSS / 布局** | ⚠️ 已按 Cargo 左侧导航方向重写；内页左导航已完成线上/截图回归确认，仍需视觉残差修正 |
 | 网页 CMS | ✅ 保留为唯一后台演进方向，旧 Electron admin 已移除；已拆出样式、状态、预览、校验、导入/导出包、发布应用计划、资产路径、缺失资产阻止、真实发布 smoke、发布前备份、恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘 |
 
 **TaskList 当前任务**（按优先级）：
 
-- P0：内页左侧导航线上/截图回归确认
-- P0：建立并执行视觉验证门禁
+- P0：执行并扩展视觉验证门禁
 - P1：消除整体缩放、字号、行高、列对齐残差，实测 gallery 断点列数
 - P2：迁移 photos 02-07 缺失图片（用户说后期手动补）
 - P3：继续扩展发布/恢复校验覆盖
@@ -118,7 +117,7 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 ## 推荐继续工作的步骤
 
-1. **视觉回归**：本地 build 后跑 `visual-diff`，重点看 `codes.desktop.clone.png` 是否保留左侧导航，再处理字号、行高、列对齐残差。
+1. **视觉回归**：本地 build 后跑 `visual:check` 和 `visual:diff`，再处理字号、行高、列对齐残差。
 
 2. **gallery 断点列数**：用 Playwright 实测原站 375 / 768 / 1024 / 1440 / 1920 每个断点列数，写入 CSS 媒体查询。
 
@@ -138,5 +137,6 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 - `docs/WORKFLOW.md` — 工作流（抓站 / 部署 / 截图对照 / Git）
 - `_reference-site/` — 原站 HTML + CSS 归档（事实之源）
 - `site/scripts/visual-diff.mjs` — Playwright 截图对照脚本
+- `site/scripts/visual-layout-check.mjs` — 左侧导航/返回链接快速布局门禁
 - `MEMORY.md` 索引 → `~/.claude/projects/D--WebProjects-Onovich/memory/`（Claude 全局记忆）
 - 全局知识库 → `<GLOBAL_DOCS>`（跨项目的工作流方法）

@@ -10,7 +10,7 @@
 
 - `https://blog.onovich.com` 由 GitHub Pages 部署 `site/` 构建结果。
 - 域名必须保持 `blog.onovich.com`；不要把 Pages CNAME 改成主域名 `onovich.com`。
-- 下一轮需要重点回归：内页左侧导航是否在线上保留、整体视觉差异是否低于当前门槛。
+- 2026-06-10 已通过 `visual:check` 确认线上 `blog.onovich.com/codes` 保留左侧导航；下一轮重点转向整体视觉残差和断点列数。
 
 ### 本地工作区状态
 
@@ -20,7 +20,7 @@
 
 ## 1. 当前最高优先级问题
 
-用户最新明确指出：
+用户此前明确指出：
 
 > 目前侧边栏在点击其中任意选项进入子页面后会消失，和原版网页完全不符，相差甚远。
 
@@ -42,7 +42,15 @@ MESSAGE               x≈112 y≈450
 右侧内容区             x≈514 起
 ```
 
-所以后续第一件事是：**把内页左侧导航做线上和截图回归确认**。代码当前已经按 v2.3.0 风格渲染左侧导航，但仍要用 visual-diff 和线上页面确认。
+本项已在 2026-06-10 回归确认：
+
+```txt
+npm run visual:diff -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel
+npm run visual:check -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel --viewports=desktop --targets=clone
+npm run visual:check -- --pages=codes --viewports=desktop --targets=original,clone
+```
+
+`codes.desktop.clone.png` 已人工查看，左侧导航存在；线上 `blog.onovich.com/codes` 与原站同样通过布局框检查。当前最高优先级改为：**继续消除字号、行高、列对齐和 gallery 断点列数残差**，并把 `visual:check` + `visual:diff` 作为每次视觉变更的门禁。
 
 ---
 
@@ -57,7 +65,9 @@ npm run build
   ↓
 本地预览 dist / astro preview
   ↓
-node scripts/visual-diff.mjs --clone=http://localhost:4350 --pages=home,codes,pixel
+npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
+  ↓
+npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
   ↓
 Read 关键截图：
   diff-screenshots/home.desktop.original.png
@@ -178,7 +188,7 @@ viewport <= 768 → body.mobile full_width
 
 ## 6. 推荐下一步具体操作
 
-### Step 1 — 回归确认内页导航和视觉差异
+### Step 1 — 跑视觉门禁和截图
 
 先本地 build：
 
@@ -190,14 +200,15 @@ npm run build
 启动本地预览：
 
 ```bash
-node node_modules/.bin/http-server dist -p 4350 -s
+npm run preview -- --host 127.0.0.1 --port 4350
 ```
 
 另一个终端跑：
 
 ```bash
 cd <PROJECT_ROOT>/site
-node scripts/visual-diff.mjs --clone=http://localhost:4350 --pages=home,codes,pixel
+npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
+npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 ```
 
 然后用 Read 工具看：
@@ -213,7 +224,7 @@ node scripts/visual-diff.mjs --clone=http://localhost:4350 --pages=home,codes,pi
 
 ### Step 2 — 继续缩小视觉差异
 
-如果 `codes` clone 有左侧导航，就继续处理字号、行高、列间距、缩略图断点列数这些残差。
+优先处理字号、行高、列间距、缩略图断点列数这些残差。
 
 ### Step 3 — 如果仍偏差大
 
@@ -245,8 +256,7 @@ node scripts/visual-diff.mjs --clone=http://localhost:4350 --pages=home,codes,pi
 
 建议把已有任务调整为：
 
-- P0：内页左侧导航线上/截图回归确认
-- P0：建立并执行视觉验证门禁（不要再绕过）
+- P0：执行并扩展视觉验证门禁（不要再绕过）
 - P1：消除整体缩放、字号、行高、列对齐残差
 - P1：实测并复刻 gallery 每个断点列数
 - P2：photos 02-07 缺图（用户说后期手动补）
