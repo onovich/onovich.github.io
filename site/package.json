@@ -12,6 +12,7 @@
     "cms:apply": "node scripts/apply-cms-publish.mjs",
     "cms:apply:smoke": "node scripts/cms-apply-smoke.mjs",
     "cms:check": "node scripts/cms-check.mjs",
+    "cms:publish:smoke": "node scripts/cms-publish-smoke.mjs",
     "cms:smoke": "node scripts/cms-smoke.mjs",
     "preview": "astro preview",
     "astro": "astro"

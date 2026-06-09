@@ -470,6 +470,7 @@ const cmsAssetSource = read('src/cms/assetReferences.js');
 const dynamicRouteSource = read('src/pages/[...slug].astro');
 const applyScriptSource = read('scripts/apply-cms-publish.mjs');
 const applySmokeSource = read('scripts/cms-apply-smoke.mjs');
+const publishSmokeSource = read('scripts/cms-publish-smoke.mjs');
 const packageSource = read('package.json');
 
 for (const presetId of expectedPresets) {
@@ -509,7 +510,10 @@ assert(applyScriptSource.includes('createCmsApplyPlan'), 'CMS apply script must 
 assert(applyScriptSource.includes('collectCmsAssetPublishIssues'), 'CMS apply script must block unpublishable assets before writing');
 assert(cmsApplyPlanSource.includes("section.type === 'gallery'"), 'CMS apply plan must publish gallery sections without GIF hero items');
 assert(applySmokeSource.includes('CMS apply smoke passed'), 'CMS apply smoke must provide a reusable dry-run check');
+assert(publishSmokeSource.includes('createCmsPublishPackage'), 'CMS publish smoke must exercise real publish package creation');
+assert(publishSmokeSource.includes('cms-seed'), 'CMS publish smoke must read the built CMS seed');
 assert(packageSource.includes('"cms:apply:smoke"'), 'CMS apply smoke must be available as an npm script');
+assert(packageSource.includes('"cms:publish:smoke"'), 'CMS publish smoke must be available as an npm script');
 
 const codes = readJson('src/content/codes.json');
 const games = readJson('src/content/games.json');
