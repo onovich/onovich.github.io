@@ -14,7 +14,7 @@
 
 ### 本地工作区状态
 
-旧 Electron `admin/` 后台已移除，后续只沿站内 `/cms` 网页 CMS 演进。CMS 已拆出样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验和缺失资产阻止；下一步优先打磨富文本编辑、资源上传落地和回滚提示。提交前仍要注意：`.claude/settings.local.json` 是本地设置变化，不要随手提交。
+旧 Electron `admin/` 后台已移除，后续只沿站内 `/cms` 网页 CMS 演进。CMS 已拆出样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验和缺失资产阻止；`cms:publish:smoke` 已能用真实构建 seed 跑发布包 dry-run。下一步优先打磨富文本编辑、资源上传落地和回滚提示。提交前仍要注意：`.claude/settings.local.json` 是本地设置变化，不要随手提交。
 
 ---
 
@@ -251,7 +251,7 @@ node scripts/visual-diff.mjs --clone=http://localhost:4350 --pages=home,codes,pi
 - P1：实测并复刻 gallery 每个断点列数
 - P2：photos 02-07 缺图（用户说后期手动补）
 - P2：继续模块化网页 CMS：优先打磨富文本编辑和资源上传落地
-- P3：完善 CMS 真实内容包 smoke、回滚提示和校验覆盖
+- P3：完善 CMS 回滚提示和校验覆盖
 
 ---
 
