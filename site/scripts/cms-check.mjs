@@ -335,6 +335,8 @@ const cmsPublishSource = read('src/cms/publishPackage.js');
 const cmsImportSource = read('src/cms/importPackage.js');
 const dynamicRouteSource = read('src/pages/[...slug].astro');
 const applyScriptSource = read('scripts/apply-cms-publish.mjs');
+const applySmokeSource = read('scripts/cms-apply-smoke.mjs');
+const packageSource = read('package.json');
 
 for (const presetId of expectedPresets) {
   assert(presetsSource.includes(`id: '${presetId}'`), `Missing section preset: ${presetId}`);
@@ -369,6 +371,8 @@ assert(applyScriptSource.includes('CMS publish applied'), 'CMS apply script must
 assert(applyScriptSource.includes('--dry-run'), 'CMS apply script must support --dry-run');
 assert(applyScriptSource.includes('parseCmsPackageJson'), 'CMS apply script must use the shared import package parser');
 assert(applyScriptSource.includes("section.type === 'gallery'"), 'CMS apply script must publish gallery sections without GIF hero items');
+assert(applySmokeSource.includes('CMS apply smoke passed'), 'CMS apply smoke must provide a reusable dry-run check');
+assert(packageSource.includes('"cms:apply:smoke"'), 'CMS apply smoke must be available as an npm script');
 
 const codes = readJson('src/content/codes.json');
 const games = readJson('src/content/games.json');
