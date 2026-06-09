@@ -88,6 +88,7 @@ function checkGalleryItems(items, context) {
 const presetsSource = read('src/cms/presets.ts');
 const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
+const cmsClientSource = read('src/cms/client.ts');
 const dynamicRouteSource = read('src/pages/[...slug].astro');
 const applyScriptSource = read('scripts/apply-cms-publish.mjs');
 
@@ -107,10 +108,11 @@ for (const page of expectedPages) {
   }
 }
 
-assert(cmsSource.includes('activeSectionId'), 'CMS UI must keep section-level editing state');
 assert(cmsSource.includes('sectionPresetInput'), 'CMS UI must expose section preset controls');
 assert(cmsSource.includes('cms-validation-seed'), 'CMS UI must expose validation seed data');
-assert(cmsSource.includes('manifest'), 'CMS export package must include a manifest');
+assert(cmsSource.includes("import '../cms/client'"), 'CMS page must load the browser client module');
+assert(cmsClientSource.includes('activeSectionId'), 'CMS UI must keep section-level editing state');
+assert(cmsClientSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
 assert(applyScriptSource.includes('CMS publish applied'), 'CMS apply script must write exported publish packages');
