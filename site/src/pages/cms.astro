@@ -7,6 +7,8 @@ import gifs from '../content/gifs.json';
 import graphics from '../content/graphics.json';
 import photoAlbums from '../content/photoAlbums.json';
 import poemHtml from '../content/poem.html?raw';
+import { createCmsSeed } from '../cms/currentContent';
+import { validateCmsSite } from '../cms/validation';
 
 const sidebar = [
   { id: 'codes', path: '/codes', label: 'CODES', group: '作品' },
@@ -167,7 +169,19 @@ const seed = {
   pages,
 };
 
-const seedJson = JSON.stringify(seed).replace(/</g, '\\u003c');
+const cmsSeed = createCmsSeed({
+  codes,
+  games,
+  pixel,
+  illustrations,
+  gifs,
+  graphics,
+  photoAlbums,
+  poemHtml,
+});
+const seedIssues = validateCmsSite(cmsSeed);
+const seedJson = JSON.stringify(cmsSeed).replace(/</g, '\\u003c');
+const validationJson = JSON.stringify(seedIssues).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
@@ -179,6 +193,7 @@ const seedJson = JSON.stringify(seed).replace(/</g, '\\u003c');
   </head>
   <body class="cms-page">
     <script type="application/json" id="cms-seed" set:html={seedJson}></script>
+    <script type="application/json" id="cms-validation-seed" set:html={validationJson}></script>
 
     <div class="cms-shell">
       <aside class="cms-rail">
