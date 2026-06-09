@@ -207,13 +207,78 @@ export function pasteCmsRichText({
   return true;
 }
 
+export function createCmsRichTextLinkPanel({
+  root,
+  documentRef,
+  editor,
+  selectionStore,
+}) {
+  const panel = root.getElementById('richLinkPanel');
+  const input = root.getElementById('richLinkInput');
+  const applyButton = root.getElementById('applyRichLinkBtn');
+  const cancelButton = root.getElementById('cancelRichLinkBtn');
+
+  function close({ focusEditor = true } = {}) {
+    if (!panel) return false;
+    panel.hidden = true;
+    if (input) input.value = '';
+    if (focusEditor) editor?.focus?.();
+    return true;
+  }
+
+  function apply() {
+    if (!input) return false;
+    const applied = runCmsRichTextCommand({
+      command: 'createLink',
+      documentRef,
+      editor,
+      selectionStore,
+      value: input.value,
+    });
+    if (!applied) {
+      input.focus?.();
+      return false;
+    }
+    close();
+    return true;
+  }
+
+  function open() {
+    if (!panel || !input) return false;
+    panel.hidden = false;
+    input.value = '';
+    input.focus?.();
+    return true;
+  }
+
+  applyButton?.addEventListener?.('click', apply);
+  cancelButton?.addEventListener?.('click', () => close());
+  input?.addEventListener?.('keydown', event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      apply();
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      close();
+    }
+  });
+
+  return { apply, close, input, open, panel };
+}
+
 export function bindCmsRichTextToolbar({
   root,
   documentRef = root,
   editor,
-  promptForHref,
 }) {
   const selectionStore = createCmsRichTextSelectionStore({ documentRef, editor });
+  const linkPanel = createCmsRichTextLinkPanel({
+    root,
+    documentRef,
+    editor,
+    selectionStore,
+  });
 
   ['keyup', 'mouseup', 'touchend'].forEach(eventName => {
     editor?.addEventListener?.(eventName, () => selectionStore.capture());
@@ -255,13 +320,7 @@ export function bindCmsRichTextToolbar({
     selectionStore.capture();
   });
   makeLinkButton.addEventListener('click', () => {
-    runCmsRichTextCommand({
-      command: 'createLink',
-      documentRef,
-      editor,
-      selectionStore,
-      value: promptForHref(),
-    });
+    linkPanel.open();
   });
 
   const clearFormatButton = root.getElementById('clearFormatBtn');

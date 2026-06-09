@@ -65,12 +65,16 @@ const port = await listen();
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 const errors = [];
+const dialogs = [];
 
 page.on('console', (msg) => {
   if (msg.type() === 'error') errors.push(msg.text());
 });
 page.on('pageerror', (err) => errors.push(err.message));
-page.on('dialog', (dialog) => dialog.accept('gallery-roomy-3'));
+page.on('dialog', (dialog) => {
+  dialogs.push(dialog.message());
+  dialog.accept('gallery-roomy-3');
+});
 
 try {
   await page.goto(`http://127.0.0.1:${port}/cms/`, { waitUntil: 'load' });
@@ -126,7 +130,29 @@ try {
     };
   });
 
+  await page.evaluate(() => {
+    const editor = document.querySelector('#richEditor');
+    editor.innerHTML = 'Make link';
+    editor.focus();
+    const textNode = editor.firstChild;
+    const start = textNode.textContent.indexOf('link');
+    const range = document.createRange();
+    range.setStart(textNode, start);
+    range.setEnd(textNode, start + 4);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  });
+  await page.click('#makeLinkBtn');
+  await page.fill('#richLinkInput', ' https://example.com/smoke ');
+  await page.click('#applyRichLinkBtn');
+  const afterLink = await page.evaluate(() => ({
+    html: document.querySelector('#richEditor')?.innerHTML || '',
+    panelHidden: document.querySelector('#richLinkPanel')?.hidden ?? null,
+  }));
+
   assert(errors.length === 0, `Console/page errors: ${errors.join(' | ')}`);
+  assert(!dialogs.includes('链接 URL'), 'Rich text links must use the inline panel instead of browser prompt');
   assert(before.title === 'Onovich CMS', 'Bad CMS title');
   assert(before.pageButtons >= 10, `Too few CMS pages: ${before.pageButtons}`);
   assert(before.structurePanelActive, 'Structure panel was not active initially');
@@ -136,8 +162,10 @@ try {
   assert(afterPaste.textPanelActive, 'Rich text tab did not activate');
   assert(afterPaste.html.includes('<strong>Safe</strong>'), 'Rich text paste did not preserve allowed formatting');
   assert(!afterPaste.html.includes('onclick') && !afterPaste.html.includes('script') && !afterPaste.html.includes('javascript:'), 'Rich text paste did not sanitize unsafe HTML');
+  assert(afterLink.html.includes('<a href="https://example.com/smoke">link</a>'), 'Rich text link panel did not apply the selected link');
+  assert(afterLink.panelHidden, 'Rich text link panel did not close after applying a link');
 
-  console.log(JSON.stringify({ before, afterAdd, afterRaw, afterPaste, errors }, null, 2));
+  console.log(JSON.stringify({ before, afterAdd, afterRaw, afterPaste, afterLink, dialogs, errors }, null, 2));
 } finally {
   await browser.close();
   await closeServer();

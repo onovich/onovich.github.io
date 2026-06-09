@@ -13,9 +13,8 @@
 1. P0：内页左侧导航线上/截图回归确认，必须跑 visual-diff 并看 `codes.desktop.clone.png`。
 2. P0：继续建立视觉验证门禁，后续视觉改动不能只靠 build 通过。
 3. P1：用 Playwright `getComputedStyle()` 消除字号、行高、列对齐、gallery 断点列数残差。
-4. P2：CMS 富文本体验二期：链接 UI。
-5. P2：CMS 资源上传落地：读取图片尺寸，发布包带 `site/public/images/uploads/...`，`cms:apply` 统一校验和落盘。
-6. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
+4. P2：CMS 资源上传落地：读取图片尺寸，发布包带 `site/public/images/uploads/...`，`cms:apply` 统一校验和落盘。
+5. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
 
 ---
 
@@ -93,12 +92,12 @@
 - 富文本工具栏命令拆到 `site/src/cms/richText.js`，统一处理命令白名单、链接 URL trim、拒绝 `javascript:`/`data:` 链接，并由 `cms:check` 覆盖
 - 富文本选区保存/恢复已收进 `site/src/cms/richText.js`，toolbar 点击前会捕获编辑器选区，执行命令前恢复，避免点击按钮或弹出链接输入后丢失 selection
 - 富文本粘贴清洗和允许标签白名单已收进 `site/src/cms/richText.js`；`draftValidation.js` 会阻止导入/Raw JSON 里的危险标签、事件处理器和危险链接
+- 富文本链接 UI 已替代浏览器 `prompt()`：`/cms` 里点击“链接”会打开内嵌 URL 面板，`cms:smoke` 会真实选择正文文本并验证 `<a href="https://example.com/smoke">link</a>`
 - `npm run cms:check` 已覆盖状态、预览、草稿校验、导出包、导入包、应用计划、资产路径和缺失资产阻止等纯逻辑；`npm run cms:smoke`、`npm run cms:apply:smoke`、`npm run cms:publish:smoke` 已可复用做网页 CMS/发布链路冒烟
 
 **下一步（拆成小节点）**：
-1. 富文本体验二期：用轻量链接编辑 UI 替代 `prompt()`。
-2. 资源上传落地：按 `docs/CMS_ARCHITECTURE_GUIDE.md` 的 Asset Model 读取图片宽高和 MIME，写进发布包的 `site/public/images/uploads/...`。
-3. 发布链路覆盖：让 `cms:apply` 统一校验/落盘上传资源，并把新资源路径纳入 `cms:apply:smoke` / `cms:publish:smoke`。
+1. 资源上传落地：按 `docs/CMS_ARCHITECTURE_GUIDE.md` 的 Asset Model 读取图片宽高和 MIME，写进发布包的 `site/public/images/uploads/...`。
+2. 发布链路覆盖：让 `cms:apply` 统一校验/落盘上传资源，并把新资源路径纳入 `cms:apply:smoke` / `cms:publish:smoke`。
 
 ---
 
