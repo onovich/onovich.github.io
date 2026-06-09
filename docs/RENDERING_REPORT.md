@@ -30,7 +30,7 @@ cd site && npm run visual:measure -- --clone=http://localhost:4350 --pages=home,
 
 `visual:check` 是截图前的快速布局门禁：它用 Playwright 读取真实布局框，检查左侧 Onovich 导航、当前分类链接和内页 `< HOME` 返回链接是否仍在预期区域。它不能替代人工看截图，但能提前阻止内页导航消失这类 P0 回归。
 
-`visual:measure` 是数值探针：它复用同一套页面/视口/加载等待逻辑，输出原站和 clone 的 bbox、font-size、line-height、gallery columns 和 delta。先跑 measure，再决定 CSS 改哪里。
+`visual:measure` 是数值探针：它复用同一套页面/视口/加载等待逻辑，输出原站和 clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns 和 delta。先跑 measure，再决定 CSS 改哪里。
 
 ---
 
@@ -87,7 +87,9 @@ font-family h2:    "Nunito, Icons"
 - Clone：3 列宽 `--thumbnails-width: 58%`，已对齐
 - 2026-06-10 更新：`codes` 实际运行时使用 `.gallery_image_caption` 小字 caption，而不是 `.thumbnails .title/.tags` 大字号。clone 已切到 `captionMode="title-desc-links"`，`visual:measure` desktop 下 title/tags font-size 和 line-height delta 为 0。
 - 2026-06-10 更新：`bodycopy` / main content 行高已改回原站 `16px`；codes 5 断点 `bodycopy.lineHeight` delta 均为 0。
-- 残差：内页 main y、main width、wide root font-size 仍需后续节点继续收。
+- 2026-06-10 更新：`visual:measure` 已新增 `mainAnchor`。旧 `main.y` 是右栏列盒位置，不再单独作为视觉残差依据；桌面 codes/pixel 的 `< HOME` anchor delta 约 `-4.51px`，gallery 顶部 `thumbnails.y` delta 约 `-10.96px`。
+- 2026-06-10 5 断点复核：codes `mainAnchor.y` delta 约 mobile `-33.32px`、tablet `-25.54px`、laptop `-18.56px`、desktop `-4.51px`、wide `-27.44px`。
+- 残差：内页 gallery 顶部、main width、wide root font-size 仍需后续节点继续收。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid

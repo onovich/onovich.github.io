@@ -139,11 +139,12 @@ async function collectStyleMetrics(page) {
         && rect.height > 0;
     };
 
-    const read = (element) => {
+    const read = (element, extra = {}) => {
       if (!element) return null;
       const rect = element.getBoundingClientRect();
       const style = window.getComputedStyle(element);
       return {
+        ...extra,
         x: round(rect.x),
         y: round(rect.y),
         width: round(rect.width),
@@ -164,6 +165,8 @@ async function collectStyleMetrics(page) {
 
     const back = Array.from(document.querySelectorAll(selectors.back))
       .find((element) => (element.textContent || '').replace(/\s+/g, ' ').trim() === '< HOME');
+    const mainColumn = pick(selectors.mainColumn);
+    const mainAnchor = findMainAnchor(mainColumn);
 
     const thumbElements = Array.from(document.querySelectorAll(selectors.thumb)).filter(visible);
     const thumbRects = thumbElements.map((element) => element.getBoundingClientRect());
@@ -183,7 +186,8 @@ async function collectStyleMetrics(page) {
       bodycopy: read(pick(selectors.bodycopy)),
       pageContent: read(pick(selectors.pageContent)),
       navColumn: read(pick(selectors.navColumn)),
-      mainColumn: read(pick(selectors.mainColumn)),
+      mainColumn: read(mainColumn),
+      mainAnchor: read(mainAnchor?.element, mainAnchor ? { kind: mainAnchor.kind } : {}),
       h1: read(pick(selectors.h1)),
       h2: read(pick(selectors.h2)),
       back: read(back),
@@ -203,6 +207,42 @@ async function collectStyleMetrics(page) {
         itemCount: thumbRects.length,
       },
     };
+
+    function findMainAnchor(mainElement) {
+      const mainRect = mainElement?.getBoundingClientRect() || null;
+      const candidates = [];
+      const add = (kind, selector, options = {}) => {
+        for (const element of document.querySelectorAll(selector)) {
+          if (!visible(element)) continue;
+          if (options.text) {
+            const text = (element.textContent || '').replace(/\s+/g, ' ').trim();
+            if (text !== options.text) continue;
+          }
+          if (!isInsideMainContent(element, mainRect)) continue;
+          candidates.push({ kind, element, rect: element.getBoundingClientRect() });
+        }
+      };
+
+      add('back', selectors.back, { text: '< HOME' });
+      add('homeAvatar', selectors.homeAvatar);
+      add('thumbnails', selectors.thumbnailsContainer);
+      add('thumb', selectors.thumb);
+      add('image', 'img');
+      add('homeDivider', selectors.homeDivider);
+      add('homeBio', selectors.homeBio);
+
+      candidates.sort((a, b) => a.rect.y - b.rect.y || a.rect.x - b.rect.x);
+      return candidates[0] || null;
+    }
+
+    function isInsideMainContent(element, mainRect) {
+      if (!mainRect) return true;
+      const rect = element.getBoundingClientRect();
+      const centerX = rect.x + rect.width / 2;
+      return centerX >= mainRect.x - 40
+        && centerX <= mainRect.right + 40
+        && rect.y >= mainRect.y - 5;
+    }
   });
 }
 
@@ -230,6 +270,7 @@ function printTextReport(records) {
           `html=${fmt(record.metrics.html?.fontSize)}`,
           `body=${fmt(record.metrics.bodycopy?.fontSize)}/${fmt(record.metrics.bodycopy?.lineHeight)}`,
           `main=${fmt(record.metrics.mainColumn?.x)},${fmt(record.metrics.mainColumn?.y)} ${fmt(record.metrics.mainColumn?.width)}x${fmt(record.metrics.mainColumn?.height)}`,
+          `anchor=${record.metrics.mainAnchor?.kind || '-'}@${fmt(record.metrics.mainAnchor?.x)},${fmt(record.metrics.mainAnchor?.y)}`,
           `thumb=${fmt(record.metrics.thumbImage?.width)}x${fmt(record.metrics.thumbImage?.height)}`,
           `title=${fmt(record.metrics.title?.fontSize)}/${fmt(record.metrics.title?.lineHeight)}`,
           `tags=${fmt(record.metrics.tags?.fontSize)}/${fmt(record.metrics.tags?.lineHeight)}`,
@@ -250,6 +291,8 @@ function printDelta(original, clone) {
     ['main.x', original.mainColumn?.x, clone.mainColumn?.x],
     ['main.y', original.mainColumn?.y, clone.mainColumn?.y],
     ['main.width', original.mainColumn?.width, clone.mainColumn?.width],
+    ['mainAnchor.y', original.mainAnchor?.y, clone.mainAnchor?.y],
+    ['thumbnails.y', original.thumbnails?.y, clone.thumbnails?.y],
     ['thumbImage.width', original.thumbImage?.width, clone.thumbImage?.width],
     ['thumbImage.height', original.thumbImage?.height, clone.thumbImage?.height],
     ['title.fontSize', original.title?.fontSize, clone.title?.fontSize],
