@@ -11,6 +11,7 @@
     "build": "astro build",
     "cms:apply": "node scripts/apply-cms-publish.mjs",
     "cms:check": "node scripts/cms-check.mjs",
+    "cms:smoke": "node scripts/cms-smoke.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
