@@ -50,7 +50,7 @@ npm run visual:check -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel -
 npm run visual:check -- --pages=codes --viewports=desktop --targets=original,clone
 ```
 
-`codes.desktop.clone.png` 已人工查看，左侧导航存在；线上 `blog.onovich.com/codes` 与原站同样通过布局框检查。`visual:measure` 已新增 `mainAnchor`，旧 `main.y` 只是右栏列盒位置，不再单独作为视觉残差依据。wide root font-size 已修到原站实测 `15.55px`；codes/pixel 标准 gallery 顶部也已按 5 断点收敛；pixel mobile 横向溢出已修；pixel 第二段 natural/flush gallery 已收敛；tight gallery 的 game/gif/illustrator mobile/tablet 列数已恢复 3 列；graphic 已恢复原站首张 `graphic-06.jpg` 全栏图与后续长图顺序。当前最高优先级改为：**继续收 tight gallery 顶部、graphic mobile/tablet 主栏宽度/顶部位置和 main width 残差**，并把 `visual:check` + `visual:measure` + `visual:diff` 作为每次视觉变更的门禁。
+`codes.desktop.clone.png` 已人工查看，左侧导航存在；线上 `blog.onovich.com/codes` 与原站同样通过布局框检查。`visual:measure` 已新增 `mainAnchor`，旧 `main.y` 只是右栏列盒位置，不再单独作为视觉残差依据。wide root font-size 已修到原站实测 `15.55px`；codes/pixel 标准 gallery 顶部也已按 5 断点收敛；pixel mobile 横向溢出已修；pixel 第二段 natural/flush gallery 已收敛；tight gallery 顶部和 game/gif/illustrator 断点列数已收敛；graphic 已恢复原站首张 `graphic-06.jpg` 全栏图、后续长图顺序和 laptop 2 列。当前最高优先级改为：**继续收 main width、graphic mobile/tablet 图片宽度和 gif hero/natural media 尺寸残差**，并把 `visual:check` + `visual:measure` + `visual:diff` 作为每次视觉变更的门禁。
 
 ---
 
@@ -227,7 +227,7 @@ npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 
 ### Step 2 — 继续缩小视觉差异
 
-优先处理 tight gallery 顶部、graphic mobile/tablet 主栏宽度/顶部位置和 main width 这些残差。Codes caption 已在 2026-06-10 切为 Cargo 风格 12px HTML caption；bodycopy / main content 行高也已同步为原站 `16px`，codes 5 断点列数 delta 为 0，wide root font-size 已修到 `15.55px`，pixel mobile 横向溢出已修，pixel 第二段 natural/flush gallery 的 `g2` 列数与 desktop/wide 图片宽高也已收敛，game/gif/illustrator mobile/tablet 已恢复 3 列，graphic 已恢复首张全栏图 `graphic-06.jpg` 与后续长图顺序。注意：旧 `main.y` 测的是右栏列盒，不等于首个可见内容起点；codes/pixel 标准 gallery 的 `mainAnchor.y` / `thumbnails.y` 5 断点 delta 已约为 0。
+优先处理 main width、graphic mobile/tablet 图片宽度和 gif hero/natural media 尺寸这些残差。Codes caption 已在 2026-06-10 切为 Cargo 风格 12px HTML caption；bodycopy / main content 行高也已同步为原站 `16px`，codes 5 断点列数 delta 为 0，wide root font-size 已修到 `15.55px`，pixel mobile 横向溢出已修，pixel 第二段 natural/flush gallery 的 `g2` 列数与 desktop/wide 图片宽高也已收敛，game/gif/illustrator mobile/tablet/laptop/desktop/wide 列数与 tight 顶部已收敛，graphic 已恢复首张全栏图 `graphic-06.jpg`、后续长图顺序和 laptop 2 列。注意：旧 `main.y` 测的是右栏列盒，不等于首个可见内容起点；继续看 `mainAnchor.y` / `thumbnails.y`。
 
 ### Step 3 — 如果仍偏差大
 
