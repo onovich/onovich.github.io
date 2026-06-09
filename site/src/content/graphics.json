@@ -1,47 +1,47 @@
 [
   {
     "id": "comet-night",
-    "title": "??????????????????????????????????????????????????????",
+    "title": "每当彗星来临的夜晚，奥诺维奇上尉就彻夜难眠。一次次他以为是故乡的人来接他，可那来自星辰的熟悉感又总稍纵即逝。",
     "year": "2020.5",
     "src": "/images/graphics/graphic-04.jpg",
     "width": 1218,
     "height": 7448,
-    "captionHtml": "??????????????????????????????????????????????????????<br>2020.5"
+    "captionHtml": "每当彗星来临的夜晚，奥诺维奇上尉就彻夜难眠。一次次他以为是故乡的人来接他，可那来自星辰的熟悉感又总稍纵即逝。<br>2020.5"
   },
   {
     "id": "sleepless-window",
-    "title": "???????????????",
+    "title": "睡不着时望着舷窗外的星环发呆。",
     "year": "2020.5",
     "src": "/images/graphics/graphic-05.jpg",
     "width": 3045,
     "height": 18620,
-    "captionHtml": "???????????????<br>2020.5"
+    "captionHtml": "睡不着时望着舷窗外的星环发呆。<br>2020.5"
   },
   {
     "id": "self-2014",
-    "title": "???",
+    "title": "自画像",
     "year": "2014.6",
     "src": "/images/graphics/graphic-01.jpg",
     "width": 1472,
     "height": 1098,
-    "captionHtml": "???<br>2014.6"
+    "captionHtml": "自画像<br>2014.6"
   },
   {
     "id": "self-2015",
-    "title": "???",
+    "title": "自画像",
     "year": "2015.5",
     "src": "/images/graphics/graphic-03.jpg",
     "width": 1600,
     "height": 1066,
-    "captionHtml": "???<br>2015.5"
+    "captionHtml": "自画像<br>2015.5"
   },
   {
     "id": "comic-character",
-    "title": "????",
+    "title": "漫画人设",
     "year": "2016.6",
     "src": "/images/graphics/graphic-02.jpg",
     "width": 1600,
     "height": 1066,
-    "captionHtml": "???? <br> 2016.6"
+    "captionHtml": "漫画人设 <br> 2016.6"
   }
 ]
