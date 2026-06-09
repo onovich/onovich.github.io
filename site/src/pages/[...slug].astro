@@ -93,6 +93,8 @@ function sectionBody(section) {
             width={section.items[0].width}
             height={section.items[0].height}
             loading="eager"
+            decoding="async"
+            fetchpriority="high"
           />
         </div>
       )}
@@ -118,6 +120,9 @@ function sectionBody(section) {
               alt={section.items[0].title || ''}
               width={section.items[0].width}
               height={section.items[0].height}
+              loading="eager"
+              decoding="async"
+              fetchpriority="high"
             />
           )}
           <hr class="home-divider" />

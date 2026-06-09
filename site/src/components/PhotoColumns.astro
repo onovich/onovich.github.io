@@ -26,7 +26,9 @@ const { items, showCaptions = false, lightbox = false } = Astro.props;
         alt={[item.title, item.year].filter(Boolean).join('')}
         width={item.width}
         height={item.height}
-        loading={index < 9 ? 'eager' : 'lazy'}
+        loading={index < 6 ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchpriority={index === 0 ? 'high' : undefined}
       />
     );
 
