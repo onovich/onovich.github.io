@@ -39,8 +39,8 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html {
   scroll-behavior: smooth;
-  /* Cargo's predefined preset sets root font-size to 12.96px (≈81% of 16). */
-  font-size: clamp(11.06px, 0.9vw, 12.96px);
+  /* Cargo's preset reaches 12.96px at desktop and 15.55px at wide. */
+  font-size: clamp(11.06px, 0.9vw, 15.55px);
 }
 
 @media (max-width: 768px) {
