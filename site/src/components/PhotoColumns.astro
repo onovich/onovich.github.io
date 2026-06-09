@@ -12,12 +12,13 @@ interface PhotoItem {
 interface Props {
   items: PhotoItem[];
   showCaptions?: boolean;
+  lightbox?: boolean;
 }
 
-const { items, showCaptions = false } = Astro.props;
+const { items, showCaptions = false, lightbox = false } = Astro.props;
 ---
 
-<div class={`photo-columns${showCaptions ? ' photo-columns--captions' : ''}`}>
+<div class={`photo-columns${showCaptions ? ' photo-columns--captions' : ''}${lightbox ? ' photo-columns--lightbox pswp-gallery' : ''}`}>
   {items.map((item, index) => {
     const media = (
       <img
@@ -31,7 +32,19 @@ const { items, showCaptions = false } = Astro.props;
 
     return (
       <figure class="photo-card">
-        {item.href ? (
+        {lightbox ? (
+          <a
+            class="photo-card__image photo-card__image--lightbox"
+            href={item.src}
+            data-pswp-width={item.width ?? 1200}
+            data-pswp-height={item.height ?? 900}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Open ${[item.title, item.year].filter(Boolean).join(' ') || 'photo'}`}
+          >
+            {media}
+          </a>
+        ) : item.href ? (
           <a class="photo-card__image" href={item.href}>
             {media}
           </a>

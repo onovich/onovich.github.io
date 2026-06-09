@@ -101,6 +101,7 @@ function sectionBody(section) {
         <PhotoColumns
           items={section.items || []}
           showCaptions={section.params?.showCaptions !== false && section.params?.captionMode !== 'none'}
+          lightbox={section.type === 'photo-detail'}
         />
       )}
 
