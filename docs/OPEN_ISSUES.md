@@ -11,8 +11,8 @@
 ## 当前 TODO 摘要（2026-06-10）
 
 1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
-2. P1：用 Playwright `getComputedStyle()` 消除字号、行高、列对齐、gallery 断点列数残差。
-3. P1：把 gallery 每个断点真实列数实测后写进 CSS。
+2. P1：继续用 `visual:measure` 消除 bodycopy 行高、内页顶部 y、wide 断点 root font-size 残差。
+3. P1：继续实测并复核 gallery 每个断点列数；codes 当前 5 断点列数已对齐。
 4. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
 
 ---
@@ -41,16 +41,18 @@
 
 **症状**：当前 `https://blog.onovich.com/` 的样式与 `https://onovich.com/` 仍有可见残差：
 - v2.2.0 已修：左 4/8 grid、汉堡菜单、root font-size 12.96px、avatar+hr+bio
-- 残差：clone 字号略大、行高略松、列上下对齐略偏
-- 缩略图列数还没按断点对齐（原站列数由 Cargo runtime JS 注入 `[thumbnails-cols]` 属性）
+- 已修：codes gallery caption 从大字号 structured caption 改为 Cargo 风格 12px HTML caption；`visual:measure` 桌面 title/tags font-size 与 line-height delta 均为 0。
+- 残差：bodycopy 行高仍偏松、内页右栏 y 偏高、wide 断点 root font-size 偏小。
+- 缩略图列数需要继续复核其它 gallery 页面；codes 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列）。
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
 **自动门禁**：`site/scripts/visual-layout-check.mjs` 已加入，npm 脚本为 `npm run visual:check`；用于快速阻止左导航/返回链接消失这类 P0 回归。
+**数值探针**：`site/scripts/visual-style-report.mjs` 已加入，npm 脚本为 `npm run visual:measure`；用于输出原站/clone 的 bbox、font-size、line-height、gallery columns delta。
 
 **下一步**（任务 #18 后续 / P0）：
-1. 用 Playwright `getComputedStyle()` 对照原站 5 断点的关键元素（h1/h2/bodycopy/.thumb_image/.title/.tags），抽出精确像素值
-2. 调 `global.css` 直到 5 断点截图差异 < 5px
-3. 缩略图列数：实测原站每个断点显示几列后写进 `@media`
+1. 用 `npm run visual:measure -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel --viewports=mobile,tablet,laptop,desktop,wide` 继续抽精确像素值。
+2. 调 `global.css` 直到 5 断点截图差异 < 5px。
+3. 缩略图列数：继续实测 game / pixel / illustrator / graphic 的断点列数，再决定是否写进 `@media`。
 
 ---
 

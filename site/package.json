@@ -17,6 +17,7 @@
     "cms:smoke": "node scripts/cms-smoke.mjs",
     "visual:check": "node scripts/visual-layout-check.mjs",
     "visual:diff": "node scripts/visual-diff.mjs",
+    "visual:measure": "node scripts/visual-style-report.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

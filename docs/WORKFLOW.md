@@ -182,11 +182,12 @@ curl -sL \
 1. cd site && npm run build
 2. npm run preview -- --host 127.0.0.1 --port 4350
 3. npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
-4. npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
-5. Read 6 张关键截图（home/codes/pixel × desktop/mobile original/clone）
-6. 写出可见差异清单（量化或定性）
-7. 不通过 → 继续改 → 回到 1
-8. 通过 → commit + push → 等 Actions → curl 线上验 build-version
+4. npm run visual:measure -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
+5. npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
+6. Read 6 张关键截图（home/codes/pixel × desktop/mobile original/clone）
+7. 写出可见差异清单（量化或定性）
+8. 不通过 → 继续改 → 回到 1
+9. 通过 → commit + push → 等 Actions → curl 线上验 build-version
 ```
 
 **绝对禁止的事**：

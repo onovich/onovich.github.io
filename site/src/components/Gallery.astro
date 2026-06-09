@@ -28,6 +28,7 @@ interface Props {
   natural?: boolean;
   columns?: 2 | 3;
   showCaptions?: boolean;
+  captionMode?: 'structured' | 'title-desc-links' | 'html';
   className?: string;
 }
 
@@ -38,6 +39,7 @@ const {
   natural = false,
   columns = 3,
   showCaptions = true,
+  captionMode = 'structured',
   className = '',
 } = Astro.props;
 
@@ -50,6 +52,32 @@ const galleryClass = [
   !showCaptions ? 'thumbnails--no-captions' : '',
   className,
 ].filter(Boolean).join(' ');
+
+function escapeHtml(value: string | number | undefined) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function generatedCaptionHtml(item: GalleryItemData) {
+  if (captionMode !== 'title-desc-links') return '';
+
+  const links = (item.links || []).map((link) => (
+    `<a href="${escapeHtml(link.url || '#')}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label || 'Link')}</a>`
+  )).join(' / ');
+
+  const lines = [
+    item.title ? `<b>${escapeHtml(item.title)}</b>` : '',
+    item.desc ? escapeHtml(item.desc) : '',
+    item.year ? escapeHtml(item.year) : '',
+    links,
+  ].filter(Boolean);
+
+  return lines.join('<br>');
+}
 ---
 
 <div class="thumbnails-container">
@@ -75,10 +103,10 @@ const galleryClass = [
             fetchpriority={index === 0 ? 'high' : undefined}
           />
         </a>
-        {showCaptions && item.captionHtml && (
-          <figcaption class="caption" set:html={item.captionHtml} />
+        {showCaptions && (item.captionHtml || generatedCaptionHtml(item)) && (
+          <figcaption class="caption" set:html={item.captionHtml || generatedCaptionHtml(item)} />
         )}
-        {showCaptions && !item.captionHtml && (
+        {showCaptions && !item.captionHtml && !generatedCaptionHtml(item) && (
           <figcaption>
             <div class="title">{item.title}</div>
             {(item.desc || item.year || (item.links && item.links.length > 0)) && (
