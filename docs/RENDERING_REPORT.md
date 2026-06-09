@@ -71,7 +71,7 @@ font-family h2:    "Nunito, Icons"
 颜色 h2:           rgba(54,54,54,0.85), font-weight 300
 ```
 
-> bodycopy 的 line-height **是绝对像素 16px** 而不是相对值。这是 Cargo 的怪癖，会导致中文文本行间距很挤。我们 clone 用了 `1.6` 倍数，看起来更舒服，差异可接受。
+> bodycopy 的 line-height **是绝对像素 16px** 而不是相对值。2026-06-10 已将 clone 的 `bodycopy` / main content 行高同步为 `16px`，codes 5 断点 `bodycopy.lineHeight` delta 均为 0。
 
 ---
 
@@ -86,7 +86,8 @@ font-family h2:    "Nunito, Icons"
 - 原站：缩略图网格，宽度 58%，3 列布局（待 networkidle 长等才能加载缩略图）
 - Clone：3 列宽 `--thumbnails-width: 58%`，已对齐
 - 2026-06-10 更新：`codes` 实际运行时使用 `.gallery_image_caption` 小字 caption，而不是 `.thumbnails .title/.tags` 大字号。clone 已切到 `captionMode="title-desc-links"`，`visual:measure` desktop 下 title/tags font-size 和 line-height delta 为 0。
-- 残差：bodycopy line-height、内页 main y、wide root font-size 仍需后续节点继续收。
+- 2026-06-10 更新：`bodycopy` / main content 行高已改回原站 `16px`；codes 5 断点 `bodycopy.lineHeight` delta 均为 0。
+- 残差：内页 main y、main width、wide root font-size 仍需后续节点继续收。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid

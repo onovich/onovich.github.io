@@ -152,7 +152,7 @@ bodycopy {
   font-size: 1.3rem;
   font-weight: 200;
   color: var(--text);
-  line-height: 1.6;
+  line-height: 16px;
   font-family: var(--font-zh);
 }
 
@@ -215,7 +215,7 @@ small {
 
 .home-grid__col { padding: 0; }
 .home-grid__col--nav  { padding-top: 0; }
-.home-grid__col--main { font-size: 1.3rem; line-height: 1.6; }
+.home-grid__col--main { font-size: 1.3rem; line-height: 16px; }
 
 .page-home .home-grid__col--main { padding-top: 7.3rem; }
 .page-inner .home-grid__col--main { padding-top: 5.5rem; }
