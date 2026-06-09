@@ -50,7 +50,7 @@ npm run visual:check -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel -
 npm run visual:check -- --pages=codes --viewports=desktop --targets=original,clone
 ```
 
-`codes.desktop.clone.png` 已人工查看，左侧导航存在；线上 `blog.onovich.com/codes` 与原站同样通过布局框检查。当前最高优先级改为：**继续消除右栏顶部 y、main width、wide root font-size 和其它 gallery 断点列数残差**，并把 `visual:check` + `visual:measure` + `visual:diff` 作为每次视觉变更的门禁。
+`codes.desktop.clone.png` 已人工查看，左侧导航存在；线上 `blog.onovich.com/codes` 与原站同样通过布局框检查。`visual:measure` 已新增 `mainAnchor`，旧 `main.y` 只是右栏列盒位置，不再单独作为视觉残差依据。当前最高优先级改为：**继续用 `mainAnchor.y` / `thumbnails.y` 收内页顶部视觉位置，再处理 main width、wide root font-size 和其它 gallery 断点列数残差**，并把 `visual:check` + `visual:measure` + `visual:diff` 作为每次视觉变更的门禁。
 
 ---
 
@@ -227,7 +227,7 @@ npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 
 ### Step 2 — 继续缩小视觉差异
 
-优先处理右栏顶部 y、main width、wide root font-size、其它 gallery 断点列数这些残差。Codes caption 已在 2026-06-10 切为 Cargo 风格 12px HTML caption；bodycopy / main content 行高也已同步为原站 `16px`，codes 5 断点 delta 为 0。
+优先处理 `mainAnchor.y` / `thumbnails.y`、main width、wide root font-size、其它 gallery 断点列数这些残差。Codes caption 已在 2026-06-10 切为 Cargo 风格 12px HTML caption；bodycopy / main content 行高也已同步为原站 `16px`，codes 5 断点 delta 为 0。注意：旧 `main.y` 测的是右栏列盒，不等于首个可见内容起点；codes 5 断点 `mainAnchor.y` delta 约为 mobile `-33.32px`、tablet `-25.54px`、laptop `-18.56px`、desktop `-4.51px`、wide `-27.44px`。
 
 ### Step 3 — 如果仍偏差大
 

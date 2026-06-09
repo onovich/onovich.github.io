@@ -11,7 +11,7 @@
 ## 当前 TODO 摘要（2026-06-10）
 
 1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
-2. P1：继续用 `visual:measure` 消除内页顶部 y、main width、wide 断点 root font-size 残差。
+2. P1：继续用 `visual:measure` 的 `mainAnchor.y` / `thumbnails.y` 消除内页顶部视觉残差，再处理 main width、wide 断点 root font-size。
 3. P1：继续实测并复核 gallery 每个断点列数；codes 当前 5 断点列数已对齐。
 4. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
 
@@ -43,12 +43,14 @@
 - v2.2.0 已修：左 4/8 grid、汉堡菜单、root font-size 12.96px、avatar+hr+bio
 - 已修：codes gallery caption 从大字号 structured caption 改为 Cargo 风格 12px HTML caption；`visual:measure` 桌面 title/tags font-size 与 line-height delta 均为 0。
 - 已修：bodycopy / main content 行高改回原站绝对 `16px`；codes 5 断点 `bodycopy.lineHeight` delta 均为 0。
-- 残差：内页右栏 y 偏高、main width 略窄、wide 断点 root font-size 偏小。
+- 已澄清：旧 `main.y` 测到的是右栏列盒，不能代表首个可见内容；`visual:measure` 已新增 `mainAnchor`。桌面 home 首个内容 delta 约 `-0.62px`，codes/pixel `< HOME` delta 约 `-4.51px`，gallery 顶部 `thumbnails.y` delta 约 `-10.96px`。
+- 5 断点复核：codes 的 `mainAnchor.y` delta 约 mobile `-33.32px`、tablet `-25.54px`、laptop `-18.56px`、desktop `-4.51px`、wide `-27.44px`；下一轮应按断点收顶部间距，而不是用单一 desktop padding 猜。
+- 残差：内页 gallery 顶部仍略高、main width 略窄、wide 断点 root font-size 偏小。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列）。
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
 **自动门禁**：`site/scripts/visual-layout-check.mjs` 已加入，npm 脚本为 `npm run visual:check`；用于快速阻止左导航/返回链接消失这类 P0 回归。
-**数值探针**：`site/scripts/visual-style-report.mjs` 已加入，npm 脚本为 `npm run visual:measure`；用于输出原站/clone 的 bbox、font-size、line-height、gallery columns delta。
+**数值探针**：`site/scripts/visual-style-report.mjs` 已加入，npm 脚本为 `npm run visual:measure`；用于输出原站/clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns delta。
 
 **下一步**（任务 #18 后续 / P0）：
 1. 用 `npm run visual:measure -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel --viewports=mobile,tablet,laptop,desktop,wide` 继续抽精确像素值。
