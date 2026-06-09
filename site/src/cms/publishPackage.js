@@ -1,10 +1,11 @@
 import { clone } from './state.js';
+import { CMS_UPLOAD_TARGET_DIR, collectCmsUploadAssets } from './uploadAssets.js';
 
 export const CMS_PUBLISH_TARGETS = Object.freeze([
   'site/src/content/site.json',
   'site/src/content/*.json',
   'site/src/content/poem.html',
-  'site/public/images/uploads',
+  CMS_UPLOAD_TARGET_DIR,
 ]);
 
 export function createCmsPublishPackage({
@@ -15,6 +16,8 @@ export function createCmsPublishPackage({
   const pages = Array.isArray(state.pages) ? state.pages : [];
   const sidebar = Array.isArray(state.sidebar) ? state.sidebar : [];
   const payload = clone(state);
+  const uploadAssets = collectCmsUploadAssets(payload);
+  payload.assets = uploadAssets;
   const errors = issues.filter(issue => issue?.level === 'error');
   const warnings = issues.filter(issue => issue?.level !== 'error');
 
@@ -33,6 +36,12 @@ export function createCmsPublishPackage({
         errors: errors.length,
         warnings: warnings.length,
         issues: clone(issues),
+      },
+      uploads: {
+        count: uploadAssets.length,
+        targetDir: CMS_UPLOAD_TARGET_DIR,
+        paths: uploadAssets.map(asset => asset.targetPath),
+        totalBytes: uploadAssets.reduce((sum, asset) => sum + (Number(asset.size) || 0), 0),
       },
       publishTargets: [...CMS_PUBLISH_TARGETS],
     },

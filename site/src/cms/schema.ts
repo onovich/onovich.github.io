@@ -56,6 +56,7 @@ export interface CmsSeed {
   nav: NavConfig;
   presets: PresetRegistry;
   pages: CmsPage[];
+  assets?: CmsAsset[];
 }
 
 export interface SiteMeta {
@@ -161,6 +162,20 @@ export interface ContentItem {
 export interface ContentLink {
   label: string;
   url: string;
+}
+
+export interface CmsAsset {
+  id: string;
+  src: string;
+  targetPath?: string;
+  originalUrl?: string;
+  width: number;
+  height: number;
+  mimeType: string;
+  alt?: string;
+  source: 'original-site' | 'upload' | 'manual';
+  size?: number;
+  dataUrl?: string;
 }
 
 export interface SeoParams {
