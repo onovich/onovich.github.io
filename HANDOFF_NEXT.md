@@ -1,6 +1,6 @@
 # 下一任 Agent 接手说明（HANDOFF_NEXT）
 
-> 写于 2026-04-29，会话即将交接。目标：让后续 agent 不重复踩坑，直接从正确状态继续。
+> 更新于 2026-06-09。目标：让后续 agent 不重复踩坑，直接从正确状态继续。
 
 ---
 
@@ -8,44 +8,13 @@
 
 ### 线上状态
 
-- 线上 `https://blog.onovich.com` 当前应部署到最近一次成功 commit：`a3caa8e Add agent handoff guide and rendering report from Playwright probe` 或之后 Actions 成功的 commit。
-- 线上可见版本号大概率是 `v2.2.0-astro · 2026-04-29`。
-- 线上最大问题：**进入子页面后左侧导航/侧边栏消失**，与原站不符。
+- `https://blog.onovich.com` 由 GitHub Pages 部署 `site/` 构建结果。
+- 域名必须保持 `blog.onovich.com`；不要把 Pages CNAME 改成主域名 `onovich.com`。
+- 下一轮需要重点回归：内页左侧导航是否在线上保留、整体视觉差异是否低于当前门槛。
 
 ### 本地工作区状态
 
-当前工作区有**未提交草稿改动**：
-
-```txt
-M site/src/layouts/BaseLayout.astro
-M site/src/pages/index.astro
-M site/src/styles/global.css
-```
-
-这组草稿尝试修复"内页缺少左侧导航"：
-
-- 删除 `variant: home | inner` 的区分
-- 所有页面统一显示左 4/12 的 Onovich 分类导航
-- 右 8/12 显示当前页面内容
-- 非首页右栏顶部增加 `< HOME` 返回链接
-- 版本号改为 `v2.3.0-astro · 2026-04-29`
-
-**重要**：这组改动**还没有经过视觉验证，不要直接 push**。
-
-草稿 diff 已保存为：
-
-```txt
-docs/DRAFT_V2_3_INNER_NAV.patch
-```
-
-后续 agent 可以：
-
-```bash
-# 查看草稿
-git diff -- site/src/layouts/BaseLayout.astro site/src/pages/index.astro site/src/styles/global.css
-
-# 如果不想使用草稿，谨慎确认后再丢弃；不要盲目 reset。
-```
+旧 Electron `admin/` 后台已移除，后续只沿站内 `/cms` 网页 CMS 演进。提交前仍要注意：`.claude/settings.local.json` 是本地设置变化，不要随手提交。
 
 ---
 
@@ -73,7 +42,7 @@ MESSAGE               x≈112 y≈450
 右侧内容区             x≈514 起
 ```
 
-所以后续第一件事是：**把这个内页左侧导航修复验证通过**。
+所以后续第一件事是：**把内页左侧导航做线上和截图回归确认**。代码当前已经按 v2.3.0 风格渲染左侧导航，但仍要用 visual-diff 和线上页面确认。
 
 ---
 
@@ -209,9 +178,9 @@ viewport <= 768 → body.mobile full_width
 
 ## 6. 推荐下一步具体操作
 
-### Step 1 — 先验证当前草稿
+### Step 1 — 回归确认内页导航和视觉差异
 
-当前工作区已经有 v2.3.0 草稿。不要立刻 push。先本地 build：
+先本地 build：
 
 ```bash
 cd <PROJECT_ROOT>/site
@@ -242,14 +211,9 @@ node scripts/visual-diff.mjs --clone=http://localhost:4350 --pages=home,codes,pi
 <PROJECT_ROOT>/diff-screenshots/pixel.mobile.clone.png
 ```
 
-### Step 2 — 如果 codes clone 有左侧导航且位置基本对
+### Step 2 — 继续缩小视觉差异
 
-再 commit：
-
-```bash
-git add site/src/layouts/BaseLayout.astro site/src/pages/index.astro site/src/styles/global.css docs/DRAFT_V2_3_INNER_NAV.patch
-# 以及本交接文档
-```
+如果 `codes` clone 有左侧导航，就继续处理字号、行高、列间距、缩略图断点列数这些残差。
 
 ### Step 3 — 如果仍偏差大
 
@@ -281,12 +245,13 @@ git add site/src/layouts/BaseLayout.astro site/src/pages/index.astro site/src/st
 
 建议把已有任务调整为：
 
-- P0：修复内页左侧导航缺失（当前草稿待验证）
+- P0：内页左侧导航线上/截图回归确认
 - P0：建立并执行视觉验证门禁（不要再绕过）
-- P1：消除整体缩放/尺寸偏差
+- P1：消除整体缩放、字号、行高、列对齐残差
 - P1：实测并复刻 gallery 每个断点列数
 - P2：photos 02-07 缺图（用户说后期手动补）
-- P3：Electron admin 端到端验证
+- P2：拆分 `site/src/pages/cms.astro` 单体，网页 CMS 作为唯一后台继续演进
+- P3：完善 CMS 发布包应用、预览稳定性和校验覆盖
 
 ---
 

@@ -11,7 +11,7 @@
 
 ## 目标
 
-把 **onovich.com**（Cargo 托管的个人作品集）复刻到 **GitHub Pages + Astro 静态站 + 本地 Electron 发布后台**，**像素级一致**。最终域名分工：
+把 **onovich.com**（Cargo 托管的个人作品集）复刻到 **GitHub Pages + Astro 静态站 + 站内网页 CMS**，**像素级一致**。最终域名分工：
 
 - `https://onovich.com` → Cargo 原站（**保留**，作为对照基准）
 - `https://blog.onovich.com` → 我们复刻的 Astro 新站（GitHub Pages）
@@ -40,8 +40,6 @@
 │       ├── styles/global.css           ← ★ 当前样式还不像原站，需重写
 │       ├── content/*.json              ← 数据
 │       └── pages/*.astro               ← 12 个页面
-├── admin/                   ← Electron 发布后台（已写完，未端到端验证）
-│   ├── main.js / preload.js / renderer/
 └── .github/workflows/deploy.yml ← Node 22, build site/, deploy to Pages
 ```
 
@@ -56,14 +54,14 @@
 | 内容数据（codes/games/pixel/illustrations/gifs/graphics/sns/poems） | ✅ 已填 |
 | 图片迁移 | ⚠️ photos 02-07 仍缺，需从原站抓 |
 | **CSS / 布局** | ❌ **当前是顶部 navbar + 汉堡菜单，原站是左侧 sidebar，全错。需要按 `_reference-site/stylesheet.css` 重写** |
-| Electron admin | ⚠️ 代码已写，未走过端到端验证 |
+| 网页 CMS | ✅ 保留为唯一后台演进方向，旧 Electron admin 已移除 |
 
 **TaskList 当前任务**（按优先级）：
 
 - `#17` 从原站 CSS 反推真实样式规范（blocks #16）
 - `#16` 按真实规范重写 Astro 站布局与样式（blocked by #17）
 - `#14` 迁移 photos 02-07 缺失图片
-- `#15` Electron admin 端到端验证
+- 后续 CMS 演进：拆分 `site/src/pages/cms.astro` 单体，完善预览 / 导出 / 发布链路
 
 ---
 
@@ -133,7 +131,7 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 3. **#14 photos 02-07**：从 `_reference-site/photo.html` 提取 `freight.cargo.site` 的真实图片 URL，curl 下载
 
-4. **#15 Electron admin**：本地启动 → 编辑一个 JSON → 导入一张图片 → publish → 看 Actions 是否触发
+4. **网页 CMS 演进**：围绕 `/cms` 完善编辑、预览、导出发布包与 `cms:check` 校验；不再维护旧 Electron admin
 
 ---
 

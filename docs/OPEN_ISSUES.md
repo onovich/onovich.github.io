@@ -8,9 +8,9 @@
 
 ---
 
-## 🔴 1. 内页左侧导航缺失（当前 P0）
+## 🔴 1. 内页左侧导航需要线上回归确认（当前 P0）
 
-**症状**：线上 `blog.onovich.com/codes` 等子页面进入后，左侧 Onovich 分类导航消失；原站 `onovich.com/codes` 会保留左侧导航列，并在右侧显示 `< HOME` + 内容。
+**症状**：早期线上 `blog.onovich.com/codes` 等子页面进入后，左侧 Onovich 分类导航消失；原站 `onovich.com/codes` 会保留左侧导航列，并在右侧显示 `< HOME` + 内容。
 
 **已确认事实**（Playwright 实测 `onovich.com/codes` 1440px）：
 - H1 Onovich at x≈112 y≈58
@@ -18,13 +18,9 @@
 - GAMES / PIXEL / ... / MESSAGE 都在左列
 - 右侧内容区从 x≈514 开始
 
-**当前状态**：工作区有 v2.3.0 草稿（未提交）尝试修复此问题：
-- `site/src/layouts/BaseLayout.astro`
-- `site/src/pages/index.astro`
-- `site/src/styles/global.css`
-- diff 另存为 `docs/DRAFT_V2_3_INNER_NAV.patch`
+**当前状态**：代码侧已经进入 v2.3.0 风格，`BaseLayout.astro` 会在首页和内页渲染左侧 Onovich 分类导航；但仍需要对线上部署结果和 visual-diff 截图做一次回归确认。
 
-**下一步**：接手者必须先执行 visual-diff 门禁，确认 `codes.desktop.clone.png` 有左侧导航，再决定是否 commit/push。详见 `HANDOFF_NEXT.md`。
+**下一步**：执行 visual-diff 门禁，确认 `codes.desktop.clone.png` 与线上 `blog.onovich.com/codes` 都有左侧导航，再把本项降级为已解决。
 
 ---
 
@@ -46,9 +42,9 @@
 
 ## 🟢 3. 工作区曾经有的错误中间产物
 
-**说明**：早期会话遗留过 working tree 改动，已在 v2.2.0 commit 中清理。**当前**工作区还有 v2.3.0 草稿（修内页侧栏），见 #1。
+**说明**：早期会话遗留过 working tree 改动，已在 v2.2.0 commit 中清理；后续不要把临时截图、旧站反例或本地设置误提交。
 
-**下一步**：v2.3.0 草稿必须先经 visual-diff 验证才能 commit。
+**下一步**：提交前继续只 stage 相关文件；不要提交 `.claude/settings.local.json`、`diff-screenshots/`、`_old-site/`。
 
 ---
 
@@ -66,18 +62,11 @@
 
 ---
 
-## 🟡 5. Electron admin 未端到端验证
+## 🟡 5. 网页 CMS 需要拆分和发布链路打磨
 
-**症状**：`admin/main.js` `preload.js` `renderer/` 代码已写但从未走过完整流程。
+**当前**：项目不再维护双后台。旧 `admin/` Electron 管理端已移除，后续只沿站内 `/cms` 网页 CMS 演进。
 
-**未验证项**：
-- 启动后能否正确列出所有 section
-- JSON 编辑保存
-- 拖拽导入图片到 `site/public/images/<section>/`
-- 启动本地 astro dev 预览
-- 一键 git push 触发 GitHub Actions
-
-**下一步**（任务 #15）：等 #16 视觉复刻通过后再做。否则 admin 跑出来发布的也是错样式。
+**下一步**：把 `site/src/pages/cms.astro` 的样式、状态管理、预览、导入导出、富文本编辑逐步拆出；同时完善发布包应用脚本与 `npm run cms:check` 校验覆盖。
 
 ---
 
