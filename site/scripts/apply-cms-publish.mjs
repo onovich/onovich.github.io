@@ -29,9 +29,11 @@ function writeText(relativePath, value) {
   targets.set(relativePath, value.endsWith('\n') ? value : `${value}\n`);
 }
 
-function firstSectionItems(pageId) {
+function sectionItems(pageId, sectionFilter = () => true) {
   const page = pageById.get(pageId);
-  return page?.sections?.flatMap((section) => section.items || []) || [];
+  return page?.sections
+    ?.filter(sectionFilter)
+    .flatMap((section) => section.items || []) || [];
 }
 
 function bodyHtml(pageId) {
@@ -52,12 +54,17 @@ function stripCmsOnlyItemFields(item) {
 }
 
 function publishGallery(pageId, fileName) {
-  writeJson(`src/content/${fileName}.json`, firstSectionItems(pageId).map(stripCmsOnlyItemFields));
+  writeJson(
+    `src/content/${fileName}.json`,
+    sectionItems(pageId, (section) => section.type === 'gallery').map(stripCmsOnlyItemFields),
+  );
 }
 
 function publishPhotoAlbums() {
   const photoPage = pageById.get('photo');
-  const index = photoPage?.sections?.flatMap((section) => section.items || []) || [];
+  const index = photoPage?.sections
+    ?.filter((section) => section.type === 'photo-index')
+    .flatMap((section) => section.items || []) || [];
   const albums = pages
     .filter((page) => page.templateId === 'photo-detail')
     .map((page) => ({
