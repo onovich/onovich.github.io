@@ -19,6 +19,8 @@ interface GalleryItemData {
   height?: number;
   links?: GalleryLink[];
   captionHtml?: string;
+  hideCaption?: boolean;
+  span?: 'all';
 }
 
 interface Props {
@@ -83,7 +85,7 @@ function generatedCaptionHtml(item: GalleryItemData) {
 <div class="thumbnails-container">
   <div class={galleryClass} id="gallery">
     {items.map((item, index) => (
-      <figure class={`thumb has_title${wide ? ' thumb--wide' : ''}`}>
+      <figure class={`thumb has_title${wide ? ' thumb--wide' : ''}${item.span === 'all' ? ' thumb--span-all' : ''}`}>
         <a
           class="thumb_image_link"
           href={item.src}
@@ -103,10 +105,10 @@ function generatedCaptionHtml(item: GalleryItemData) {
             fetchpriority={index === 0 ? 'high' : undefined}
           />
         </a>
-        {showCaptions && (item.captionHtml || generatedCaptionHtml(item)) && (
+        {showCaptions && !item.hideCaption && (item.captionHtml || generatedCaptionHtml(item)) && (
           <figcaption class="caption" set:html={item.captionHtml || generatedCaptionHtml(item)} />
         )}
-        {showCaptions && !item.captionHtml && !generatedCaptionHtml(item) && (
+        {showCaptions && !item.hideCaption && !item.captionHtml && !generatedCaptionHtml(item) && (
           <figcaption>
             <div class="title">{item.title}</div>
             {(item.desc || item.year || (item.links && item.links.length > 0)) && (

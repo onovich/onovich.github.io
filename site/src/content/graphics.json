@@ -1,5 +1,14 @@
 [
   {
+    "id": "yellow-window",
+    "title": "Yellow window",
+    "src": "/images/graphics/graphic-06.jpg",
+    "width": 3045,
+    "height": 2660,
+    "span": "all",
+    "hideCaption": true
+  },
+  {
     "id": "comet-night",
     "title": "每当彗星来临的夜晚，奥诺维奇上尉就彻夜难眠。一次次他以为是故乡的人来接他，可那来自星辰的熟悉感又总稍纵即逝。",
     "year": "2020.5",

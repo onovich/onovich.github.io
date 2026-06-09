@@ -471,6 +471,10 @@ body.page-contact .site-footer {
   contain-intrinsic-size: 240px 320px;
 }
 
+.thumbnails .thumb--span-all {
+  grid-column: 1 / -1;
+}
+
 .thumbnails--dense .thumb {
   padding: 0.125rem;
 }

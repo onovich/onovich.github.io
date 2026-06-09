@@ -123,7 +123,11 @@ async function collectStyleMetrics(page) {
       if (options.pick === 'right') {
         filtered.sort((a, b) => b.getBoundingClientRect().x - a.getBoundingClientRect().x);
       } else {
-        filtered.sort((a, b) => a.getBoundingClientRect().x - b.getBoundingClientRect().x);
+        filtered.sort((a, b) => {
+          const rectA = a.getBoundingClientRect();
+          const rectB = b.getBoundingClientRect();
+          return rectA.y - rectB.y || rectA.x - rectB.x;
+        });
       }
 
       return filtered[0] || null;
@@ -169,10 +173,11 @@ async function collectStyleMetrics(page) {
     const mainAnchor = findMainAnchor(mainColumn);
 
     const thumbElements = Array.from(document.querySelectorAll(selectors.thumb)).filter(visible);
+    const thumbImageElements = Array.from(document.querySelectorAll(selectors.thumbImage)).filter(visible);
     const thumbRects = thumbElements.map((element) => element.getBoundingClientRect());
-    const firstRowTop = thumbRects.length > 0 ? Math.min(...thumbRects.map((rect) => rect.y)) : null;
-    const firstRowRects = firstRowTop === null ? [] : thumbRects.filter((rect) => Math.abs(rect.y - firstRowTop) < 3);
-    const firstRowX = firstRowRects.map((rect) => round(rect.x)).sort((a, b) => a - b);
+    const thumbImageRects = thumbImageElements.map((element) => element.getBoundingClientRect());
+    const galleryRows = analyzeRows(thumbImageRects.length > 0 ? thumbImageRects : thumbRects);
+    const galleryColumnRow = galleryRows.find((row) => row.count > 1) || galleryRows[0] || null;
 
     const thumbnails = pick(selectors.thumbnails);
     const cargoCols = thumbnails?.getAttribute('thumbnails-cols') || thumbnails?.getAttribute('thumbnails-columns') || '';
@@ -202,27 +207,53 @@ async function collectStyleMetrics(page) {
       title: read(pick(selectors.title)),
       tags: read(pick(selectors.tags)),
       gallery: {
-        columns: firstRowX.length,
-        firstRowX,
+        columns: galleryColumnRow?.count || 0,
+        firstRowColumns: galleryRows[0]?.count || 0,
+        rowColumns: galleryRows.slice(0, 3).map((row) => row.count),
+        firstRowX: galleryColumnRow?.x || [],
         cargoCols,
-        itemCount: thumbRects.length,
+        itemCount: thumbImageRects.length || thumbRects.length,
       },
       gallerySections,
     };
+
+    function analyzeRows(rects) {
+      const rows = [];
+      for (const rect of [...rects].sort((a, b) => a.y - b.y || a.x - b.x)) {
+        let row = rows.find((candidate) => Math.abs(candidate.y - rect.y) < 3);
+        if (!row) {
+          row = { y: rect.y, rects: [] };
+          rows.push(row);
+        }
+        row.rects.push(rect);
+      }
+
+      return rows.map((row) => {
+        const sortedRects = row.rects.sort((a, b) => a.x - b.x);
+        return {
+          y: round(row.y),
+          count: sortedRects.length,
+          x: sortedRects.map((rect) => round(rect.x)),
+        };
+      });
+    }
 
     function readGallerySections(selector) {
       return Array.from(document.querySelectorAll(selector)).filter(visible).map((galleryElement, index) => {
         const thumbs = Array.from(galleryElement.querySelectorAll(selectors.thumb)).filter(visible);
         const images = Array.from(galleryElement.querySelectorAll(selectors.thumbImage)).filter(visible);
         const sectionThumbRects = thumbs.map((element) => element.getBoundingClientRect());
-        const rowTop = sectionThumbRects.length > 0 ? Math.min(...sectionThumbRects.map((rect) => rect.y)) : null;
-        const rowRects = rowTop === null ? [] : sectionThumbRects.filter((rect) => Math.abs(rect.y - rowTop) < 3);
+        const sectionImageRects = images.map((element) => element.getBoundingClientRect());
+        const rows = analyzeRows(sectionImageRects.length > 0 ? sectionImageRects : sectionThumbRects);
+        const columnRow = rows.find((row) => row.count > 1) || rows[0] || null;
 
         return {
           index,
           className: galleryElement.className?.toString?.() || '',
-          columns: rowRects.length,
-          itemCount: thumbs.length,
+          columns: columnRow?.count || 0,
+          firstRowColumns: rows[0]?.count || 0,
+          rowColumns: rows.slice(0, 3).map((row) => row.count),
+          itemCount: images.length || thumbs.length,
           gallery: read(galleryElement),
           thumb: read(thumbs[0]),
           thumbImage: read(images[0]),
@@ -290,6 +321,10 @@ function printTextReport(records) {
       const secondGallerySummary = secondGallery
         ? `g2=${secondGallery.columns}c ${fmt(secondGallery.thumbImage?.width)}x${fmt(secondGallery.thumbImage?.height)} h=${fmt(secondGallery.gallery?.height)}`
         : '';
+      const firstRowSummary = record.metrics.gallery.firstRowColumns
+        && record.metrics.gallery.firstRowColumns !== record.metrics.gallery.columns
+        ? `/first=${record.metrics.gallery.firstRowColumns}`
+        : '';
       console.log(
         [
           record.target.padEnd(8),
@@ -300,7 +335,7 @@ function printTextReport(records) {
           `thumb=${fmt(record.metrics.thumbImage?.width)}x${fmt(record.metrics.thumbImage?.height)}`,
           `title=${fmt(record.metrics.title?.fontSize)}/${fmt(record.metrics.title?.lineHeight)}`,
           `tags=${fmt(record.metrics.tags?.fontSize)}/${fmt(record.metrics.tags?.lineHeight)}`,
-          `cols=${record.metrics.gallery.columns}${record.metrics.gallery.cargoCols ? `(${record.metrics.gallery.cargoCols})` : ''}`,
+          `cols=${record.metrics.gallery.columns}${firstRowSummary}${record.metrics.gallery.cargoCols ? `(${record.metrics.gallery.cargoCols})` : ''}`,
           secondGallerySummary,
         ].filter(Boolean).join('  ')
       );
