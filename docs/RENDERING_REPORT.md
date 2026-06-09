@@ -12,6 +12,7 @@ cd site && node scripts/visual-diff.mjs                # 全量截图
 cd site && node scripts/visual-diff.mjs --pages=home   # 单页截图
 cd site && node scripts/visual-diff.mjs --clone=http://localhost:4350  # 用本地 dist 对照
 cd site && npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
+cd site && npm run visual:measure -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
 ```
 
 视口（VIEWPORTS）：
@@ -28,6 +29,8 @@ cd site && npm run visual:check -- --clone=http://localhost:4350 --pages=home,co
 页面（PAGES）：home, codes, game, pixel, illustrator, gif, graphic, photo, poem, sns, links, contact（contact 在原站路径是 `/contact-form`）。
 
 `visual:check` 是截图前的快速布局门禁：它用 Playwright 读取真实布局框，检查左侧 Onovich 导航、当前分类链接和内页 `< HOME` 返回链接是否仍在预期区域。它不能替代人工看截图，但能提前阻止内页导航消失这类 P0 回归。
+
+`visual:measure` 是数值探针：它复用同一套页面/视口/加载等待逻辑，输出原站和 clone 的 bbox、font-size、line-height、gallery columns 和 delta。先跑 measure，再决定 CSS 改哪里。
 
 ---
 
@@ -82,7 +85,8 @@ font-family h2:    "Nunito, Icons"
 ### Codes / Game `/codes` `/game`
 - 原站：缩略图网格，宽度 58%，3 列布局（待 networkidle 长等才能加载缩略图）
 - Clone：3 列宽 `--thumbnails-width: 58%`，已对齐
-- 残差：原站缩略图标题字号 1.8rem (≈23px)，clone 已用 1.8rem；图片 outline 1px 已加
+- 2026-06-10 更新：`codes` 实际运行时使用 `.gallery_image_caption` 小字 caption，而不是 `.thumbnails .title/.tags` 大字号。clone 已切到 `captionMode="title-desc-links"`，`visual:measure` desktop 下 title/tags font-size 和 line-height delta 为 0。
+- 残差：bodycopy line-height、内页 main y、wide root font-size 仍需后续节点继续收。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid

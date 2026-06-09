@@ -58,7 +58,7 @@
 **TaskList 当前任务**（按优先级）：
 
 - P0：执行并扩展视觉验证门禁
-- P1：消除整体缩放、字号、行高、列对齐残差，实测 gallery 断点列数
+- P1：消除整体缩放、行高、列对齐残差，实测 gallery 断点列数
 - P2：迁移 photos 02-07 缺失图片（用户说后期手动补）
 - P3：继续扩展发布/恢复校验覆盖
 
@@ -117,7 +117,7 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 ## 推荐继续工作的步骤
 
-1. **视觉回归**：本地 build 后跑 `visual:check` 和 `visual:diff`，再处理字号、行高、列对齐残差。
+1. **视觉回归**：本地 build 后跑 `visual:check`、`visual:measure` 和 `visual:diff`，再处理行高、列对齐和断点残差。Codes caption 已切到 Cargo 风格 12px HTML caption。
 
 2. **gallery 断点列数**：用 Playwright 实测原站 375 / 768 / 1024 / 1440 / 1920 每个断点列数，写入 CSS 媒体查询。
 
@@ -138,5 +138,6 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 - `_reference-site/` — 原站 HTML + CSS 归档（事实之源）
 - `site/scripts/visual-diff.mjs` — Playwright 截图对照脚本
 - `site/scripts/visual-layout-check.mjs` — 左侧导航/返回链接快速布局门禁
+- `site/scripts/visual-style-report.mjs` — computedStyle / bbox / gallery columns 数值探针
 - `MEMORY.md` 索引 → `~/.claude/projects/D--WebProjects-Onovich/memory/`（Claude 全局记忆）
 - 全局知识库 → `<GLOBAL_DOCS>`（跨项目的工作流方法）

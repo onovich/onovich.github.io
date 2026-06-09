@@ -54,6 +54,7 @@ function galleryProps(section) {
     wide: imageFit === 'cover-16-9',
     columns: params.columns === 2 ? 2 : 3,
     showCaptions: params.showCaptions !== false && params.captionMode !== 'none',
+    captionMode: params.captionMode || 'structured',
     className: spacing === 'flush' ? 'thumbnails--flush' : '',
   };
 }

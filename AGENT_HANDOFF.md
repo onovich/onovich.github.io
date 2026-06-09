@@ -53,7 +53,8 @@
 │   │   └── images/              ← 所有媒体文件，已 commit
 │   ├── scripts/
 │   │   ├── visual-diff.mjs      ← Playwright 截图对照脚本
-│   │   └── visual-layout-check.mjs ← 左侧导航/返回链接快速布局门禁
+│   │   ├── visual-layout-check.mjs ← 左侧导航/返回链接快速布局门禁
+│   │   └── visual-style-report.mjs ← computedStyle / bbox / 列数数值探针
 │   └── src/
 │       ├── layouts/BaseLayout.astro    ← 全局壳子，home/inner 两 variant
 │       ├── components/Gallery.astro    ← 画廊组件（PhotoSwipe 集成）
@@ -124,7 +125,7 @@
 - ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份、备份恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘
 
 ### 进行中 / 待做
-- 🟡 视觉残差消除（clone 字号略大、列对齐略偏；下一轮迭代用 `getComputedStyle` 对照清单逐项修）
+- 🟡 视觉残差消除（codes caption 已收敛；bodycopy 行高、右栏顶部 y、wide root font-size、部分 gallery 断点列数继续用 `visual:measure` 逐项修）
 - 🟡 photos 02-07 缺图（用户说非关键路径，后期手动补）
 - 🟡 网页 CMS 后续增强：围绕 `/cms`，但优先级低于视觉 P0/P1
 
@@ -149,6 +150,7 @@ npm run preview -- --host 127.0.0.1 --port 4350
 
 # 3. 跑 Playwright 截图对照（用本地预览作为 clone）
 npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
+npm run visual:measure -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
 npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 
 # 4. 用 Read 工具看 diff-screenshots/{slug}.{vp}.original.png 与 .clone.png
