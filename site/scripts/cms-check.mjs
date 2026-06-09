@@ -7,6 +7,7 @@ import { collectCmsDraftIssues } from '../src/cms/draftValidation.js';
 import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publishPackage.js';
 import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
+import { classifyCmsAssetSrc, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = path.join(root, 'src');
@@ -217,6 +218,7 @@ function checkCmsDraftValidation() {
             params: { clickMode: 'internal-page' },
             items: [
               { id: 'missing-dimensions', src: '/images/codes/work.png' },
+              { id: 'remote-image', src: 'https://example.com/work.png', width: 100, height: 100 },
               { id: 'missing-target', targetPageId: 'missing-page' },
             ],
           }],
@@ -231,8 +233,33 @@ function checkCmsDraftValidation() {
   assert(messages.includes('未知页面模板 unknown-template'), 'CMS draft validation must reject unknown page templates');
   assert(messages.includes('未知分段预设 unknown-preset'), 'CMS draft validation must reject unknown section presets');
   assert(messages.includes('图片缺少宽高'), 'CMS draft validation must warn on image items without dimensions');
+  assert(messages.includes('图片路径需要在 /images/ 下'), 'CMS draft validation must warn on unpublishable image paths');
   assert(messages.includes('目标页面不存在'), 'CMS draft validation must reject missing internal targets');
   assert(issues.filter(issue => issue.level === 'error').length >= 4, 'CMS draft validation must classify blocking issues as errors');
+}
+
+function checkCmsAssetReferences() {
+  const state = {
+    pages: [{
+      id: 'codes',
+      title: 'Codes',
+      sections: [{
+        id: 'gallery',
+        items: [
+          { id: 'local', src: '/images/codes/local.png', width: 100, height: 80 },
+          { id: 'remote', src: 'https://example.com/remote.png', width: 100, height: 80 },
+          { id: 'empty', src: '' },
+        ],
+      }],
+    }],
+  };
+  const refs = collectCmsAssetReferences(state);
+
+  assert(refs.length === 2, 'CMS asset reference collector must return non-empty item image sources');
+  assert(refs[0].pageId === 'codes' && refs[0].sectionId === 'gallery' && refs[0].itemId === 'local', 'CMS asset references must keep source context');
+  assert(classifyCmsAssetSrc('/images/codes/local.png').publishable, 'CMS asset classifier must accept site images');
+  assert(!classifyCmsAssetSrc('https://example.com/remote.png').publishable, 'CMS asset classifier must reject remote images before publish');
+  assert(!classifyCmsAssetSrc('images/relative.png').publishable, 'CMS asset classifier must reject relative image paths before publish');
 }
 
 function checkCmsPublishPackage() {
@@ -422,6 +449,7 @@ const cmsClientSource = read('src/cms/client.ts');
 const cmsPublishSource = read('src/cms/publishPackage.js');
 const cmsImportSource = read('src/cms/importPackage.js');
 const cmsApplyPlanSource = read('src/cms/applyPackagePlan.js');
+const cmsAssetSource = read('src/cms/assetReferences.js');
 const dynamicRouteSource = read('src/pages/[...slug].astro');
 const applyScriptSource = read('scripts/apply-cms-publish.mjs');
 const applySmokeSource = read('scripts/cms-apply-smoke.mjs');
@@ -454,6 +482,7 @@ assert(cmsClientSource.includes('createCmsPublishPackage'), 'CMS client must use
 assert(cmsClientSource.includes('parseCmsPackageJson'), 'CMS client must use the shared import package parser');
 assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(cmsImportSource.includes('invalid cms package'), 'CMS import package must centralize invalid package handling');
+assert(cmsAssetSource.includes('/images/'), 'CMS asset validation must keep publishable image path rules centralized');
 assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
 assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
 assert(applyScriptSource.includes('CMS publish applied'), 'CMS apply script must write exported publish packages');
@@ -475,6 +504,7 @@ const photoAlbums = readJson('src/content/photoAlbums.json');
 checkCmsStateHelpers();
 checkCmsPreviewRenderer();
 checkCmsDraftValidation();
+checkCmsAssetReferences();
 checkCmsPublishPackage();
 checkCmsImportPackage();
 checkCmsApplyPlan();

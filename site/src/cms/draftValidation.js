@@ -1,3 +1,5 @@
+import { classifyCmsAssetSrc } from './assetReferences.js';
+
 export function collectCmsDraftIssues({
   state,
   seedIssues = [],
@@ -28,6 +30,9 @@ export function collectCmsDraftIssues({
       for (const item of section.items || []) {
         if (item.src && (!item.width || !item.height)) {
           issues.push({ level: 'warning', message: `${page.title}/${section.id}/${item.id}: 图片缺少宽高`, pageId: page.id, sectionId: section.id, itemId: item.id });
+        }
+        if (item.src && !classifyCmsAssetSrc(item.src).publishable) {
+          issues.push({ level: 'warning', message: `${page.title}/${section.id}/${item.id}: 图片路径需要在 /images/ 下`, pageId: page.id, sectionId: section.id, itemId: item.id });
         }
         if (section.params?.clickMode === 'internal-page' && item.targetPageId && !state.pages.some(target => target.id === item.targetPageId)) {
           issues.push({ level: 'error', message: `${page.title}/${item.id}: 目标页面不存在`, pageId: page.id, sectionId: section.id, itemId: item.id });
