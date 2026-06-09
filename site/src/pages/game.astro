@@ -3,6 +3,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Gallery from '../components/Gallery.astro';
 import items from '../content/games.json';
 ---
-<BaseLayout title="GAMES — Onovich" activePage="/game">
-  <Gallery items={items} wide={true} />
+<BaseLayout title="GAMES — Onovich" activePage="/game" pageClass="page-game page-gallery-tight">
+  <Gallery items={items} dense={true} natural={true} />
 </BaseLayout>
