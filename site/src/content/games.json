@@ -1,155 +1,122 @@
 [
   {
-    "id": "ninja-ming",
+    "id": "game-01",
     "title": "Ninja Ming",
-    "desc": "1Poss 工作室 · 2021-2024 · 共同开发",
     "src": "/images/games/ninja-ming.png",
-    "width": 1780,
-    "height": 1000,
-    "links": [{ "label": "Steam", "url": "https://store.steampowered.com/app/1784660" }]
+    "width": 706,
+    "height": 397,
+    "captionHtml": "<b>Ninja Ming</b> <br> 1Poss 工作室 2021-2024<br> (共同开发)<br><a href=\"https://store.steampowered.com/app/3234330/Ninja_Ming/\" style=\"text-decoration: underline;\"target=\"_blank\">Steam</a>"
   },
   {
-    "id": "ninja-ming-wu",
+    "id": "game-02",
     "title": "Ninja Ming: Wu",
-    "desc": "1Poss 工作室 · 2024 · 协助开发",
     "src": "/images/games/ninja-ming-wu.png",
-    "width": 1780,
-    "height": 1000,
-    "links": [{ "label": "Steam", "url": "https://store.steampowered.com/app/2841380" }]
+    "width": 706,
+    "height": 396,
+    "captionHtml": "<b>Ninja Ming: Wu</b> <br> 1Poss 工作室 2024<br> (协助开发)<br><a href=\"https://store.steampowered.com/app/1569750/Ninja_Ming_Wu/\" style=\"text-decoration: underline;\"target=\"_blank\">Steam</a>"
   },
   {
-    "id": "air",
+    "id": "game-03",
     "title": "Air",
-    "desc": "2024 研发中",
     "src": "/images/games/air.png",
-    "width": 1780,
-    "height": 1000,
-    "links": [{ "label": "Github", "url": "https://github.com/onovich/Air" }]
+    "width": 991,
+    "height": 556,
+    "captionHtml": "<b>Air</b> <br> 2024 研发中<br><a href=\"https://github.com/onovich/Air\" style=\"text-decoration: underline;\"target=\"_blank\">Github</a>"
   },
   {
-    "id": "oshi",
+    "id": "game-04",
     "title": "Oshi",
-    "desc": "2024 研发中",
     "src": "/images/games/oshi.png",
     "width": 1780,
     "height": 1000,
-    "links": [{ "label": "Github", "url": "https://github.com/onovich/Oshi" }]
+    "captionHtml": "<b>Osh</b>i <br> 2024 研发中<br><a href=\"https://github.com/onovich/Oshi\" style=\"text-decoration: underline;\"target=\"_blank\">Github</a>"
   },
   {
-    "id": "alter",
+    "id": "game-05",
     "title": "Alter",
-    "desc": "2024 研发中",
     "src": "/images/games/alter.png",
     "width": 1780,
     "height": 1000,
-    "links": [{ "label": "Github", "url": "https://github.com/onovich/Alter" }]
+    "captionHtml": "<b>Alter</b> <br> 2024 研发中<br><a href=\"https://github.com/onovich/Alter\" style=\"text-decoration: underline;\" target=\"_blank\">Github</a>"
   },
   {
-    "id": "leap",
+    "id": "game-06",
     "title": "Leap",
-    "desc": "2024 研发中",
     "src": "/images/games/leap.png",
-    "width": 1780,
-    "height": 1000,
-    "links": [{ "label": "Github", "url": "https://github.com/onovich/Leap" }]
+    "width": 1894,
+    "height": 1066,
+    "captionHtml": "<b>Leap</b> <br> 2024 研发中<br><a href=\"https://github.com/onovich/Leap\" style=\"text-decoration: underline;\" target=\"_blank\">Github</a>"
   },
   {
-    "id": "zangeki60s",
+    "id": "game-07",
     "title": "Zangeki60s'",
-    "desc": "2024 研发中",
     "src": "/images/games/zangeki60s.png",
-    "width": 1780,
-    "height": 1000,
-    "links": []
+    "width": 1280,
+    "height": 720,
+    "captionHtml": "<b>Zangeki60s'</b> <br> 2024 研发中"
   },
   {
-    "id": "ping",
+    "id": "game-08",
     "title": "Ping",
-    "desc": "2024.3",
     "src": "/images/games/ping.png",
     "width": 1780,
     "height": 1000,
-    "links": [{ "label": "Github", "url": "https://github.com/onovich/Ping" }]
+    "captionHtml": "<b>Ping</b> <br> 2024.3<br><a href=\"https://github.com/onovich/Ping_Server\" style=\"text-decoration: underline;\" target=\"_blank\">Github</a>"
   },
   {
-    "id": "frogvillage",
+    "id": "game-09",
     "title": "FrogVillage",
-    "desc": "1Poss 工作室 · 2024.1-2024.2 · 已搁置 · 合作开发",
     "src": "/images/games/frogvillage.png",
-    "width": 1780,
-    "height": 1000,
-    "links": []
+    "width": 1932,
+    "height": 1086,
+    "captionHtml": "<b>FrogVillage</b><br>1Poss 工作室 2024.1 - 2024.2 已搁置<br>(合作开发)"
   },
   {
-    "id": "villagetd",
+    "id": "game-10",
     "title": "VillageTD",
-    "desc": "1Poss 工作室 · 2023.10-2024.3 · 已搁置 · 协助开发",
     "src": "/images/games/villagetd.png",
-    "width": 1780,
-    "height": 1000,
-    "links": []
+    "width": 1932,
+    "height": 1086,
+    "captionHtml": "<b>VillageTD</b><br>1Poss 工作室 2023.10 - 2024.3 已搁置<br> (协助开发)"
   },
   {
-    "id": "narrow",
-    "title": "Narrow",
-    "desc": "已搁置",
-    "src": "/images/games/narrow.png",
-    "width": 1780,
-    "height": 1000,
-    "links": []
-  },
-  {
-    "id": "silence",
+    "id": "game-11",
     "title": "Silence",
-    "desc": "2021.9-2021.10 · 已搁置",
     "src": "/images/games/silence.png",
-    "width": 1780,
-    "height": 1000,
-    "links": []
+    "width": 3840,
+    "height": 2160,
+    "captionHtml": "<b>Silence</b><br>2021.9-2021.10 已搁置"
   },
   {
-    "id": "flow",
+    "id": "game-12",
     "title": "Flow",
-    "desc": "2021.6 · GMTK JAM 2021",
     "src": "/images/games/flow.png",
-    "width": 1780,
-    "height": 1000,
-    "links": [{ "label": "itch.io", "url": "https://itch.io/jam/gmtk-2021" }]
+    "width": 3840,
+    "height": 2160,
+    "captionHtml": "<b>Flow</b><br> 2021.6 GMTK JAM 2021 <br> <a href=\"https://onovich.itch.io/flow\" style=\"text-decoration: underline;\" target=\"_blank\">Itch.io</a>"
   },
   {
-    "id": "alien-stalker",
+    "id": "game-13",
     "title": "Alien Stalker",
-    "desc": "2021.4-2021.9 · 已搁置",
     "src": "/images/games/alien-stalker.png",
-    "width": 1780,
-    "height": 1000,
-    "links": []
+    "width": 3840,
+    "height": 2160,
+    "captionHtml": "<b>Alien Stalker</b><br>2021.4-2021.9 已搁置"
   },
   {
-    "id": "lzl",
+    "id": "game-14",
     "title": "林中路",
-    "desc": "2019 · 已搁置",
     "src": "/images/games/lzl.png",
     "width": 1780,
     "height": 1000,
-    "links": []
+    "captionHtml": "<b>林中路</b><br>2019 已搁置"
   },
   {
-    "id": "dicetiger",
-    "title": "镜虎与六面禅",
-    "desc": "2019 · 已搁置",
-    "src": "/images/games/dicetiger.png",
-    "width": 1780,
-    "height": 1000,
-    "links": []
-  },
-  {
-    "id": "wuxjl",
+    "id": "game-15",
     "title": "无心俱乐部",
-    "desc": "CigaGameJam2019.7 · 已搁置",
     "src": "/images/games/wuxjl.png",
     "width": 1780,
     "height": 1000,
-    "links": []
+    "captionHtml": "<b>无心俱乐部</b><br>CigaGameJam2019.7 已搁置"
   }
 ]

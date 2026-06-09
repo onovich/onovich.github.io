@@ -1,17 +1,263 @@
 [
-  { "id": "yx1",      "title": "YX1",         "year": "2021",  "src": "/images/illustrations/yx1.jpg",      "width": 1080, "height": 1080 },
-  { "id": "yx3",      "title": "YX3",         "year": "2021",  "src": "/images/illustrations/yx3.jpg",      "width": 1080, "height": 1080 },
-  { "id": "yx4",      "title": "YX4",         "year": "2021",  "src": "/images/illustrations/yx4.jpg",      "width": 1080, "height": 1080 },
-  { "id": "yx5",      "title": "YX5",         "year": "2021",  "src": "/images/illustrations/yx5.jpg",      "width": 1080, "height": 1080 },
-  { "id": "yx6",      "title": "YX6",         "year": "2021",  "src": "/images/illustrations/yx6.jpg",      "width": 1080, "height": 1080 },
-  { "id": "hzz",      "title": "HZZ",         "year": "2021",  "src": "/images/illustrations/hzz.jpg",      "width": 1080, "height": 1080 },
-  { "id": "lw",       "title": "LW",          "year": "2021",  "src": "/images/illustrations/lw.jpg",       "width": 1080, "height": 1080 },
-  { "id": "bl",       "title": "BL",          "year": "2021",  "src": "/images/illustrations/bl.jpg",       "width": 1080, "height": 1080 },
-  { "id": "128",      "title": "_128_",       "year": "2021",  "src": "/images/illustrations/128.gif",      "width": 800,  "height": 800  },
-  { "id": "img-6962", "title": "IMG_6962",    "year": "2021",  "src": "/images/illustrations/img-6962.jpg", "width": 1080, "height": 1350 },
-  { "id": "img-6963", "title": "IMG_6963",    "year": "2021",  "src": "/images/illustrations/img-6963.jpg", "width": 1080, "height": 1350 },
-  { "id": "img-6964", "title": "IMG_6964",    "year": "2021",  "src": "/images/illustrations/img-6964.jpg", "width": 1080, "height": 1350 },
-  { "id": "illus-01", "title": "插图 01",     "year": "2021",  "src": "/images/illustrations/illus-01.jpg", "width": 1080, "height": 1080 },
-  { "id": "illus-02", "title": "插图 02",     "year": "2021",  "src": "/images/illustrations/illus-02.jpg", "width": 1080, "height": 1080 },
-  { "id": "illus-03", "title": "插图 03",     "year": "2021",  "src": "/images/illustrations/illus-03.jpg", "width": 1080, "height": 1080 }
+  {
+    "id": "illustration-01",
+    "section": 1,
+    "title": "悬魂梯",
+    "src": "/images/illustrations/128.gif",
+    "width": 1122,
+    "height": 1981,
+    "captionHtml": "悬魂梯<br>2020.11"
+  },
+  {
+    "id": "illustration-02",
+    "section": 2,
+    "title": "异人",
+    "src": "/images/illustrations/ref-02.jpg",
+    "width": 2000,
+    "height": 2468,
+    "captionHtml": "异人<br>2020.11"
+  },
+  {
+    "id": "illustration-03",
+    "section": 2,
+    "title": "荆棘夫人",
+    "src": "/images/illustrations/ref-03.jpg",
+    "width": 2000,
+    "height": 2468,
+    "captionHtml": "荆棘夫人<br>2020.11"
+  },
+  {
+    "id": "illustration-04",
+    "section": 2,
+    "title": "异人",
+    "src": "/images/illustrations/ref-04.jpg",
+    "width": 2000,
+    "height": 2468,
+    "captionHtml": "异人<br>2020.11"
+  },
+  {
+    "id": "illustration-05",
+    "section": 2,
+    "title": "普罗米修斯",
+    "src": "/images/illustrations/ref-05.jpg",
+    "width": 3000,
+    "height": 4000,
+    "captionHtml": "普罗米修斯<br>2020.11"
+  },
+  {
+    "id": "illustration-06",
+    "section": 2,
+    "title": "灵魂之井的午夜",
+    "src": "/images/illustrations/ref-06.jpg",
+    "width": 1200,
+    "height": 1600,
+    "captionHtml": "灵魂之井的午夜<br>2020.11"
+  },
+  {
+    "id": "illustration-07",
+    "section": 2,
+    "title": "鱼",
+    "src": "/images/illustrations/ref-07.jpg",
+    "width": 2000,
+    "height": 2667,
+    "captionHtml": "鱼<br>2020.11"
+  },
+  {
+    "id": "illustration-08",
+    "section": 2,
+    "title": "渡",
+    "src": "/images/illustrations/ref-08.jpg",
+    "width": 1200,
+    "height": 1600,
+    "captionHtml": "渡<br>2020.11"
+  },
+  {
+    "id": "illustration-09",
+    "section": 2,
+    "title": "囚",
+    "src": "/images/illustrations/ref-09.jpg",
+    "width": 1500,
+    "height": 2000,
+    "captionHtml": "囚<br>2020.11"
+  },
+  {
+    "id": "illustration-10",
+    "section": 2,
+    "title": "迷失深空",
+    "src": "/images/illustrations/ref-10.jpg",
+    "width": 1500,
+    "height": 2000,
+    "captionHtml": "迷失深空<br>2020.11"
+  },
+  {
+    "id": "illustration-11",
+    "section": 2,
+    "title": "烟与盐之地",
+    "src": "/images/illustrations/ref-11.jpg",
+    "width": 1200,
+    "height": 1800,
+    "captionHtml": "烟与盐之地<br>2020.11"
+  },
+  {
+    "id": "illustration-12",
+    "section": 2,
+    "title": "巨人与龙",
+    "src": "/images/illustrations/ref-12.jpg",
+    "width": 1200,
+    "height": 1800,
+    "captionHtml": "巨人与龙<br>2020.11"
+  },
+  {
+    "id": "illustration-13",
+    "section": 2,
+    "title": "龙王",
+    "src": "/images/illustrations/ref-13.jpg",
+    "width": 1200,
+    "height": 1800,
+    "captionHtml": "龙王<br>2020.11"
+  },
+  {
+    "id": "illustration-14",
+    "section": 2,
+    "title": "外道魔",
+    "src": "/images/illustrations/ref-14.jpg",
+    "width": 1500,
+    "height": 2000,
+    "captionHtml": "外道魔<br>2020.11"
+  },
+  {
+    "id": "illustration-15",
+    "section": 2,
+    "title": "自画像",
+    "src": "/images/illustrations/ref-15.jpg",
+    "width": 1500,
+    "height": 2000,
+    "captionHtml": "自画像<br>2020.11"
+  },
+  {
+    "id": "illustration-16",
+    "section": 2,
+    "title": "窄门行者",
+    "src": "/images/illustrations/ref-16.jpg",
+    "width": 1500,
+    "height": 2000,
+    "captionHtml": "窄门行者<br>2020.11"
+  },
+  {
+    "id": "illustration-17",
+    "section": 2,
+    "title": "流亡者",
+    "src": "/images/illustrations/ref-17.jpg",
+    "width": 1200,
+    "height": 1600,
+    "captionHtml": "流亡者<br>2020.11"
+  },
+  {
+    "id": "illustration-18",
+    "section": 2,
+    "title": "行脚僧",
+    "src": "/images/illustrations/ref-18.png",
+    "width": 2048,
+    "height": 2732,
+    "captionHtml": "行脚僧<br>2020.11"
+  },
+  {
+    "id": "illustration-19",
+    "section": 2,
+    "title": "狮面",
+    "src": "/images/illustrations/ref-19.jpg",
+    "width": 1200,
+    "height": 1601,
+    "captionHtml": "狮面<br>2020.11"
+  },
+  {
+    "id": "illustration-20",
+    "section": 2,
+    "title": "热海先生",
+    "src": "/images/illustrations/ref-20.png",
+    "width": 2328,
+    "height": 2724,
+    "captionHtml": "热海先生<br>2020.11"
+  },
+  {
+    "id": "illustration-21",
+    "section": 3,
+    "title": "烟流骑士",
+    "src": "/images/illustrations/ref-21.jpg",
+    "width": 1440,
+    "height": 1080,
+    "captionHtml": "烟流骑士<br>2019.6"
+  },
+  {
+    "id": "illustration-22",
+    "section": 3,
+    "title": "烟流骑士",
+    "src": "/images/illustrations/ref-22.jpg",
+    "width": 1440,
+    "height": 1080,
+    "captionHtml": "烟流骑士<br>2019.6"
+  },
+  {
+    "id": "illustration-23",
+    "section": 3,
+    "title": "烟流骑士",
+    "src": "/images/illustrations/ref-23.jpg",
+    "width": 1440,
+    "height": 1080,
+    "captionHtml": "烟流骑士<br>2019.6"
+  },
+  {
+    "id": "illustration-24",
+    "section": 3,
+    "title": "Bone dancer",
+    "src": "/images/illustrations/ref-24.jpg",
+    "width": 1113,
+    "height": 953,
+    "captionHtml": "Bone dancer<br>2019.6"
+  },
+  {
+    "id": "illustration-25",
+    "section": 3,
+    "title": "Bone dancer",
+    "src": "/images/illustrations/ref-25.jpg",
+    "width": 1107,
+    "height": 1046,
+    "captionHtml": "Bone dancer<br>2019.6"
+  },
+  {
+    "id": "illustration-26",
+    "section": 3,
+    "title": "Bone dancer",
+    "src": "/images/illustrations/ref-26.jpg",
+    "width": 1282,
+    "height": 1307,
+    "captionHtml": "Bone dancer<br>2019.6"
+  },
+  {
+    "id": "illustration-27",
+    "section": 3,
+    "title": "Bone dancer",
+    "src": "/images/illustrations/ref-27.jpg",
+    "width": 1188,
+    "height": 1093,
+    "captionHtml": "Bone dancer<br>2019.6"
+  },
+  {
+    "id": "illustration-28",
+    "section": 3,
+    "title": "Bone dancer",
+    "src": "/images/illustrations/ref-28.jpg",
+    "width": 1421,
+    "height": 1230,
+    "captionHtml": "Bone dancer<br>2019.6"
+  },
+  {
+    "id": "illustration-29",
+    "section": 3,
+    "title": "Bone dancer",
+    "src": "/images/illustrations/ref-29.jpg",
+    "width": 1125,
+    "height": 1032,
+    "captionHtml": "Bone dancer<br>2019.6"
+  }
 ]

@@ -1,22 +1,254 @@
 [
-  { "id": "frog-park",       "title": "frog park",        "year": "2022.2", "src": "/images/pixel/frog-park.jpg",        "width": 800, "height": 800 },
-  { "id": "frog-park-2",     "title": "frog park 2",      "year": "2022.2", "src": "/images/pixel/frog-park-2.jpg",      "width": 800, "height": 800 },
-  { "id": "jygs",            "title": "剑隐归山",           "year": "2021.9", "src": "/images/pixel/jygs.png",            "width": 800, "height": 800 },
-  { "id": "action-1",        "title": "动作其一",           "year": "2021.7", "src": "/images/pixel/action-1.gif",        "width": 800, "height": 800 },
-  { "id": "action-2",        "title": "动作其二",           "year": "2021.7", "src": "/images/pixel/action-2.gif",        "width": 800, "height": 800 },
-  { "id": "fly-dragon-fox",  "title": "飞龙剑斩狐仙",       "year": "2021.7", "src": "/images/pixel/fly-dragon-fox.png",  "width": 786, "height": 1387 },
-  { "id": "jian-lai",        "title": "剑来",               "year": "2021.7", "src": "/images/pixel/jian-lai.gif",        "width": 800, "height": 800 },
-  { "id": "action-3",        "title": "动作其三",           "year": "2021.7", "src": "/images/pixel/action-3.gif",        "width": 800, "height": 800 },
-  { "id": "fly-dragon-ghost","title": "飞龙剑斩鬼佛",       "year": "2021.7", "src": "/images/pixel/fly-dragon-ghost.png","width": 786, "height": 1387 },
-  { "id": "sanxue",          "title": "三船",               "year": "2021.8", "src": "/images/pixel/sanxue.gif",          "width": 800, "height": 800 },
-  { "id": "shaonian-pi",     "title": "少年派",             "year": "2021.8", "src": "/images/pixel/shaonian-pi.gif",     "width": 800, "height": 800 },
-  { "id": "evil-knight",     "title": "恶灵骑士",           "year": "2021.8", "src": "/images/pixel/evil-knight.gif",     "width": 800, "height": 800 },
-  { "id": "ae86",            "title": "AE86",               "year": "2021.8", "src": "/images/pixel/ae86.gif",            "width": 800, "height": 800 },
-  { "id": "dongsen-1",       "title": "动森其一",           "year": "2021.7", "src": "/images/pixel/dongsen-1.jpg",       "width": 800, "height": 800 },
-  { "id": "dongsen-2",       "title": "动森其二",           "year": "2021.7", "src": "/images/pixel/dongsen-2.jpg",       "width": 800, "height": 800 },
-  { "id": "pixel-heads-1",   "title": "像素画师头像集其一", "year": "2021.7", "src": "/images/pixel/pixel-heads-1.png",   "width": 800, "height": 800 },
-  { "id": "pixel-heads-2",   "title": "像素画师头像集其二", "year": "2021.7", "src": "/images/pixel/pixel-heads-2.png",   "width": 800, "height": 800 },
-  { "id": "xin-li-ming",     "title": "新黎明",             "year": "2021.7", "src": "/images/pixel/xin-li-ming.jpg",     "width": 800, "height": 800 },
-  { "id": "self-portrait",   "title": "自画像",             "year": "2021.7", "src": "/images/pixel/self-portrait.gif",   "width": 800, "height": 800 },
-  { "id": "special-beam",    "title": "魔贯光杀炮",         "year": "2021.7", "src": "/images/pixel/special-beam.png",    "width": 786, "height": 1387 }
+  {
+    "id": "pixel-01",
+    "section": 1,
+    "title": "frog park",
+    "src": "/images/pixel/ref-01.jpg",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "frog park<br>2022.2"
+  },
+  {
+    "id": "pixel-02",
+    "section": 1,
+    "title": "frog park 2",
+    "src": "/images/pixel/ref-02.jpg",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "frog park 2 <br> 2022.2"
+  },
+  {
+    "id": "pixel-03",
+    "section": 1,
+    "title": "剑隐归山",
+    "src": "/images/pixel/ref-03.jpg",
+    "width": 400,
+    "height": 400,
+    "captionHtml": "剑隐归山<br>2021.9"
+  },
+  {
+    "id": "pixel-04",
+    "section": 1,
+    "title": "动作其一",
+    "src": "/images/pixel/ref-04.gif",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "动作其一<br>2021.7"
+  },
+  {
+    "id": "pixel-05",
+    "section": 1,
+    "title": "动作其二",
+    "src": "/images/pixel/ref-05.gif",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "动作其二<br>2021.7"
+  },
+  {
+    "id": "pixel-06",
+    "section": 1,
+    "title": "飞龙剑斩鬼佛",
+    "src": "/images/pixel/ref-06.gif",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "飞龙剑斩鬼佛<br>2021.7"
+  },
+  {
+    "id": "pixel-07",
+    "section": 1,
+    "title": "剑来",
+    "src": "/images/pixel/ref-07.gif",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "剑来<br>2021.7"
+  },
+  {
+    "id": "pixel-08",
+    "section": 1,
+    "title": "动作其三",
+    "src": "/images/pixel/ref-08.gif",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "动作其三<br>2021.7"
+  },
+  {
+    "id": "pixel-09",
+    "section": 1,
+    "title": "飞龙剑斩狐仙",
+    "src": "/images/pixel/ref-09.jpg",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "飞龙剑斩狐仙<br>2021.7"
+  },
+  {
+    "id": "pixel-10",
+    "section": 1,
+    "title": "三船",
+    "src": "/images/pixel/ref-10.jpg",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "三船<br>2021.8"
+  },
+  {
+    "id": "pixel-11",
+    "section": 1,
+    "title": "少年派",
+    "src": "/images/pixel/ref-11.jpg",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "少年派<br>2021.8"
+  },
+  {
+    "id": "pixel-12",
+    "section": 1,
+    "title": "恶灵骑士",
+    "src": "/images/pixel/ref-12.jpg",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "恶灵骑士<br>2021.8"
+  },
+  {
+    "id": "pixel-13",
+    "section": 1,
+    "title": "AE86",
+    "src": "/images/pixel/ref-13.gif",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "AE86<br>2021.8"
+  },
+  {
+    "id": "pixel-14",
+    "section": 1,
+    "title": "动森其一",
+    "src": "/images/pixel/ref-14.jpg",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "动森其一<br>2021.7"
+  },
+  {
+    "id": "pixel-15",
+    "section": 1,
+    "title": "动森其二",
+    "src": "/images/pixel/ref-15.gif",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "动森其二<br>2021.7"
+  },
+  {
+    "id": "pixel-16",
+    "section": 1,
+    "title": "像素画师头像集其一",
+    "src": "/images/pixel/ref-16.gif",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "像素画师头像集其一<br>2021.7"
+  },
+  {
+    "id": "pixel-17",
+    "section": 1,
+    "title": "像素画师头像集其二",
+    "src": "/images/pixel/ref-17.jpg",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "像素画师头像集其二<br>2021.7"
+  },
+  {
+    "id": "pixel-18",
+    "section": 1,
+    "title": "新黎明",
+    "src": "/images/pixel/ref-18.gif",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "新黎明<br>2021.7"
+  },
+  {
+    "id": "pixel-19",
+    "section": 1,
+    "title": "自画像",
+    "src": "/images/pixel/ref-19.jpg",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "自画像<br>2021.7"
+  },
+  {
+    "id": "pixel-20",
+    "section": 1,
+    "title": "魔贯光杀炮",
+    "src": "/images/pixel/ref-20.gif",
+    "width": 800,
+    "height": 800,
+    "captionHtml": "魔贯光杀炮<br>2021.7"
+  },
+  {
+    "id": "pixel-21",
+    "section": 2,
+    "title": "soulLike游戏人设",
+    "src": "/images/pixel/ref-21.png",
+    "width": 786,
+    "height": 1387,
+    "captionHtml": "soulLike游戏人设<br>2019.2"
+  },
+  {
+    "id": "pixel-22",
+    "section": 2,
+    "title": "soulLike游戏人设",
+    "src": "/images/pixel/ref-22.jpg",
+    "width": 786,
+    "height": 1387,
+    "captionHtml": "soulLike游戏人设<br>2019.2"
+  },
+  {
+    "id": "pixel-23",
+    "section": 2,
+    "title": "soulLike游戏人设",
+    "src": "/images/pixel/ref-23.png",
+    "width": 786,
+    "height": 1387,
+    "captionHtml": "soulLike游戏人设<br>2019.2"
+  },
+  {
+    "id": "pixel-24",
+    "section": 2,
+    "title": "soulLike游戏人设",
+    "src": "/images/pixel/ref-24.png",
+    "width": 786,
+    "height": 1387,
+    "captionHtml": "soulLike游戏人设<br>2019.2"
+  },
+  {
+    "id": "pixel-25",
+    "section": 2,
+    "title": "soulLike游戏人设",
+    "src": "/images/pixel/ref-25.jpg",
+    "width": 786,
+    "height": 1386,
+    "captionHtml": "soulLike游戏人设<br>2019.2"
+  },
+  {
+    "id": "pixel-26",
+    "section": 2,
+    "title": "soulLike游戏人设",
+    "src": "/images/pixel/ref-26.png",
+    "width": 786,
+    "height": 1387,
+    "captionHtml": "soulLike游戏人设<br>2019.2"
+  },
+  {
+    "id": "pixel-27",
+    "section": 2,
+    "title": "soulLike游戏人设",
+    "src": "/images/pixel/ref-27.png",
+    "width": 786,
+    "height": 1387,
+    "captionHtml": "soulLike游戏人设<br>2019.2"
+  },
+  {
+    "id": "pixel-28",
+    "section": 2,
+    "title": "RPG游戏人设",
+    "src": "/images/pixel/ref-28.png",
+    "width": 786,
+    "height": 1387,
+    "captionHtml": "RPG游戏人设<br>2019.1"
+  }
 ]

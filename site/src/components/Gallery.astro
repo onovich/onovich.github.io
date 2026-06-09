@@ -18,18 +18,42 @@ interface GalleryItemData {
   width?: number;
   height?: number;
   links?: GalleryLink[];
+  captionHtml?: string;
 }
 
 interface Props {
   items: GalleryItemData[];
   wide?: boolean;
+  dense?: boolean;
+  natural?: boolean;
+  columns?: 2 | 3;
+  showCaptions?: boolean;
+  className?: string;
 }
 
-const { items, wide = false } = Astro.props;
+const {
+  items,
+  wide = false,
+  dense = false,
+  natural = false,
+  columns = 3,
+  showCaptions = true,
+  className = '',
+} = Astro.props;
+
+const galleryClass = [
+  'thumbnails',
+  'pswp-gallery',
+  dense ? 'thumbnails--dense' : '',
+  natural ? 'thumbnails--natural' : '',
+  columns === 2 ? 'thumbnails--columns-2' : '',
+  !showCaptions ? 'thumbnails--no-captions' : '',
+  className,
+].filter(Boolean).join(' ');
 ---
 
 <div class="thumbnails-container">
-  <div class="thumbnails pswp-gallery" id="gallery">
+  <div class={galleryClass} id="gallery">
     {items.map((item, index) => (
       <figure class={`thumb has_title${wide ? ' thumb--wide' : ''}`}>
         <a
@@ -49,27 +73,32 @@ const { items, wide = false } = Astro.props;
             loading={index < 6 ? 'eager' : 'lazy'}
           />
         </a>
-        <figcaption>
-          <div class="title">{item.title}</div>
-          {(item.desc || item.year || (item.links && item.links.length > 0)) && (
-            <div class="tags">
-              {item.desc && <div>{item.desc}</div>}
-              {item.year && <div>{item.year}</div>}
-              {item.links && item.links.length > 0 && (
-                <div>
-                  {item.links.map((link, i) => (
-                    <>
-                      <a href={link.url} target="_blank" rel="noopener noreferrer">
-                        {link.label}
-                      </a>
-                      {i < item.links!.length - 1 && <span> / </span>}
-                    </>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </figcaption>
+        {showCaptions && item.captionHtml && (
+          <figcaption class="caption" set:html={item.captionHtml} />
+        )}
+        {showCaptions && !item.captionHtml && (
+          <figcaption>
+            <div class="title">{item.title}</div>
+            {(item.desc || item.year || (item.links && item.links.length > 0)) && (
+              <div class="tags">
+                {item.desc && <div>{item.desc}</div>}
+                {item.year && <div>{item.year}</div>}
+                {item.links && item.links.length > 0 && (
+                  <div>
+                    {item.links.map((link, i) => (
+                      <>
+                        <a href={link.url} target="_blank" rel="noopener noreferrer">
+                          {link.label}
+                        </a>
+                        {i < item.links.length - 1 && <span> / </span>}
+                      </>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </figcaption>
+        )}
       </figure>
     ))}
   </div>

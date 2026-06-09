@@ -1,8 +1,47 @@
 [
-  { "id": "graphic-01", "title": "P2189205031",  "year": "2021",  "src": "/images/graphics/graphic-01.jpg", "width": 1080, "height": 1080 },
-  { "id": "graphic-02", "title": "P23580362702", "year": "2021",  "src": "/images/graphics/graphic-02.jpg", "width": 1080, "height": 1080 },
-  { "id": "graphic-03", "title": "P2358036270",  "year": "2021",  "src": "/images/graphics/graphic-03.jpg", "width": 1080, "height": 1080 },
-  { "id": "graphic-04", "title": "设计 04",      "year": "2021",  "src": "/images/graphics/graphic-04.jpg", "width": 1080, "height": 1080 },
-  { "id": "graphic-05", "title": "设计 05",      "year": "2021",  "src": "/images/graphics/graphic-05.jpg", "width": 1080, "height": 1080 },
-  { "id": "graphic-06", "title": "设计 06",      "year": "2021",  "src": "/images/graphics/graphic-06.jpg", "width": 1080, "height": 1080 }
+  {
+    "id": "comet-night",
+    "title": "??????????????????????????????????????????????????????",
+    "year": "2020.5",
+    "src": "/images/graphics/graphic-04.jpg",
+    "width": 1218,
+    "height": 7448,
+    "captionHtml": "??????????????????????????????????????????????????????<br>2020.5"
+  },
+  {
+    "id": "sleepless-window",
+    "title": "???????????????",
+    "year": "2020.5",
+    "src": "/images/graphics/graphic-05.jpg",
+    "width": 3045,
+    "height": 18620,
+    "captionHtml": "???????????????<br>2020.5"
+  },
+  {
+    "id": "self-2014",
+    "title": "???",
+    "year": "2014.6",
+    "src": "/images/graphics/graphic-01.jpg",
+    "width": 1472,
+    "height": 1098,
+    "captionHtml": "???<br>2014.6"
+  },
+  {
+    "id": "self-2015",
+    "title": "???",
+    "year": "2015.5",
+    "src": "/images/graphics/graphic-03.jpg",
+    "width": 1600,
+    "height": 1066,
+    "captionHtml": "???<br>2015.5"
+  },
+  {
+    "id": "comic-character",
+    "title": "????",
+    "year": "2016.6",
+    "src": "/images/graphics/graphic-02.jpg",
+    "width": 1600,
+    "height": 1066,
+    "captionHtml": "???? <br> 2016.6"
+  }
 ]

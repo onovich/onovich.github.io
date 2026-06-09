@@ -3,8 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Gallery from '../components/Gallery.astro';
 import items from '../content/graphics.json';
 ---
-<BaseLayout title="GRAPHIC DESIGNS — Onovich" activePage="/graphic">
+<BaseLayout title="GRAPHIC DESIGNS — Onovich" activePage="/graphic" pageClass="page-graphic page-gallery-tight">
   {items.length > 0
-    ? <Gallery items={items} />
+    ? <Gallery items={items} dense={true} natural={true} columns={2} />
     : <p style="color: rgba(0,0,0,0.4); font-size: 1.1rem;">暂无内容</p>}
 </BaseLayout>
