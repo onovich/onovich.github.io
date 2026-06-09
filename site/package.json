@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "prebuild": "npm run cms:check",
     "build": "astro build",
+    "cms:apply": "node scripts/apply-cms-publish.mjs",
     "cms:check": "node scripts/cms-check.mjs",
     "preview": "astro preview",
     "astro": "astro"

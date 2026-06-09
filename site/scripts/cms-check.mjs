@@ -88,6 +88,8 @@ function checkGalleryItems(items, context) {
 const presetsSource = read('src/cms/presets.ts');
 const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
+const dynamicRouteSource = read('src/pages/[...slug].astro');
+const applyScriptSource = read('scripts/apply-cms-publish.mjs');
 
 for (const presetId of expectedPresets) {
   assert(presetsSource.includes(`id: '${presetId}'`), `Missing section preset: ${presetId}`);
@@ -109,6 +111,10 @@ assert(cmsSource.includes('activeSectionId'), 'CMS UI must keep section-level ed
 assert(cmsSource.includes('sectionPresetInput'), 'CMS UI must expose section preset controls');
 assert(cmsSource.includes('cms-validation-seed'), 'CMS UI must expose validation seed data');
 assert(cmsSource.includes('manifest'), 'CMS export package must include a manifest');
+assert(dynamicRouteSource.includes('getStaticPaths'), 'CMS generated page route must provide getStaticPaths');
+assert(dynamicRouteSource.includes('reservedPaths'), 'CMS generated page route must avoid existing hand-tuned routes');
+assert(applyScriptSource.includes('CMS publish applied'), 'CMS apply script must write exported publish packages');
+assert(applyScriptSource.includes('--dry-run'), 'CMS apply script must support --dry-run');
 
 const codes = readJson('src/content/codes.json');
 const games = readJson('src/content/games.json');
