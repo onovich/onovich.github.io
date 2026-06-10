@@ -100,7 +100,7 @@ function generatedCaptionHtml(item: GalleryItemData) {
             class="thumb_image"
             src={item.src}
             alt={item.title}
-            loading={index < 2 ? 'eager' : 'lazy'}
+            loading={index < 3 ? 'eager' : 'lazy'}
             decoding="async"
             fetchpriority={index === 0 ? 'high' : undefined}
           />
