@@ -9,6 +9,9 @@
  *   npm run visual:measure -- --clone=http://localhost:4350
  *   npm run visual:measure -- --pages=home,codes,pixel --viewports=desktop
  *   npm run visual:measure -- --targets=original,clone --format=json
+ *   npm run visual:measure -- --pages=galleries --imageTimeout=2000 --scrollPasses=1
+ *   npm run visual:measure -- --pages=galleries --loadImages=false
+ *   npm run visual:measure -- --pages=codes --navigationTimeout=15000 --attempts=1
  */
 import { chromium } from 'playwright';
 
@@ -19,6 +22,7 @@ import {
   selectPages,
   selectTargets,
   selectViewports,
+  numberArg,
   targetUrl,
 } from './visual-config.mjs';
 
@@ -27,6 +31,12 @@ const PAGES = selectPages(args.pages || 'home,codes,pixel');
 const VIEWPORTS = selectViewports(args.viewports || 'mobile,tablet,laptop,desktop,wide');
 const TARGETS = selectTargets(args.targets, 'original,clone', args);
 const FORMAT = args.format || 'text';
+const IMAGE_TIMEOUT = numberArg(args.imageTimeout, 8000);
+const SCROLL_PASSES = numberArg(args.scrollPasses, 2);
+const SCROLL_DELAY = numberArg(args.scrollDelay, 80);
+const NAVIGATION_TIMEOUT = numberArg(args.navigationTimeout, 45000);
+const ATTEMPTS = numberArg(args.attempts, 2);
+const LOAD_IMAGES = args.loadImages !== 'false' && args.noImages !== true && args.noImages !== 'true';
 
 const browser = await chromium.launch();
 const records = [];
@@ -45,7 +55,14 @@ try {
         const url = targetUrl(config.baseUrl, pageInfo[config.routeKey]);
 
         try {
-          await gotoVisualPage(page, url, config.waitMs);
+          await gotoVisualPage(page, url, config.waitMs, {
+            imageTimeout: IMAGE_TIMEOUT,
+            scrollPasses: SCROLL_PASSES,
+            scrollDelay: SCROLL_DELAY,
+            timeout: NAVIGATION_TIMEOUT,
+            attempts: ATTEMPTS,
+            loadImages: LOAD_IMAGES,
+          });
           const metrics = await collectStyleMetrics(page);
           records.push({ target: config.name, viewport: viewport.name, page: pageInfo.slug, url, ok: true, metrics });
         } catch (error) {

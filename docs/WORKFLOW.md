@@ -203,6 +203,7 @@ npm run assets:check
 2. npm run preview -- --host 127.0.0.1 --port 4350
 3. npm run visual:guard -- --clone=http://localhost:4350
 4. npm run visual:measure -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
+   # quick scan: add --imageTimeout=2000 --scrollPasses=1 --navigationTimeout=15000 --attempts=1, or --loadImages=false when image height is irrelevant
 5. npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 6. Read 6 张关键截图（home/codes/pixel × desktop/mobile original/clone）
 7. 写出可见差异清单（量化或定性）

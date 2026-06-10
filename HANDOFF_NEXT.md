@@ -240,6 +240,8 @@ npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 
 先跑 `npm run assets:check`：当前结果应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。旧 `photos.json` / `/images/photos/*` 已移除；photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为准，不要再按缺图任务处理。illustrator 的 `128.gif`、`ref-18.png`、`ref-20.png` 已有 `thumbSrc` poster。常规无截图门禁先用 `visual:guard --clone=http://localhost:4350`；当前 gallery + photo detail desktop clone 基线为 `217/217` 图片加载，mobile+desktop 扩展审计为 `434/434`。有 WARN 时再用 `visual:diff --targets=clone --imageTimeout=25000 --scrollPasses=3` 定向截图。可用 `visual:guard --full --skipLayout` 扩展复核移动端图片加载。
 
+`visual:measure` 现在支持 `--imageTimeout`、`--scrollPasses`、`--scrollDelay`、`--navigationTimeout`、`--attempts`、`--loadImages=false`。原站慢时先窄范围快扫，例如 `--pages=galleries --viewports=desktop --imageTimeout=2000 --scrollPasses=1 --navigationTimeout=15000 --attempts=1`，再对候选页用正常图片等待复核。当前 desktop 快扫候选是 `codes/pixel` 缩略图宽度约 `-2px`、`photo` 顶部约 `-5.6px`；`gif/graphic` 顶部先当测量锚点噪声，不直接改 CSS。
+
 ### Step 3 — 如果仍偏差大
 
 不要 push。继续从原站读 computedStyle：

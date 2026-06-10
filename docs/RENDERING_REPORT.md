@@ -14,6 +14,7 @@ cd site && node scripts/visual-diff.mjs --clone=http://localhost:4350  # 用本�
 cd site && node scripts/visual-diff.mjs --targets=clone --pages=illustrator --imageTimeout=25000 --scrollPasses=3
 cd site && npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
 cd site && npm run visual:measure -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
+cd site && npm run visual:measure -- --clone=http://localhost:4350 --pages=galleries --imageTimeout=2000 --scrollPasses=1 --navigationTimeout=15000 --attempts=1
 cd site && npm run assets:check                    # 本地资源引用/大缩略图候选
 ```
 
@@ -36,7 +37,7 @@ cd site && npm run assets:check                    # 本地资源引用/大缩�
 
 `visual:check` 是截图前的快速布局门禁：它用 Playwright 读取真实布局框，检查左侧 Onovich 导航、当前分类链接和内页 `< HOME` 返回链接是否仍在预期区域。它不能替代人工看截图，但能提前阻止内页导航消失这类 P0 回归。
 
-`visual:measure` 是数值探针：它复用同一套页面/视口/加载等待逻辑，输出原站和 clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns 和 delta。先跑 measure，再决定 CSS 改哪里。
+`visual:measure` 是数值探针：它复用同一套页面/视口/加载等待逻辑，输出原站和 clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns 和 delta。先跑 measure，再决定 CSS 改哪里。大范围快扫可临时加 `--imageTimeout=2000 --scrollPasses=1 --navigationTimeout=15000 --attempts=1`，只看不依赖图片高度的指标时可加 `--loadImages=false`。
 
 `assets:check` 是资源探针：它不启动浏览器，只读取 `src/content/*.json` 和 `public/images`，缺失 `/images/` 引用会失败，超过 `1MB` 且没有 `thumbSrc` 的缩略图候选会列为警告。
 

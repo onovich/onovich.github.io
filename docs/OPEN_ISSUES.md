@@ -79,11 +79,13 @@
 **聚合门禁**：`site/scripts/visual-guard.mjs` 已加入，npm 脚本为 `npm run visual:guard`；用于一条命令执行常规 layout + image audit。
 **资源门禁**：`site/scripts/assets-check.mjs` 已加入，npm 脚本为 `npm run assets:check`；用于快速检查内容 JSON 的 `/images/` 引用是否缺失，并列出超过 `1MB` 且没有 `thumbSrc` 的大缩略图候选。
 **Ops wrapper**：`.codex/project-ops-workflow.json` 与 `docs/codex-ops-workflow.md` 已初始化；常规验证可用 `Validate.cmd` 跑 build + assets，`Smoke.cmd` 跑 `visual:guard` + 本地预览 HTTP 检查，减少后续手写命令和 token 消耗。
+**Measure 快扫**：`visual:measure` 已支持 `--imageTimeout`、`--scrollPasses`、`--scrollDelay`、`--navigationTimeout`、`--attempts`、`--loadImages=false`；原站较慢时先窄范围快扫，再用正常图片等待复核候选。
 
 **下一步**（任务 #18 后续 / P0）：
 1. 继续把 `npm run assets:check` 作为资源门禁；当前应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。
 2. 缩略图列数和资源加载：先用 `visual:guard --clone=http://localhost:4350` 复核常规布局和 gallery + photo detail；有 WARN 时再用 `visual:diff --targets=clone` 定向截图，之后决定是否需要页面级 eager / poster 调整。
 3. 小幅图片尺寸残差：目前 gallery 尺寸类残差已收敛到数值门禁级别；继续以 `thumbImage.width/height` 为准防回归，不再把旧 `main.width` 假残差列为待修。
+4. 下一轮视觉小节点候选：用正常图片等待复核 desktop 快扫里的 `codes/pixel` 缩略图宽度约 `-2px`、`photo` 顶部约 `-5.6px`；`gif/graphic` 顶部指标先按测量锚点噪声处理，不直接改 CSS。
 
 ---
 
