@@ -156,11 +156,11 @@
 
 ## 🟢 8. CI Node 版本绑定
 
-**当前**：workflow 里 `node-version: '22'`，与 `package.json engines.node: '>=22.12.0'` 匹配。
+**当前**：workflow 里 `node-version: '22'`，与 `package.json engines.node: '>=22.12.0'` 匹配；同时已设置 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'`，提前让 GitHub JavaScript actions 使用 Node 24，避免 Node 20 actions 弃用提示。
 
 **风险**：未来升级 Astro 可能要 Node 24，两边都要同步改。
 
-**应对**：已写进 `docs/LESSONS.md` 第 6 条。
+**应对**：已写进 `docs/LESSONS.md` 第 6 条；部署时继续观察 Actions annotation 是否清掉。
 
 ---
 
