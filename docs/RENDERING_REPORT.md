@@ -11,6 +11,7 @@
 cd site && node scripts/visual-diff.mjs                # 全量截图
 cd site && node scripts/visual-diff.mjs --pages=home   # 单页截图
 cd site && node scripts/visual-diff.mjs --clone=http://localhost:4350  # 用本地 dist 对照
+cd site && node scripts/visual-diff.mjs --pages=illustrator --imageTimeout=25000 --scrollPasses=3
 cd site && npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
 cd site && npm run visual:measure -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
 cd site && npm run assets:check                    # 本地资源引用/大缩略图候选
@@ -25,7 +26,7 @@ cd site && npm run assets:check                    # 本地资源引用/大缩�
 | desktop | 1440×900 |
 | wide    | 1920×1080 |
 
-每个视口对原站 + clone 各 fullPage screenshot，输出 `diff-screenshots/{slug}.{vp}.{label}.png`（gitignored）。
+每个视口对原站 + clone 各 fullPage screenshot，输出 `diff-screenshots/{slug}.{vp}.{label}.png`（gitignored）。`visual:diff` 会在截图前把 lazy images 临时改为 eager、滚动预热页面、等待图片，并输出 `images=loaded/total`；长 gallery 可加 `--imageTimeout=25000 --scrollPasses=3` 减少 false placeholder。
 
 页面（PAGES）：home, codes, game, pixel, illustrator, gif, graphic, photo, poem, sns, links, contact（contact 在原站路径是 `/contact-form`）。
 
@@ -111,7 +112,8 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：illustrator desktop/wide 在 page-scoped 宽度下收回首组与第二组尺寸；首组 `thumbImage` width delta 从 `+0.97/+1.17px` 收到 `0/0px`，height delta 从 `+1.7/+2.08px` 收到 `0/0px`，两组列数仍为 3。
 - 2026-06-10 更新：`assets:check` 已加入；旧 `photos.json` / `/images/photos/*` 链路已移除，photo 运行时来源统一为 `photoAlbums.json`。当前 234 个真实内容图片引用均存在，且没有超过 `1MB` 仍缺 `thumbSrc` 的候选。
 - 2026-06-10 更新：illustrator 3 个大候选 `128.gif`、`ref-18.png`、`ref-20.png` 已接入同尺寸比例 WebP poster（约 93KB、39KB、88KB），点击仍打开原 GIF/PNG；desktop/wide `thumbImage` 宽高 delta 维持 `0px`。
-- 残差：gallery 资源加载仍需按节点继续复核；GIF gallery 已有轻量 WebP poster，illustrator lower lazy thumbnails 仍可单独评估。
+- 2026-06-10 更新：`visual:diff` 已增加 lazy image 预热和 `images=loaded/total` 日志；`illustrator` desktop clone 在 `--imageTimeout=25000 --scrollPasses=3` 下为 `29/29`，截图下半段不再被 false placeholder 干扰。
+- 残差：gallery 资源加载仍需按节点继续复核；GIF gallery 已有轻量 WebP poster。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid

@@ -206,6 +206,12 @@ npm run assets:check
 9. 通过 → commit + push → 等 Actions → curl 线上验 build-version
 ```
 
+长 gallery 截图如果下半段出现占位，先看 `visual:diff` 输出的 `images=loaded/total`。需要排除截图预热不足时，加：
+
+```txt
+npm run visual:diff -- --clone=http://localhost:4350 --pages=illustrator --imageTimeout=25000 --scrollPasses=3
+```
+
 **绝对禁止的事**：
 
 - build 通过就 commit + push

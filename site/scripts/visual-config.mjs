@@ -51,6 +51,12 @@ export function splitListArg(value) {
   return (value || '').toString().split(',').map((item) => item.trim()).filter(Boolean);
 }
 
+export function numberArg(value, fallback) {
+  if (value === undefined || value === true || value === '') return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 export function selectPages(value) {
   const requested = splitListArg(value).map((slug) => PAGE_ALIASES.get(slug) || slug);
   if (requested.length === 0) return PAGES_ALL;
@@ -90,12 +96,16 @@ export async function gotoVisualPage(page, url, settleMs, options = {}) {
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
       await page.waitForLoadState('load', { timeout: Math.min(10000, timeout) }).catch(() => {});
+      let imageStats = null;
       if (loadImages) {
-        await revealLazyImages(page);
-        await waitForImages(page, options.imageTimeout ?? 8000);
+        await revealLazyImages(page, {
+          passes: options.scrollPasses ?? 2,
+          delayMs: options.scrollDelay ?? 80,
+        });
+        imageStats = await waitForImages(page, options.imageTimeout ?? 8000);
       }
       await page.waitForTimeout(settleMs);
-      return;
+      return { imageStats };
     } catch (error) {
       lastError = error;
       if (attempt < attempts) await page.waitForTimeout(1000);
@@ -105,8 +115,8 @@ export async function gotoVisualPage(page, url, settleMs, options = {}) {
   throw lastError;
 }
 
-async function revealLazyImages(page) {
-  await page.evaluate(async () => {
+async function revealLazyImages(page, options) {
+  await page.evaluate(async ({ passes, delayMs }) => {
     const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
     document.querySelectorAll('img[loading="lazy"]').forEach((img) => {
@@ -114,24 +124,27 @@ async function revealLazyImages(page) {
     });
 
     const viewportHeight = window.innerHeight || 800;
-    const scrollHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
     const step = Math.max(250, Math.floor(viewportHeight * 0.8));
 
-    for (let y = 0; y <= scrollHeight; y += step) {
-      window.scrollTo(0, y);
-      await sleep(60);
+    for (let pass = 0; pass < passes; pass += 1) {
+      const scrollHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      for (let y = 0; y <= scrollHeight; y += step) {
+        window.scrollTo(0, y);
+        await sleep(delayMs);
+      }
     }
 
     window.scrollTo(0, 0);
-  });
+  }, options);
 }
 
 async function waitForImages(page, timeout) {
-  await page.evaluate(async (imageTimeout) => {
+  return page.evaluate(async (imageTimeout) => {
     const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
     const images = Array.from(document.images);
+    const isRenderable = (img) => img.complete && img.naturalWidth > 0 && img.naturalHeight > 0;
     const settled = Promise.all(images.map((img) => {
-      if (img.complete) return true;
+      if (isRenderable(img) || img.complete) return true;
       return new Promise((resolve) => {
         img.addEventListener('load', () => resolve(true), { once: true });
         img.addEventListener('error', () => resolve(true), { once: true });
@@ -140,5 +153,10 @@ async function waitForImages(page, timeout) {
 
     await Promise.race([settled, sleep(imageTimeout)]);
     window.scrollTo(0, 0);
+
+    return {
+      total: images.length,
+      loaded: images.filter(isRenderable).length,
+    };
   }, timeout);
 }
