@@ -607,6 +607,11 @@ body.page-gif.page-gallery-tight .page-back {
   margin-bottom: 0;
 }
 
+body.page-gif .thumbnails .thumb_image_link,
+body.page-gif .thumbnails .thumb_image {
+  background: #000;
+}
+
 @media (min-width: 1600px) {
   body.page-inner.page-gallery-tight .home-grid__col--main {
     padding-top: 5.23rem;
