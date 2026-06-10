@@ -67,7 +67,7 @@ try {
           continue;
         }
 
-        const facts = await collectLayoutFacts(page, pageInfo.navLabel);
+        const facts = await collectLayoutFacts(page, pageInfo);
         const result = validateLayout({ target, pageInfo, viewport, facts });
         checks += result.checked;
 
@@ -105,8 +105,10 @@ if (failures.length > 0) {
   console.log(`\nVisual layout check passed: ${checks} assertions.`);
 }
 
-async function collectLayoutFacts(page, navLabel) {
-  return page.evaluate((label) => {
+async function collectLayoutFacts(page, pageInfo) {
+  return page.evaluate((info) => {
+    const navLabel = info.navLabel;
+    const backText = `< ${info.backLabel || 'HOME'}`;
     const normalize = (value) => value.replace(/\s+/g, ' ').trim();
     const rectOf = (element) => {
       if (!element) return null;
@@ -140,8 +142,8 @@ async function collectLayoutFacts(page, navLabel) {
     };
 
     const logo = candidate(document.querySelectorAll('h1 a, [class*="logo"], h1'), 'Onovich');
-    const navLink = candidate(document.querySelectorAll('a'), label);
-    const backLink = candidate(document.querySelectorAll('a'), '< HOME', 'right');
+    const navLink = candidate(document.querySelectorAll('a'), navLabel);
+    const backLink = candidate(document.querySelectorAll('a'), backText, 'right');
     const navColumn = document.querySelector('.home-grid__col--nav');
     const mainColumn = document.querySelector('.home-grid__col--main');
 
@@ -159,7 +161,7 @@ async function collectLayoutFacts(page, navLabel) {
       navColumn: navColumn && isVisible(navColumn) ? rectOf(navColumn) : null,
       mainColumn: mainColumn && isVisible(mainColumn) ? rectOf(mainColumn) : null,
     };
-  }, navLabel);
+  }, pageInfo);
 }
 
 function validateLayout({ target, pageInfo, viewport, facts }) {
@@ -177,8 +179,9 @@ function validateLayout({ target, pageInfo, viewport, facts }) {
   ));
 
   if (pageInfo.slug !== 'home' && desktopLike) {
-    checked += assertRect(errors, facts.backLink?.rect, 'missing visible < HOME back link', (rect) => (
-      rect.x >= viewport.width * 0.6 ? '' : `< HOME link is not aligned to the right content area (x=${round(rect.x)})`
+    const backText = `< ${pageInfo.backLabel || 'HOME'}`;
+    checked += assertRect(errors, facts.backLink?.rect, `missing visible ${backText} back link`, (rect) => (
+      rect.x >= viewport.width * 0.6 ? '' : `${backText} link is not aligned to the right content area (x=${round(rect.x)})`
     ));
   }
 

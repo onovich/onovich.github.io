@@ -121,7 +121,7 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 2. **gallery 断点列数**：用 Playwright 实测原站 375 / 768 / 1024 / 1440 / 1920 每个断点列数，写入 CSS 媒体查询。
 
-3. **gallery 加载体验**：先用 `visual:image-audit --imageTimeout=25000 --scrollPasses=3` 做无截图加载审计；当前主要 gallery desktop clone 基线为 `113/113` 图片加载，mobile+desktop 扩展审计为 `226/226`。有 WARN 时再定向截图并补 `thumbSrc` poster 或 eager 范围。旧 photos 链路已移除，photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为准。
+3. **gallery 加载体验**：先用 `visual:image-audit --imageTimeout=25000 --scrollPasses=3` 做无截图加载审计；当前 gallery + photo detail desktop clone 基线为 `217/217` 图片加载，mobile+desktop 扩展审计为 `434/434`。有 WARN 时再定向截图并补 `thumbSrc` poster 或 eager 范围。旧 photos 链路已移除，photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为准；可用 `--pages=photo-details` 单独复核 8 个相册详情页。
 
 4. **网页 CMS 演进**：CMS 上传/富文本/发布链路已有小节点覆盖；后续增强继续围绕 `/cms`，不再维护旧 Electron admin。
 

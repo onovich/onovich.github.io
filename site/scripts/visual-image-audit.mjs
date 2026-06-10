@@ -8,6 +8,7 @@
  * Usage:
  *   node scripts/visual-image-audit.mjs --clone=http://localhost:4350
  *   node scripts/visual-image-audit.mjs --pages=illustrator,gif --viewports=desktop,wide
+ *   node scripts/visual-image-audit.mjs --pages=photo-details
  *   node scripts/visual-image-audit.mjs --targets=original,clone --failOnPending=false
  */
 import { chromium } from 'playwright';
@@ -26,7 +27,7 @@ import {
   targetUrl,
 } from './visual-config.mjs';
 
-const DEFAULT_GALLERY_PAGES = 'codes,game,pixel,illustrator,gif,graphic,photo';
+const DEFAULT_GALLERY_PAGES = 'galleries,photo-details';
 
 const args = parseVisualArgs();
 const ORIGINAL = args.original || DEFAULT_ORIGINAL_URL;

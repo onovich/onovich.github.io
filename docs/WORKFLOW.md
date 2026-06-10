@@ -214,10 +214,10 @@ npm run assets:check
 长 gallery 截图如果下半段出现占位，先跑无截图审计：
 
 ```txt
-npm run visual:image-audit -- --clone=http://localhost:4350 --pages=illustrator,gif,graphic --viewports=desktop --imageTimeout=25000 --scrollPasses=3
+npm run visual:image-audit -- --clone=http://localhost:4350 --pages=galleries,photo-details --viewports=desktop --imageTimeout=25000 --scrollPasses=3
 ```
 
-`visual:image-audit` 复用 `visual:diff` 的 lazy image 预热和图片等待，但不保存 PNG；输出全是 `OK images=loaded/total` 时，说明优先问题不是资源加载。需要排除截图预热不足时，再定向截图：
+`visual:image-audit` 复用 `visual:diff` 的 lazy image 预热和图片等待，但不保存 PNG；输出全是 `OK images=loaded/total` 时，说明优先问题不是资源加载。页面组别可用 `galleries`、`photo-details`、`photo-albums`。需要排除截图预热不足时，再定向截图：
 
 ```txt
 npm run visual:diff -- --clone=http://localhost:4350 --targets=clone --pages=illustrator --imageTimeout=25000 --scrollPasses=3

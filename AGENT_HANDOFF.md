@@ -117,7 +117,7 @@
 - ✅ `_reference-site/` 抓取归档（11 页 HTML + CSS）
 - ✅ DNS / Pages / Actions 部署链路全通，blog.onovich.com 能访问
 - ✅ 内容数据 codes/games/pixel/illustrations/gifs/graphics/sns/poems 完整
-- ✅ 图片迁移（旧 `photos.json` / `/images/photos/*` 链路已移除；illustrator 大候选已接入 poster；`assets:check` 当前 234 个真实内容图片引用 0 缺失且无大候选 warning；`visual:diff` 已有 lazy 预热、图片加载统计和 `--targets=clone`；`visual:image-audit` 可无截图复核主要 gallery 加载）
+- ✅ 图片迁移（旧 `photos.json` / `/images/photos/*` 链路已移除；illustrator 大候选已接入 poster；`assets:check` 当前 234 个真实内容图片引用 0 缺失且无大候选 warning；`visual:diff` 已有 lazy 预热、图片加载统计和 `--targets=clone`；`visual:image-audit` 可无截图复核 gallery + photo detail 加载）
 - ✅ Layout 重写为 Cargo 风格（右上角浮动汉堡 + 滑入黑色面板 + home 4/8 grid）
 - ✅ root font-size：desktop `12.96px`、wide `15.55px` 均已与原站实测对齐
 - ✅ Playwright 截图对照基础设施 + `visual:check` 布局门禁

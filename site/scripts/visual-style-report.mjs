@@ -117,6 +117,10 @@ async function collectStyleMetrics(page) {
           const text = (element.textContent || '').replace(/\s+/g, ' ').trim();
           if (text !== options.text) return false;
         }
+        if (options.textPrefix) {
+          const text = (element.textContent || '').replace(/\s+/g, ' ').trim();
+          if (!text.startsWith(options.textPrefix)) return false;
+        }
         return visible(element);
       });
 
@@ -168,7 +172,7 @@ async function collectStyleMetrics(page) {
     };
 
     const back = Array.from(document.querySelectorAll(selectors.back))
-      .find((element) => (element.textContent || '').replace(/\s+/g, ' ').trim() === '< HOME');
+      .find((element) => (element.textContent || '').replace(/\s+/g, ' ').trim().startsWith('< '));
     const mainColumn = pick(selectors.mainColumn, { pick: 'right' });
     const mainAnchor = findMainAnchor(mainColumn);
 
@@ -271,12 +275,16 @@ async function collectStyleMetrics(page) {
             const text = (element.textContent || '').replace(/\s+/g, ' ').trim();
             if (text !== options.text) continue;
           }
+          if (options.textPrefix) {
+            const text = (element.textContent || '').replace(/\s+/g, ' ').trim();
+            if (!text.startsWith(options.textPrefix)) continue;
+          }
           if (!isInsideMainContent(element, mainRect)) continue;
           candidates.push({ kind, element, rect: element.getBoundingClientRect() });
         }
       };
 
-      add('back', selectors.back, { text: '< HOME' });
+      add('back', selectors.back, { textPrefix: '< ' });
       add('homeAvatar', selectors.homeAvatar);
       add('thumbnails', selectors.thumbnailsContainer);
       add('thumb', selectors.thumb);
