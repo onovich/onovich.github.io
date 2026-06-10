@@ -145,7 +145,7 @@ curl -sL \
   -A "Mozilla/5.0 ..." \
   -H "Referer: https://onovich.com/" \
   "https://freight.cargo.site/i/<hash>/<filename>" \
-  -o site/public/images/photos/photo-02.jpg
+  -o site/public/images/photo-albums/photo/photo-02.jpg
 ```
 
 ---
@@ -162,7 +162,7 @@ npm run assets:check
 - 缺失 `/images/` 本地引用会失败
 - 超过 `1MB` 且没有 `thumbSrc` 的缩略图候选会以警告列出
 
-当前基线：238 个本地图片引用 0 缺失；后续资源优化优先看 `128.gif`、`ref-20.png`、`ref-18.png` 和 photo index 原图。
+当前基线：231 个真实内容图片引用 0 缺失；旧 `photos.json` / `/images/photos/*` 链路已移除，后续资源优化优先看 `128.gif`、`ref-20.png`、`ref-18.png`。
 
 ---
 
