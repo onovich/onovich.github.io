@@ -96,7 +96,8 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：tight dense gallery 在 mobile/tablet 重新保持 dense modifier 优先级，`game/gif/illustrator` 移动和平板断点恢复 3 列；`graphic` 继续保持显式 2 列。
 - 2026-06-10 更新：graphic 恢复原站首张 `graphic-06.jpg` 全栏图，Gallery 支持 `span: "all"` 和 `hideCaption`；`visual:measure` 的默认 pick 改为按 y 再按 x，列数改为优先报告第一个非跨栏图片行，因此 graphic 会显示 `cols=2/first=1`。
 - 2026-06-10 更新：tight gallery 顶部按 5 断点校准，`game/illustrator` 的 `mainAnchor.y` 与 `thumbnails.y` delta 已约为 0，`gif` 保留原站 `< HOME` 高 16px 的特例；`.thumbnails--columns-2` 提升 specificity，避免 `graphic` 在 1024 laptop 被通用 3 列规则覆盖。
-- 残差：main width、graphic mobile/tablet 图片宽度、gif hero/natural media 尺寸仍需后续节点继续收。
+- 2026-06-10 更新：Cargo grid 横向 gutter / column padding 已恢复为 row 左右 `-0.75rem` + col 左右 `0.75rem` 的模型；desktop/wide 的 main width 残差从约 17-20px 收到约 4-5px，graphic desktop/wide 图片宽度残差约 3px，未引入横向滚动。
+- 残差：main width 仅剩约 4-7px 小残差；graphic mobile/tablet 图片宽度、gif hero/natural media 尺寸和 home wide avatar 尺寸仍需后续节点继续收。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid
