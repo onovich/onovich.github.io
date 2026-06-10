@@ -36,7 +36,13 @@
 [thumbnails-gutter]{ margin: -1.1rem; } /* = -2 × pad */
 [responsive-layout] [thumbnails-pad]   { padding: 0.5rem; }
 [responsive-layout] [thumbnails-gutter]{ margin: -1rem; }
+
+/* Cargo grid-row / grid-col 横向模型（clone 等价实现） */
+[grid-row][grid-gutter="3"] { margin-left: -0.75rem; margin-right: -0.75rem; }
+[grid-col][grid-pad="1.5"]  { padding-left: 0.75rem; padding-right: 0.75rem; }
 ```
+
+原站全局 `[grid-gutter="3"]` 是 `margin: -1.5rem`，但当前复刻只把它拆到横向模型里：row 左右各 `-0.75rem`，col 左右各 `0.75rem`；垂直距离仍由各页面的显式 top / gallery preset 校准。
 
 ---
 

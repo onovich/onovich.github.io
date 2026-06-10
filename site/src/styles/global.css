@@ -202,8 +202,8 @@ small {
 /* ============================================================
    HOME PAGE — 4/8 grid (nav left, content right)
    Cargo: <div grid-row grid-pad=1.5 grid-gutter=3> + grid-col=4|8
-   That translates to 1.5rem inner padding per column and a -1.5rem outer
-   gutter (margin), giving a 3rem total gap between adjacent columns.
+   grid-pad=1.5 maps to 0.75rem column padding; grid-gutter=3 maps to
+   -1.5rem row margin. We keep the vertical spacing on explicit page rules.
    ============================================================ */
 .home-grid {
   display: grid;
@@ -211,9 +211,15 @@ small {
   gap: 0;
   align-items: start;
   padding: 0;
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
 }
 
-.home-grid__col { padding: 0; min-width: 0; }
+.home-grid__col {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  min-width: 0;
+}
 .home-grid__col--nav  { padding-top: 0; }
 .home-grid__col--main { font-size: 1.3rem; line-height: 16px; }
 
