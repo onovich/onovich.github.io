@@ -125,7 +125,7 @@
 - ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份、备份恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘
 
 ### 进行中 / 待做
-- 🟡 视觉残差消除（codes caption、bodycopy 行高、wide root font-size、home wide avatar、codes/pixel 标准 gallery 顶部、pixel mobile 横向溢出、pixel 第二段 natural/flush gallery、tight gallery 顶部与 game/gif/illustrator 断点列数、illustrator mobile/tablet/laptop 缩略图尺寸、graphic 首张全栏图/长图顺序/laptop 2 列/mobile-tablet-laptop 图片宽度、Cargo grid 横向 gutter / main width、gif hero/natural media 尺寸、GIF gallery WebP poster 已收敛；顶部位置改看 `visual:measure` 的 `mainAnchor.y` / `thumbnails.y`，不要把旧 `main.y` 列盒位置当成首个内容起点；`mainColumn` 已改为取右栏最右候选，剩余 gallery 资源加载、photo 缺图和 desktop/wide 小幅图片尺寸差继续逐项复核）
+- 🟡 视觉残差消除（codes caption、bodycopy 行高、wide root font-size、home wide avatar、codes/pixel 标准 gallery 顶部、pixel mobile 横向溢出、pixel 第二段 natural/flush gallery、tight gallery 顶部与 game/gif/illustrator 断点列数、illustrator mobile/tablet/laptop 缩略图尺寸、graphic 首张全栏图/长图顺序/laptop 2 列/5 断点图片宽度、Cargo grid 横向 gutter / main width、gif hero/natural media 尺寸、GIF gallery WebP poster 已收敛；顶部位置改看 `visual:measure` 的 `mainAnchor.y` / `thumbnails.y`，不要把旧 `main.y` 列盒位置当成首个内容起点；`mainColumn` 已改为取右栏最右候选，剩余 gallery 资源加载、photo 缺图和 illustrator desktop/wide 小幅图片尺寸差继续逐项复核）
 - 🟡 photos 02-07 缺图（用户说非关键路径，后期手动补）
 - 🟡 网页 CMS 后续增强：围绕 `/cms`，但优先级低于视觉 P0/P1
 
