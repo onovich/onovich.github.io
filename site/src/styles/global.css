@@ -292,7 +292,12 @@ body.page-inner.page-gallery-standard .page-back {
 
 @media (min-width: 1600px) {
   .page-home .home-grid__col--main {
-    padding-top: 5.5rem;
+    padding-top: 6.73rem;
+  }
+
+  .page-home .home-avatar {
+    width: 6.25rem;
+    height: 6.25rem;
   }
 
   body.page-inner:not(.page-photo) .home-grid__col--main {
