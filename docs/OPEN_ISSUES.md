@@ -12,7 +12,7 @@
 
 1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
 2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 顶部与 game/gif/illustrator 列数、graphic 首张全栏图与长图顺序、graphic mobile/tablet/laptop 图片宽度、Cargo grid 横向 gutter / main width、home wide avatar、gif hero/natural media 尺寸已收敛；下一步继续收 main width 小残差并复核剩余 gallery 断点/资源加载。
-3. P1：继续实测并复核 gallery 每个断点列数；codes、pixel 第二段、game/gif/illustrator 当前 mobile/tablet/laptop/desktop/wide 列数已对齐；graphic 在 laptop/desktop/wide 保持 2 列，首张 `graphic-06.jpg` 已恢复为全栏图。
+3. P1：继续实测并复核 gallery 每个断点列数与资源加载；codes、pixel 第二段、game/gif/illustrator 当前 mobile/tablet/laptop/desktop/wide 列数已对齐；graphic 在 laptop/desktop/wide 保持 2 列，首张 `graphic-06.jpg` 已恢复为全栏图；线上 `/gif/` hero 已加载且尺寸对齐，但 GIF 缩略图加载慢，下一节点优先补轻量 `thumbSrc`/poster。
 4. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
 
 ---
@@ -58,6 +58,7 @@
 - 已修：graphic 在 `page-graphic page-gallery-tight` 范围内收回小断点横向扩展；mobile/tablet/laptop 首张全栏图宽度 delta 从 `+17.7/+25.86/+12.78px` 收到 `+0.04/+0.03/-1.59px`，列数 delta 归 0，desktop/wide 维持约 `+3px` 小残差。
 - 已修：Gallery 支持 `thumbSrc`，graphic 两张超长图新增 `public/images/graphics/thumbs/graphic-04.jpg` 与 `graphic-05.jpg` 轻量缩略图；前 3 张图改为 eager，`media.ts` 在图片已有自然尺寸时提前移除透明态，避免 graphic 线上长图下载慢时长时间显示灰色占位。
 - 已修：gif hero 在 `<=768px` 改为 `calc(100% - 0.25rem)`，mobile/tablet hero width delta 从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`；5 断点 hero/natural media 宽高均在约 `5px` 内。
+- 新残差：线上 `/gif/` 在 `domcontentloaded + 15s` 后 hero 已完成加载，但 GIF 缩略图多数仍未 `complete`，截图会出现灰/空占位；下一节点优先为 GIF gallery 增加轻量 `thumbSrc` 或静态 poster。
 - 残差：main width 仅剩约 4-7px 小残差；photo/illustrator/graphic/gif 的断点列数和资源加载仍需按节点继续复核。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game/gif/illustrator 当前 5 断点已恢复 3 列，graphic 当前 5 断点已保持 2 列。
 
@@ -68,7 +69,7 @@
 **下一步**（任务 #18 后续 / P0）：
 1. 用 `npm run visual:measure -- --clone=http://127.0.0.1:4350 --pages=gif,game,codes,pixel --viewports=mobile,tablet,laptop,desktop,wide` 继续抽精确像素值；多段 gallery 优先看 `g2` 指标。
 2. 继续收 main width 约 `4-7px` 小残差。
-3. 缩略图列数和资源加载：继续实测 photo / illustrator / graphic / gif 的断点列数与线上图片加载状态，再决定是否写进 `@media` 或补资源优化。
+3. 缩略图列数和资源加载：优先处理线上 GIF 缩略图慢加载；继续实测 photo / illustrator / graphic / gif 的断点列数与线上图片加载状态，再决定是否写进 `@media` 或补资源优化。
 
 ---
 
