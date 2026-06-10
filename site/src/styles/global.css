@@ -226,7 +226,7 @@ small {
 .page-home .home-grid__col--main { padding-top: 7.3rem; }
 .page-inner .home-grid__col--main { padding-top: 5.5rem; }
 .page-home .home-grid__col--main { padding-left: 0.5rem; }
-.page-photo .home-grid__col--main { padding-top: 4.18rem; }
+.page-photo .home-grid__col--main { padding-top: 4.61rem; }
 
 .home-grid__col--nav h1 {
   margin-top: 1.07rem;
@@ -254,7 +254,7 @@ small {
 .page-back a:hover { opacity: 0.55; }
 
 .page-photo .page-back {
-  margin-bottom: 0.7rem;
+  margin-bottom: 1.11rem;
 }
 
 body.page-inner.page-gallery-standard .home-grid__col--main {
@@ -314,6 +314,14 @@ body.page-inner.page-gallery-standard .page-back {
 
   body.page-inner.page-gallery-standard .page-back {
     margin-bottom: 2.82rem;
+  }
+
+  .page-photo .home-grid__col--main {
+    padding-top: 4.2rem;
+  }
+
+  .page-photo .page-back {
+    margin-bottom: 0.84rem;
   }
 }
 
@@ -946,6 +954,12 @@ body.menu-open .site-menu__backdrop {
   body.page-inner.page-gallery-standard .page-back {
     margin-bottom: 4.13rem;
   }
+  .page-photo .home-grid__col--main {
+    padding-top: 5.73rem;
+  }
+  .page-photo .page-back {
+    margin-bottom: 1.32rem;
+  }
   body.page-inner.page-gallery-standard .thumbnails-container {
     width: calc(100% + 2.903rem);
     margin-left: -1.602rem;
@@ -996,7 +1010,10 @@ body.menu-open .site-menu__backdrop {
   body.page-gif .gif-hero img {
     width: calc(100% - 0.25rem);
   }
-  .page-photo .home-grid__col--main { padding-top: 4.18rem; }
+  .page-photo .home-grid__col--main { padding-top: 6.1rem; }
+  .page-photo .page-back {
+    margin-bottom: 0.89rem;
+  }
   .thumbnails-container {
     width: 100%;
     margin: 0;
@@ -1019,6 +1036,9 @@ body.menu-open .site-menu__backdrop {
   .photo-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-left: 0.5rem;
+  }
+  body.page-photo .photo-columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .photo-card figcaption {
     font-size: 12px;
@@ -1047,8 +1067,15 @@ body.menu-open .site-menu__backdrop {
   body.page-gif.page-gallery-tight .page-back {
     margin-bottom: 0;
   }
+  .page-photo .home-grid__col--main {
+    padding-top: 7.1rem;
+  }
+  .page-photo .page-back {
+    margin-bottom: 1.36rem;
+  }
   .thumbnails { grid-template-columns: repeat(2, 1fr); }
   .photo-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.page-photo .photo-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 body.page-pixel .thumbnails--natural.thumbnails--flush {
