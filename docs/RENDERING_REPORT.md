@@ -100,7 +100,8 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：home wide avatar 按原站宽视口等效尺寸校准为 `6.25rem`，wide 下头像宽高 delta 从 `-10.8px` 收到 `0px`，首个内容 y delta 从 `-19.11px` 收到 `+0.01px`；desktop 头像保持约 `-0.34px` 小残差。
 - 2026-06-10 更新：graphic 在 `page-graphic page-gallery-tight` 范围内收回小断点横向扩展；mobile/tablet/laptop 首张全栏图宽度 delta 从 `+17.7/+25.86/+12.78px` 收到 `+0.04/+0.03/-1.59px`，列数 delta 归 0，desktop/wide 维持约 `+3px` 小残差。
 - 2026-06-10 更新：Gallery 支持 `thumbSrc`，graphic 两张超长图新增 `public/images/graphics/thumbs/graphic-04.jpg` 与 `graphic-05.jpg` 轻量缩略图；前 3 张图改为 eager，`media.ts` 在图片已有自然尺寸时提前移除透明态，避免 graphic 线上长图下载慢时长时间显示灰色占位。
-- 残差：main width 仅剩约 4-7px 小残差；gif hero/natural media 尺寸仍需后续节点继续收。
+- 2026-06-10 更新：gif hero 在 `<=768px` 改为 `calc(100% - 0.25rem)`，mobile/tablet hero width delta 从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`；5 断点 hero/natural media 宽高均在约 `5px` 内。
+- 残差：main width 仅剩约 4-7px 小残差；photo/illustrator/graphic/gif 的断点列数和资源加载仍需按节点继续复核。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid

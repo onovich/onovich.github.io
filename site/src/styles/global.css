@@ -955,6 +955,9 @@ body.menu-open .site-menu__backdrop {
   body.page-gif.page-gallery-tight .page-back {
     margin-bottom: 0;
   }
+  body.page-gif .gif-hero img {
+    width: calc(100% - 0.25rem);
+  }
   .page-photo .home-grid__col--main { padding-top: 4.18rem; }
   .thumbnails-container {
     width: 100%;
