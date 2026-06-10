@@ -225,6 +225,8 @@ npm run visual:diff -- --clone=http://localhost:4350 --targets=clone --pages=ill
 
 说明：视觉复刻判断仍用默认 `original,clone`。只查本地 clone 的资源加载、占位或页面回归时，先用 `visual:image-audit`；必须看截图时再用 `--targets=clone`，可以少截一半图。
 
+新增视觉脚本时不要重复写 `original/clone` target 配置；统一从 `site/scripts/visual-config.mjs` 调 `selectTargets()`，这样 `--original`、`--clone`、`--targets` 的行为只在一处维护。
+
 **绝对禁止的事**：
 
 - build 通过就 commit + push

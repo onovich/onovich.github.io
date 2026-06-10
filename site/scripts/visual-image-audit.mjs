@@ -14,42 +14,29 @@
 import { chromium } from 'playwright';
 
 import {
-  DEFAULT_CLONE_URL,
-  DEFAULT_ORIGINAL_URL,
   USER_AGENT,
   formatImageStats,
   gotoVisualPage,
   numberArg,
   parseVisualArgs,
   selectPages,
+  selectTargets,
   selectViewports,
-  splitListArg,
   targetUrl,
 } from './visual-config.mjs';
 
 const DEFAULT_GALLERY_PAGES = 'galleries,photo-details';
 
 const args = parseVisualArgs();
-const ORIGINAL = args.original || DEFAULT_ORIGINAL_URL;
-const CLONE = args.clone || DEFAULT_CLONE_URL;
 const PAGES = selectPages(args.pages || DEFAULT_GALLERY_PAGES);
 const VIEWPORTS = selectViewports(args.viewports || 'desktop');
-const TARGETS = splitListArg(args.targets || 'clone');
+const TARGETS = selectTargets(args.targets, 'clone', args);
 const IMAGE_TIMEOUT = numberArg(args.imageTimeout, 25000);
 const SCROLL_PASSES = numberArg(args.scrollPasses, 3);
 const SCROLL_DELAY = numberArg(args.scrollDelay, 80);
 const MAX_PENDING = numberArg(args.maxPending, 3);
 const FORMAT = args.format || 'text';
 const FAIL_ON_PENDING = args.failOnPending !== 'false';
-
-const targetConfigs = {
-  original: { baseUrl: ORIGINAL, routeKey: 'original', waitMs: 1500 },
-  clone: { baseUrl: CLONE, routeKey: 'clone', waitMs: 500 },
-};
-
-for (const target of TARGETS) {
-  if (!targetConfigs[target]) throw new Error(`Unknown visual target "${target}".`);
-}
 
 const records = [];
 const browser = await chromium.launch();
@@ -64,7 +51,7 @@ try {
 
     for (const pageInfo of PAGES) {
       for (const target of TARGETS) {
-        const config = targetConfigs[target];
+        const config = target;
         const url = targetUrl(config.baseUrl, pageInfo[config.routeKey]);
 
         try {
@@ -74,11 +61,11 @@ try {
             scrollDelay: SCROLL_DELAY,
           });
           const imageStats = result?.imageStats || { total: 0, loaded: 0, pending: 0, unloaded: [] };
-          records.push({ ok: true, target, viewport: viewport.name, page: pageInfo.slug, url, imageStats });
-          printRecord({ target, viewport: viewport.name, page: pageInfo.slug, imageStats });
+          records.push({ ok: true, target: config.name, viewport: viewport.name, page: pageInfo.slug, url, imageStats });
+          printRecord({ target: config.name, viewport: viewport.name, page: pageInfo.slug, imageStats });
         } catch (error) {
-          records.push({ ok: false, target, viewport: viewport.name, page: pageInfo.slug, url, error: error.message });
-          if (FORMAT !== 'json') console.log('ERR', viewport.name, pageInfo.slug, target, error.message);
+          records.push({ ok: false, target: config.name, viewport: viewport.name, page: pageInfo.slug, url, error: error.message });
+          if (FORMAT !== 'json') console.log('ERR', viewport.name, pageInfo.slug, config.name, error.message);
         }
       }
     }
