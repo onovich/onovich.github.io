@@ -449,6 +449,11 @@ body.page-contact .site-footer {
   min-width: 0;
 }
 
+body.page-gallery-standard .thumbnails-container {
+  width: calc(100% + 3.831rem);
+  margin-left: -1.833rem;
+}
+
 .thumbnails {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -941,6 +946,10 @@ body.menu-open .site-menu__backdrop {
   body.page-inner.page-gallery-standard .page-back {
     margin-bottom: 4.13rem;
   }
+  body.page-inner.page-gallery-standard .thumbnails-container {
+    width: calc(100% + 2.903rem);
+    margin-left: -1.602rem;
+  }
   body.page-gallery-tight .home-grid__col--main {
     padding-top: 7.18rem;
   }
@@ -991,6 +1000,10 @@ body.menu-open .site-menu__backdrop {
   .thumbnails-container {
     width: 100%;
     margin: 0;
+  }
+  body.page-inner.page-gallery-standard .thumbnails-container {
+    width: calc(100% + 1.165rem);
+    margin-left: -0.666rem;
   }
   body.page-graphic.page-gallery-tight .thumbnails-container {
     width: calc(100% - 0.335rem);
