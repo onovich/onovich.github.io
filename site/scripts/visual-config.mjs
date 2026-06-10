@@ -10,7 +10,12 @@ export const VISUAL_OUT_DIR = path.resolve(
 
 export const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-export const PAGES_ALL = [
+export const PHOTO_DETAIL_PAGES = Array.from({ length: 8 }, (_, index) => {
+  const slug = `photo_${index + 1}`;
+  return { slug, original: `/${slug}`, clone: `/${slug}`, navLabel: 'PHOTOS', backLabel: 'PHOTO' };
+});
+
+export const PAGES_BASE = [
   { slug: 'home',        original: '/',             clone: '/',             navLabel: 'CODES' },
   { slug: 'codes',       original: '/codes',        clone: '/codes',        navLabel: 'CODES' },
   { slug: 'game',        original: '/game',         clone: '/game',         navLabel: 'GAMES' },
@@ -25,6 +30,11 @@ export const PAGES_ALL = [
   { slug: 'contact',     original: '/contact-form', clone: '/contact',      navLabel: 'MESSAGE' },
 ];
 
+export const PAGES_ALL = [
+  ...PAGES_BASE,
+  ...PHOTO_DETAIL_PAGES,
+];
+
 export const VIEWPORTS = [
   { name: 'mobile',  width: 375,  height: 800 },
   { name: 'tablet',  width: 768,  height: 1024 },
@@ -36,6 +46,14 @@ export const VIEWPORTS = [
 const PAGE_ALIASES = new Map([
   ['index', 'home'],
   ['/', 'home'],
+]);
+
+const PAGE_GROUPS = new Map([
+  ['gallery', ['codes', 'game', 'pixel', 'illustrator', 'gif', 'graphic', 'photo']],
+  ['galleries', ['codes', 'game', 'pixel', 'illustrator', 'gif', 'graphic', 'photo']],
+  ['photo-details', PHOTO_DETAIL_PAGES.map((page) => page.slug)],
+  ['photo-detail', PHOTO_DETAIL_PAGES.map((page) => page.slug)],
+  ['photo-albums', ['photo', ...PHOTO_DETAIL_PAGES.map((page) => page.slug)]],
 ]);
 
 export function parseVisualArgs(argv = process.argv.slice(2)) {
@@ -58,7 +76,7 @@ export function numberArg(value, fallback) {
 }
 
 export function selectPages(value) {
-  const requested = splitListArg(value).map((slug) => PAGE_ALIASES.get(slug) || slug);
+  const requested = expandPageGroups(splitListArg(value).map((slug) => PAGE_ALIASES.get(slug) || slug));
   if (requested.length === 0) return PAGES_ALL;
 
   const pages = requested.map((slug) => {
@@ -67,6 +85,10 @@ export function selectPages(value) {
     return page;
   });
   return pages;
+}
+
+function expandPageGroups(slugs) {
+  return slugs.flatMap((slug) => PAGE_GROUPS.get(slug) || [slug]);
 }
 
 export function selectViewports(value) {
