@@ -30,6 +30,8 @@ cd site && npm run assets:check                    # 本地资源引用/大缩�
 
 页面（PAGES）：home, codes, game, pixel, illustrator, gif, graphic, photo, poem, sns, links, contact（contact 在原站路径是 `/contact-form`）。
 
+`visual:image-audit` 是无截图图片加载门禁：它复用 `visual:diff` 的页面/视口/图片等待逻辑，只输出 `OK/WARN images=loaded/total` 和未加载图片摘要。默认检查 clone 的主要 gallery 页桌面视口，用于先判断是否真的需要 poster/eager 调整；2026-06-10 当前本地 clone 基线为主要 gallery desktop `7/7` target、`113/113` 图片加载，mobile+desktop 扩展审计为 `14/14` target、`226/226` 图片加载。
+
 `visual:check` 是截图前的快速布局门禁：它用 Playwright 读取真实布局框，检查左侧 Onovich 导航、当前分类链接和内页 `< HOME` 返回链接是否仍在预期区域。它不能替代人工看截图，但能提前阻止内页导航消失这类 P0 回归。
 
 `visual:measure` 是数值探针：它复用同一套页面/视口/加载等待逻辑，输出原站和 clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns 和 delta。先跑 measure，再决定 CSS 改哪里。
@@ -113,6 +115,7 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：`assets:check` 已加入；旧 `photos.json` / `/images/photos/*` 链路已移除，photo 运行时来源统一为 `photoAlbums.json`。当前 234 个真实内容图片引用均存在，且没有超过 `1MB` 仍缺 `thumbSrc` 的候选。
 - 2026-06-10 更新：illustrator 3 个大候选 `128.gif`、`ref-18.png`、`ref-20.png` 已接入同尺寸比例 WebP poster（约 93KB、39KB、88KB），点击仍打开原 GIF/PNG；desktop/wide `thumbImage` 宽高 delta 维持 `0px`。
 - 2026-06-10 更新：`visual:diff` 已增加 lazy image 预热和 `images=loaded/total` 日志；`illustrator` desktop clone 在 `--imageTimeout=25000 --scrollPasses=3` 下为 `29/29`，截图下半段不再被 false placeholder 干扰。
+- 2026-06-10 更新：新增 `visual:image-audit` 无截图加载审计；本地 clone 默认主要 gallery desktop 审计为 `codes/game/pixel/illustrator/gif/graphic/photo` 共 `113/113` 图片加载，mobile+desktop 扩展审计为 `226/226` 图片加载。后续有加载疑问先看审计 WARN，再定向截图。
 - 残差：gallery 资源加载仍需按节点继续复核；GIF gallery 已有轻量 WebP poster。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos

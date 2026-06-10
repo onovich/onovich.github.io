@@ -17,6 +17,7 @@ import {
   DEFAULT_ORIGINAL_URL,
   USER_AGENT,
   VISUAL_OUT_DIR,
+  formatImageStats,
   parseVisualArgs,
   selectPages,
   selectViewports,
@@ -88,9 +89,3 @@ if (failed.length) {
   process.exitCode = 1;
 }
 console.log('Output dir:', OUT_DIR);
-
-function formatImageStats(stats) {
-  if (!stats) return '';
-  const pending = Math.max(0, stats.total - stats.loaded);
-  return `images=${stats.loaded}/${stats.total}${pending ? ` pending=${pending}` : ''}`;
-}
