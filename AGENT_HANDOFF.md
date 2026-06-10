@@ -127,9 +127,9 @@
 - ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份、备份恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘
 
 ### 进行中 / 待做
-- 🟡 视觉残差消除（codes caption、bodycopy 行高、wide root font-size、home wide avatar、codes/pixel 标准 gallery 顶部、pixel mobile 横向溢出、pixel 第二段 natural/flush gallery、tight gallery 顶部与 game/gif/illustrator 断点列数、illustrator 5 断点缩略图尺寸、graphic 首张全栏图/长图顺序/laptop 2 列和 5 断点图片宽度、Cargo grid 横向 gutter / main width、gif hero/natural media 尺寸、GIF gallery WebP poster、illustrator 大候选 WebP poster 已收敛；顶部位置改看 `visual:measure` 的 `mainAnchor.y` / `thumbnails.y`，不要把旧 `main.y` 列盒位置当成首个内容起点；`mainColumn` 已改为取右栏最右候选，剩余 gallery 慢加载体验继续用 `visual:diff` 图片统计复核）
-- 🟡 gallery lazy placeholder 优化（先跑 `visual:guard` 看布局门禁和 `images=loaded/total`，必要时按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围；photo 已统一到 `photoAlbums.json`）
-- 🟡 网页 CMS 后续增强：围绕 `/cms`，但优先级低于视觉 P0/P1
+- 🟡 视觉残差消除：下一轮优先复核 `photo` / `photo_1` desktop/wide 首图宽度小残差（约 `-2.5px` 到 `-3px`）。先读原站/clone 图片父级和祖先容器 bbox，再决定是否做 page-scoped CSS 微调。
+- 🟡 gallery lazy placeholder / 加载体验：先跑 `visual:guard` 看布局门禁和 `images=loaded/total`；当前 desktop clone 基线 `217/217`，mobile+desktop 扩展审计 `434/434`。有 WARN 时再按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围。
+- 🟡 网页 CMS 后续增强：只围绕站内 `/cms`，旧 Electron admin 已移除且不再维护；优先级低于视觉 P0/P1。
 
 ### 已知风险
 - Cargo runtime JS 注入的 inline style 单看 CSS 推不全
@@ -227,15 +227,15 @@ NODE
 
 ## 9. 如何继续工作（建议优先级）
 
-### P0：消除当前视觉残差（基于已有截图）
-- 看 `diff-screenshots/home.desktop.*.png` 找差异
-- 用 Playwright `getComputedStyle` 拿原站精确数值
-- 修 `global.css` 直到 5 个断点都能通过截图对照
+### P0：守住视觉验证门禁
+- 视觉/布局变更必须跑 `Validate.cmd` + `Smoke.cmd`
+- 大节点继续跑 `visual:measure` / `visual:diff` 并人工看关键截图
+- 不要只靠 build 通过就提交
 
-### P1：缩略图列数响应式
-- 原站缩略图列数依赖 Cargo JS 注入 `[thumbnails-cols]` 属性
-- 我们用 `grid-template-columns: repeat(N, 1fr)` 在媒体查询里写死即可
-- 用 Playwright 测原站每个断点实际列数（375/768/1024/1440/1920），写进 CSS
+### P1：photo 图片宽度小残差
+- `photo` / `photo_1` 顶部和 3 列布局已收敛
+- 下一步复核 desktop/wide 首图宽度约 `-2.5px` 到 `-3px` 的残差
+- 先用 Playwright 泛化读取原站/clone 图片父级与祖先容器 bbox，再做 page-scoped CSS 微调
 
 ### P2：优化剩余 gallery lazy placeholder
 - 先跑 `npm run assets:check`，当前 0 缺失且无大候选 warning
