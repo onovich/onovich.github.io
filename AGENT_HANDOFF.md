@@ -127,9 +127,9 @@
 - ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份、备份恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘
 
 ### 进行中 / 待做
-- 🟡 视觉残差消除：下一轮优先复核 `photo` / `photo_1` desktop/wide 首图宽度小残差（约 `-2.5px` 到 `-3px`）。先读原站/clone 图片父级和祖先容器 bbox，再决定是否做 page-scoped CSS 微调。
-- 🟡 gallery lazy placeholder / 加载体验：先跑 `visual:guard` 看布局门禁和 `images=loaded/total`；当前 desktop clone 基线 `217/217`，mobile+desktop 扩展审计 `434/434`。有 WARN 时再按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围。
-- 🟡 网页 CMS 后续增强：只围绕站内 `/cms`，旧 Electron admin 已移除且不再维护；优先级低于视觉 P0/P1。
+- 🟡 全站最终回归：复跑构建、资源、`Smoke.cmd`、必要视觉快扫，推送后确认 Actions 与线上 `200 OK`。
+- 🟡 最终文档收口：只保留真实未解决项；CMS 后续增强列为非阻塞。
+- 🟡 网页 CMS 后续增强：只围绕站内 `/cms`，旧 Electron admin 已移除且不再维护；优先级低于最终回归。
 
 ### 已知风险
 - Cargo runtime JS 注入的 inline style 单看 CSS 推不全
@@ -232,16 +232,15 @@ NODE
 - 大节点继续跑 `visual:measure` / `visual:diff` 并人工看关键截图
 - 不要只靠 build 通过就提交
 
-### P1：photo 图片宽度小残差
-- `photo` / `photo_1` 顶部和 3 列布局已收敛
-- 下一步复核 desktop/wide 首图宽度约 `-2.5px` 到 `-3px` 的残差
-- 先用 Playwright 泛化读取原站/clone 图片父级与祖先容器 bbox，再做 page-scoped CSS 微调
+### P1：全站最终回归
+- 跑 `Validate.cmd` 与 `Smoke.cmd`
+- 必要时补 `visual:measure` 快扫和关键截图
+- 推送后等 Actions 成功，并确认线上 `https://blog.onovich.com/` 返回 `200 OK`
 
-### P2：优化剩余 gallery lazy placeholder
-- 先跑 `npm run assets:check`，当前 0 缺失且无大候选 warning
-- 长 gallery 先用 `npm run visual:guard -- --clone=http://localhost:4350` 无截图复核布局和 `images=loaded/total`
-- 有 WARN 时再用 `npm run visual:diff -- --targets=clone --imageTimeout=25000 --scrollPasses=3` 定向截图
-- 如 clone 仍不能全加载，再按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围
+### P2：最终文档收口
+- `docs/OPEN_ISSUES.md` 只保留真实未解决项
+- `HANDOFF_NEXT.md` / `HANDOFF.md` / `AGENT_HANDOFF.md` 同步最终状态
+- CMS 后续增强列为非阻塞
 
 ### P3：网页 CMS 继续演进
 - 保留 `site/src/pages/cms.astro` 作为唯一后台入口

@@ -52,15 +52,14 @@
 | DNS / CNAME | ✅ 主域名继续 Cargo，blog 子域名指向 GitHub Pages |
 | 内容数据（codes/games/pixel/illustrations/gifs/graphics/sns/poems） | ✅ 已填 |
 | 图片迁移 | ✅ 旧 `photos.json` / `/images/photos/*` 链路已移除；photo 运行时统一用 `photoAlbums.json` 与 `/images/photo-albums/*`；`assets:check` 为 234 个真实内容图片引用 0 缺失 |
-| **CSS / 布局** | ⚠️ 内页左导航、标准/tight gallery、graphic、gif、illustrator、photo 顶部/列数等已大幅收敛；下一轮优先 photo desktop/wide 图片宽度小残差 |
+| **CSS / 布局** | ⚠️ 内页左导航、标准/tight gallery、graphic、gif、illustrator、photo 顶部/列数/desktop-wide 宽度等已大幅收敛；gallery 加载扩展审计已全绿，下一轮优先全站最终回归 |
 | 网页 CMS | ✅ 保留为唯一后台演进方向，旧 Electron admin 已移除；已拆出样式、状态、预览、校验、导入/导出包、发布应用计划、资产路径、缺失资产阻止、真实发布 smoke、发布前备份、恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘 |
 
 **TaskList 当前任务**（按优先级）：
 
 - P0：视觉/布局变更必须跑 `Validate.cmd` + `Smoke.cmd`；大节点继续截图对照
-- P1：复核并尽量收敛 `photo` / `photo_1` desktop/wide 图片宽度小残差
-- P1：继续用 `visual:guard` / `visual:image-audit` 守住 gallery 加载体验
-- P2：继续扩展 `/cms` 发布/恢复校验覆盖；旧 Electron admin 不再维护
+- P1：全站最终回归：构建、资源、视觉门禁、线上 Actions / `200 OK`
+- P2：最终文档收口，只保留真实未解决项；CMS 增强列为非阻塞
 
 ---
 
@@ -119,9 +118,9 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 1. **视觉回归**：本地 build 后优先跑 `visual:guard`，再按需要跑 `visual:measure` 和 `visual:diff` 处理列对齐和断点残差。`visual:measure` 已新增 `mainAnchor`；优先看 `mainAnchor.y` / `thumbnails.y`，不要再把旧 `main.y` 列盒位置当成首个内容起点。Codes caption、bodycopy 行高、wide root font-size、codes/pixel 标准 gallery 顶部、photo 顶部和列数已收敛。
 
-2. **photo 宽度残差**：下一轮先用 Playwright 读取原站/clone 首张图片、父级和祖先容器 bbox，确认 desktop/wide 约 `-2.5px` 到 `-3px` 的残差来源，再做 page-scoped 小改。
+2. **最终回归**：下一轮复跑 `Validate.cmd` / `Smoke.cmd`，必要时补 `visual:measure` 快扫；推送后等 Actions 并确认 `https://blog.onovich.com/` 返回 `200 OK`。
 
-3. **gallery 加载体验**：先用 `visual:guard --clone=http://localhost:4350` 做常规无截图门禁；当前 gallery + photo detail desktop clone 基线为 `217/217` 图片加载，mobile+desktop 扩展审计为 `434/434`。有 WARN 时再定向截图并补 `thumbSrc` poster 或 eager 范围。旧 photos 链路已移除，photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为准；可用 `visual:guard --full --skipLayout` 扩展复核移动端图片加载。
+3. **photo / gallery 防回归**：photo 顶部、列数和 desktop/wide 宽度已收敛；gallery + photo detail mobile+desktop 图片审计为 `434/434`。旧 photos 链路已移除，photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为准。
 
 4. **网页 CMS 演进**：CMS 上传/富文本/发布链路已有小节点覆盖；后续增强继续围绕 `/cms`，不再维护旧 Electron admin。
 

@@ -10,7 +10,7 @@
 
 - `https://blog.onovich.com` 由 GitHub Pages 部署 `site/` 构建结果。
 - 域名必须保持 `blog.onovich.com`；不要把 Pages CNAME 改成主域名 `onovich.com`。
-- 2026-06-10 已通过 `visual:check` 确认线上 `blog.onovich.com/codes` 保留左侧导航；下一轮重点是 photo 图片宽度小残差和 gallery 加载门禁防回归。
+- 2026-06-10 已通过 `visual:check` 确认线上 `blog.onovich.com/codes` 保留左侧导航；photo 图片宽度小残差和全 gallery 加载门禁已收敛，下一轮重点是全站最终回归。
 
 ### 本地工作区状态
 
@@ -50,11 +50,11 @@ npm run visual:check -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel -
 npm run visual:check -- --pages=codes --viewports=desktop --targets=original,clone
 ```
 
-`codes.desktop.clone.png` 已人工查看，左侧导航存在；线上 `blog.onovich.com/codes` 与原站同样通过布局框检查。`visual:measure` 已新增 `mainAnchor`，旧 `main.y` 只是右栏列盒位置，不再单独作为视觉残差依据；`mainColumn` 现在取右栏最右候选，codes/graphic desktop/wide 的 `main.x` 与 `main.width` 已归零级别。wide root font-size 已修到原站实测 `15.55px`；codes/pixel 标准 gallery 顶部也已按 5 断点收敛；pixel mobile 横向溢出已修；pixel 第二段 natural/flush gallery 已收敛；tight gallery 顶部和 game/gif/illustrator 断点列数已收敛；illustrator 5 断点缩略图尺寸已收齐；graphic 已恢复原站首张 `graphic-06.jpg` 全栏图、后续长图顺序、laptop 2 列和 5 断点图片宽度；Cargo grid 横向 gutter / main width 已收敛；home wide avatar 已收敛；gif hero/natural media 尺寸已收敛；GIF gallery 已接入轻量 WebP poster；旧 `photos.json` / `/images/photos/*` 链路已移除；illustrator 3 个大候选已接入轻量 WebP poster；`assets:check` 已确认 234 个真实内容图片引用 0 缺失且无大候选 warning；`visual:diff` 已增加 lazy image 预热和 `images=loaded/total` 日志。当前最高优先级改为：**先复核 photo desktop/wide 图片宽度小残差，再继续用图片加载统计守住剩余 gallery 慢加载体验**，相关变更仍以 `visual:check` + `visual:measure` + `visual:diff` + `assets:check` / ops wrapper 作为门禁。
+`codes.desktop.clone.png` 已人工查看，左侧导航存在；线上 `blog.onovich.com/codes` 与原站同样通过布局框检查。`visual:measure` 已新增 `mainAnchor`，旧 `main.y` 只是右栏列盒位置，不再单独作为视觉残差依据；`mainColumn` 现在取右栏最右候选，codes/graphic desktop/wide 的 `main.x` 与 `main.width` 已归零级别。wide root font-size 已修到原站实测 `15.55px`；codes/pixel 标准 gallery 顶部也已按 5 断点收敛；pixel mobile 横向溢出已修；pixel 第二段 natural/flush gallery 已收敛；tight gallery 顶部和 game/gif/illustrator 断点列数已收敛；illustrator 5 断点缩略图尺寸已收齐；graphic 已恢复原站首张 `graphic-06.jpg` 全栏图、后续长图顺序、laptop 2 列和 5 断点图片宽度；Cargo grid 横向 gutter / main width 已收敛；home wide avatar 已收敛；gif hero/natural media 尺寸已收敛；GIF gallery 已接入轻量 WebP poster；旧 `photos.json` / `/images/photos/*` 链路已移除；illustrator 3 个大候选已接入轻量 WebP poster；`assets:check` 已确认 234 个真实内容图片引用 0 缺失且无大候选 warning；`visual:diff` 已增加 lazy image 预热和 `images=loaded/total` 日志。photo desktop/wide 图片宽度小残差已由约 `-2.5px` 到 `-3px` 收到亚像素级。全 gallery mobile+desktop 扩展审计为 `30/30` target、`434/434` 图片加载。当前最高优先级改为：**全站最终回归与最终文档收口**，相关变更仍以 `visual:check` + `visual:measure` + `visual:diff` + `assets:check` / ops wrapper 作为门禁。
 
 2026-06-10 追加：codes/pixel 标准 gallery 横向容器已按 mobile/tablet、laptop、desktop/wide 三段校准；5 断点正常图片等待复核后，`thumbImage.width/height` 与 pixel 第二段 `g2` 宽高 delta 最大约 `0.47px`。
 
-2026-06-10 追加：photo index 与 photo detail 在 mobile/tablet 恢复原站 3 列，并按 5 断点校准返回链接与首图顶部；正常图片等待复核后，`backY` 最大 delta 约 `0.07px`，`thumbY` 最大 delta 约 `0.06px`。剩余候选改为 photo 图片宽度小残差（desktop/wide 约 `-2.5px` 到 `-3px`）。
+2026-06-10 追加：photo index 与 photo detail 在 mobile/tablet 恢复原站 3 列，并按 5 断点校准返回链接与首图顶部；正常图片等待复核后，`backY` 最大 delta 约 `0.07px`，`thumbY` 最大 delta 约 `0.06px`。随后 photo desktop/wide 首图宽度残差通过 page-scoped 桌面 margin 修正收敛，`thumbImage.width` delta 约 desktop `-0.32px`、wide `-0.39px`。
 
 ---
 
@@ -240,11 +240,11 @@ npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 
 ### Step 2 — 继续缩小视觉差异
 
-先处理 photo desktop/wide 图片宽度小残差，再继续复核剩余 gallery 资源加载与大缩略图候选。Codes caption 已在 2026-06-10 切为 Cargo 风格 12px HTML caption；bodycopy / main content 行高也已同步为原站 `16px`，codes 5 断点列数 delta 为 0，wide root font-size 已修到 `15.55px`，home wide avatar 宽高与首个内容 y 已收敛，pixel mobile 横向溢出已修，pixel 第二段 natural/flush gallery 的 `g2` 列数与 desktop/wide 图片宽高也已收敛，game/gif/illustrator mobile/tablet/laptop/desktop/wide 列数与 tight 顶部已收敛，illustrator 5 断点首组 `thumbImage` width delta 已收齐，graphic 已恢复首张全栏图 `graphic-06.jpg`、后续长图顺序、laptop 2 列和 5 断点图片宽度，desktop/wide 首张 width delta 已从 `+2.88/+3.43px` 收到 `+0.02/0px`，Cargo grid 横向 gutter / main width 已归零级别，gif hero 在 mobile/tablet 的宽度 delta 已从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`，GIF gallery 已用 13 张 WebP poster + `eagerThumbs` 避免缩略图慢加载。注意：旧 `main.y` 测的是右栏列盒，不等于首个可见内容起点；继续看 `mainAnchor.y` / `thumbnails.y`，图片尺寸看 `thumbImage.width/height`。
+继续做全站最终回归与最终文档收口。Codes caption 已在 2026-06-10 切为 Cargo 风格 12px HTML caption；bodycopy / main content 行高也已同步为原站 `16px`，codes 5 断点列数 delta 为 0，wide root font-size 已修到 `15.55px`，home wide avatar 宽高与首个内容 y 已收敛，pixel mobile 横向溢出已修，pixel 第二段 natural/flush gallery 的 `g2` 列数与 desktop/wide 图片宽高也已收敛，game/gif/illustrator mobile/tablet/laptop/desktop/wide 列数与 tight 顶部已收敛，illustrator 5 断点首组 `thumbImage` width delta 已收齐，graphic 已恢复首张全栏图 `graphic-06.jpg`、后续长图顺序、laptop 2 列和 5 断点图片宽度，desktop/wide 首张 width delta 已从 `+2.88/+3.43px` 收到 `+0.02/0px`，photo desktop/wide 首图 width delta 已收到亚像素级，Cargo grid 横向 gutter / main width 已归零级别，gif hero 在 mobile/tablet 的宽度 delta 已从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`，GIF gallery 已用 13 张 WebP poster + `eagerThumbs` 避免缩略图慢加载，gallery + photo detail mobile+desktop 图片审计为 `434/434`。注意：旧 `main.y` 测的是右栏列盒，不等于首个可见内容起点；继续看 `mainAnchor.y` / `thumbnails.y`，图片尺寸看 `thumbImage.width/height`。
 
-先跑 `npm run assets:check`：当前结果应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。旧 `photos.json` / `/images/photos/*` 已移除；photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为准，不要再按缺图任务处理。illustrator 的 `128.gif`、`ref-18.png`、`ref-20.png` 已有 `thumbSrc` poster。常规无截图门禁先用 `visual:guard --clone=http://localhost:4350`；当前 gallery + photo detail desktop clone 基线为 `217/217` 图片加载，mobile+desktop 扩展审计为 `434/434`。有 WARN 时再用 `visual:diff --targets=clone --imageTimeout=25000 --scrollPasses=3` 定向截图。可用 `visual:guard --full --skipLayout` 扩展复核移动端图片加载。
+先跑 `npm run assets:check`：当前结果应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。旧 `photos.json` / `/images/photos/*` 已移除；photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为准，不要再按缺图任务处理。illustrator 的 `128.gif`、`ref-18.png`、`ref-20.png` 已有 `thumbSrc` poster。常规无截图门禁先用 `visual:guard --clone=http://127.0.0.1:4351`；当前 gallery + photo detail desktop clone 基线为 `217/217` 图片加载，mobile+desktop 扩展审计为 `434/434`。有 WARN 时再用 `visual:diff --targets=clone --imageTimeout=25000 --scrollPasses=3` 定向截图。可用 `visual:guard --full --skipLayout` 扩展复核移动端图片加载。
 
-`visual:measure` 现在支持 `--imageTimeout`、`--scrollPasses`、`--scrollDelay`、`--navigationTimeout`、`--attempts`、`--loadImages=false`。原站慢时先窄范围快扫，例如 `--pages=galleries --viewports=desktop --imageTimeout=2000 --scrollPasses=1 --navigationTimeout=15000 --attempts=1`，再对候选页用正常图片等待复核。当前 `codes/pixel` 缩略图宽度和 `photo` 顶部/列数已收敛；下一轮候选是 `photo` / `photo_1` 图片宽度小残差，先读原站/clone 首张图片父级与祖先容器 bbox，再决定是否微调 CSS。`gif/graphic` 顶部先当测量锚点噪声，不直接改 CSS。
+`visual:measure` 现在支持 `--imageTimeout`、`--scrollPasses`、`--scrollDelay`、`--navigationTimeout`、`--attempts`、`--loadImages=false`。原站慢时先窄范围快扫，例如 `--pages=galleries --viewports=desktop --imageTimeout=2000 --scrollPasses=1 --navigationTimeout=15000 --attempts=1`，再对候选页用正常图片等待复核。当前 `codes/pixel` 缩略图宽度、`photo` 顶部/列数/desktop-wide 宽度和全 gallery 图片加载已收敛；下一轮候选是全站最终回归。`gif/graphic` 顶部先当测量锚点噪声，不直接改 CSS。
 
 ### Step 3 — 如果仍偏差大
 
@@ -277,9 +277,8 @@ npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 建议把已有任务调整为：
 
 - P0：视觉/布局变更必须跑 `Validate.cmd` + `Smoke.cmd`；大节点继续 `visual:measure` + `visual:diff` + 人工看图
-- P1：复核并尽量收敛 `photo` / `photo_1` desktop/wide 图片宽度小残差
-- P1：用 `visual:image-audit` 继续守住 gallery 慢加载体验，有 WARN 再定向截图
-- P2：如 clone 长 gallery 仍不能 `images=loaded/total` 全加载，再按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围
+- P1：全站最终回归：构建、资源、`Smoke.cmd`、必要截图/测量、Actions、线上 `200 OK`
+- P2：最终文档收口：只保留真实未解决项，CMS 增强列为非阻塞
 - P3：继续扩展 `/cms` 发布/恢复校验覆盖，旧 Electron admin 不再维护
 
 ---

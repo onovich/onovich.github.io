@@ -11,10 +11,11 @@
 ## 当前 TODO 摘要（2026-06-10）
 
 1. P0：视觉/布局变更必须跑 `Validate.cmd` + `Smoke.cmd`；涉及截图判断的大节点继续跑 `visual:measure` / `visual:diff` 并人工看关键截图，不能只靠 build 通过。
-2. P1：下一轮视觉小节点优先处理 `photo` / `photo_1` 在 desktop/wide 的首图宽度小残差（约 `-2.5px` 到 `-3px`）。先用 Playwright 泛化读取原站与 clone 的图片父级/祖先框，再决定是否只在 desktop/wide 范围微调 `photo-columns`。
-3. P1：继续用 `visual:guard` / `visual:image-audit` 守住 gallery 加载体验；当前 `assets:check` 为 234 个真实内容图片引用 0 缺失、0 大候选 warning，gallery + photo detail desktop clone 为 `217/217`，mobile+desktop 扩展审计为 `434/434`。有 WARN 再定向 `visual:diff` 和补 poster/eager。
-4. P2：CMS 后续增强暂缓，继续围绕唯一站内后台 `/cms`；旧 Electron `admin/` 已移除，不再维护双后台。
-5. 已关闭：旧 `photos.json` / `/images/photos/*` 内容链路已移除；photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为唯一来源，不再把 `photos 02-07` 当缺图任务。
+2. P1：`photo` / `photo_1` desktop/wide 首图宽度小残差已收敛；`thumbImage.width` delta 从约 `-2.5px` 到 `-3px` 收到 desktop `-0.32px`、wide `-0.39px`，5 断点列数仍为 3 且无横向溢出。
+3. P1：全 gallery 加载体验扩展审计已通过；`visual:guard --full --skipLayout` 覆盖 mobile+desktop 共 30 个 clone 目标，图片 `434/434` 全加载，无 WARN。
+4. P2：下一轮进入全站最终回归：构建、资源、视觉门禁、线上 Actions / `200 OK`，并把剩余可测残差归档为已修或测量噪声。
+5. P3：CMS 后续增强暂缓，继续围绕唯一站内后台 `/cms`；旧 Electron `admin/` 已移除，不再维护双后台。
+6. 已关闭：旧 `photos.json` / `/images/photos/*` 内容链路已移除；photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为唯一来源，不再把 `photos 02-07` 当缺图任务。
 
 ---
 
@@ -72,8 +73,8 @@
 - 已修：`visual:check` / `visual:measure` 现在支持 photo detail 的 `< PHOTO` 返回链接；`--pages=photo-details` 桌面 clone 布局门禁通过 `56` assertions。
 - 已修：新增 `visual:guard` 无截图聚合门禁；`--clone=http://127.0.0.1:4351` 默认路径通过布局 `75` assertions + 图片 `217/217`，`--full --skipLayout` 通过 mobile+desktop 图片 `434/434`。
 - 已修：photo index 与 photo detail 在 mobile/tablet 恢复原站 3 列，并按 5 断点校准返回链接与首图顶部；正常图片等待复核后，`backY` 最大 delta 约 `0.07px`，`thumbY` 最大 delta 约 `0.06px`，列数 5 断点均为 3。
-- 残差：`photo` / `photo_1` 的顶部和 3 列布局已收敛，剩余候选是 desktop/wide 首图宽度约 `-2.5px` 到 `-3px` 的小残差；下一步先确认原站/clone 图片父级框差异，再决定是否改 CSS。
-- 资源加载：gallery 资源加载仍需按节点继续复核；后续先用 `visual:image-audit` 区分截图预热不足和真实页面体验问题，有 WARN 时再定向跑 `visual:diff` 截图。
+- 已修：`photo` / `photo_1` desktop/wide 首图宽度残差由 `.photo-columns` 桌面横向偏移造成；在 `body.page-photo` + `min-width:1200px` 范围内归零左 margin 后，`thumbImage.width` delta 收到 desktop `-0.32px`、wide `-0.39px`，`visual:check` 50 assertions 通过，5 断点 `visual:diff --targets=clone` 为 10/10 screenshots、图片全加载。
+- 已修：gallery 加载体验已完成扩展复核；`visual:guard --full --skipLayout --clone=http://127.0.0.1:4351` 覆盖 mobile+desktop 共 30 个 clone 目标，图片 `434/434` 全加载，无 WARN。
 - 缩略图列数：codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game/gif/illustrator 当前 5 断点已恢复 3 列，graphic 当前 5 断点已保持 2 列，photo 当前 5 断点均为 3 列。
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
@@ -87,10 +88,8 @@
 
 **下一步**（任务 #18 后续 / P0）：
 1. 继续把 `Validate.cmd` / `Smoke.cmd` 作为提交前门禁；资源部分当前应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。
-2. 下一轮先复核 photo 图片宽度残差：用 Playwright 读原站/clone 首张图片、父级和祖先容器的 bbox/style，确认是不是 `.photo-columns` 的桌面横向偏移导致。
-3. 若确认可修，只做 page-scoped 小改，并按 `photo,photo_1` 的 5 断点跑 `visual:measure`；再跑 `visual:diff --targets=clone` 生成关键截图并人工查看。
-4. gallery 加载继续用 `visual:guard --clone=http://localhost:4350` 常规复核；有 WARN 时再定向截图并补 poster/eager。
-5. `gif/graphic` 顶部指标先按测量锚点噪声处理，不直接改 CSS。
+2. 下一轮进入全站最终回归：复跑常规 `Smoke.cmd`、必要的 `visual:measure` 快扫、Actions 和线上 `https://blog.onovich.com/`。
+3. `gif/graphic` 顶部指标先按测量锚点噪声处理，不直接改 CSS，最终文档里只保留真实未解决项。
 
 ---
 
