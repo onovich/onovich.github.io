@@ -101,7 +101,7 @@
 
 ### 铁律 F：CI Node 版本
 - Workflow 必须 `node-version: '22'`，因为 `package.json` 写了 `engines.node: '>=22.12.0'`。Node 20 会失败。
-- Workflow 顶层保留 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'`，提前让 GitHub JS actions 使用 Node 24；不要误改成 build Node 24，除非同步改 `package.json` 和本地验证。
+- Workflow actions 使用 Node 24 版本：`actions/checkout@v6`、`actions/setup-node@v6`、`actions/upload-pages-artifact@v5`、`actions/deploy-pages@v5`；不要误改 build Node 22，除非同步改 `package.json` 和本地验证。
 
 ### 铁律 G：Git 推送
 - 远端 `git@github.com:onovich/onovich.github.io.git`（User Pages 仓库）
