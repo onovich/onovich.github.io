@@ -119,9 +119,9 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：`assets:check` 已加入；旧 `photos.json` / `/images/photos/*` 链路已移除，photo 运行时来源统一为 `photoAlbums.json`。当前 234 个真实内容图片引用均存在，且没有超过 `1MB` 仍缺 `thumbSrc` 的候选。
 - 2026-06-10 更新：illustrator 3 个大候选 `128.gif`、`ref-18.png`、`ref-20.png` 已接入同尺寸比例 WebP poster（约 93KB、39KB、88KB），点击仍打开原 GIF/PNG；desktop/wide `thumbImage` 宽高 delta 维持 `0px`。
 - 2026-06-10 更新：`visual:diff` 已增加 lazy image 预热和 `images=loaded/total` 日志；`illustrator` desktop clone 在 `--imageTimeout=25000 --scrollPasses=3` 下为 `29/29`，截图下半段不再被 false placeholder 干扰。
-- 2026-06-10 更新：新增 `visual:image-audit` 无截图加载审计；本地 clone 默认 gallery + photo detail desktop 审计为 `codes/game/pixel/illustrator/gif/graphic/photo/photo_1..photo_8` 共 `217/217` 图片加载，mobile+desktop 扩展审计为 `434/434` 图片加载。后续有加载疑问先看审计 WARN，再定向截图。
-- 2026-06-10 更新：photo index 与 photo detail 在 mobile/tablet 恢复原站 3 列，并按 5 断点校准返回链接与首图顶部；正常图片等待复核后，`backY` 最大 delta 约 `0.07px`，`thumbY` 最大 delta 约 `0.06px`，列数 5 断点均为 3。剩余 photo 图片宽度小残差约 desktop/wide `-2.5px` 到 `-3px`。
-- 残差：gallery 资源加载仍需按节点继续复核；GIF gallery 已有轻量 WebP poster。
+- 2026-06-10 更新：新增 `visual:image-audit` 无截图加载审计；本地 clone 默认 gallery + photo detail desktop 审计为 `codes/game/pixel/illustrator/gif/graphic/photo/photo_1..photo_8` 共 `217/217` 图片加载，mobile+desktop 扩展审计为 `434/434` 图片加载。2026-06-10 后续复跑 `visual:guard --full --skipLayout --clone=http://127.0.0.1:4351`，30/30 target、434/434 图片加载，无 WARN。后续有加载疑问先看审计 WARN，再定向截图。
+- 2026-06-10 更新：photo index 与 photo detail 在 mobile/tablet 恢复原站 3 列，并按 5 断点校准返回链接与首图顶部；正常图片等待复核后，`backY` 最大 delta 约 `0.07px`，`thumbY` 最大 delta 约 `0.06px`，列数 5 断点均为 3。后续确认 desktop/wide 小残差来自 `.photo-columns` 左 margin；在 `body.page-photo` + `min-width:1200px` 收回后，`thumbImage.width` delta 从约 `-2.5px` 到 `-3px` 收到 desktop `-0.32px`、wide `-0.39px`，5 断点无横向溢出。
+- 残差：gallery 资源加载已完成 mobile+desktop 扩展复核；下一轮只做全站最终回归与文档关单。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid

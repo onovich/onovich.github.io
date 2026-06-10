@@ -742,6 +742,12 @@ body.page-gif .thumbnails--natural .thumb_image {
   margin-bottom: 0;
 }
 
+@media (min-width: 1200px) {
+  body.page-photo .photo-columns {
+    margin-left: 0;
+  }
+}
+
 /* ============================================================
    SITE MENU BUTTON (top-right hamburger)
    ============================================================ */
