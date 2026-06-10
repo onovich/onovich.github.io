@@ -36,7 +36,7 @@
 │   └── src/
 │       ├── layouts/BaseLayout.astro   ← 全局壳子（侧边栏 + 内容）
 │       ├── components/Gallery.astro    ← 画廊组件 + PhotoSwipe
-│       ├── styles/global.css           ← ★ 当前样式还不像原站，需重写
+│       ├── styles/global.css           ← ★ 当前视觉校准主文件
 │       ├── content/*.json              ← 数据
 │       └── pages/*.astro               ← 12 个页面
 └── .github/workflows/deploy.yml ← Node 22, build site/, deploy to Pages
@@ -51,16 +51,16 @@
 | GitHub Pages 部署链路 | ✅ 通了。Actions 绿色，blog.onovich.com 已能访问新站 |
 | DNS / CNAME | ✅ 主域名继续 Cargo，blog 子域名指向 GitHub Pages |
 | 内容数据（codes/games/pixel/illustrations/gifs/graphics/sns/poems） | ✅ 已填 |
-| 图片迁移 | ⚠️ photos 02-07 仍缺，需从原站抓 |
-| **CSS / 布局** | ⚠️ 已按 Cargo 左侧导航方向重写；内页左导航已完成线上/截图回归确认，仍需视觉残差修正 |
+| 图片迁移 | ✅ 旧 `photos.json` / `/images/photos/*` 链路已移除；photo 运行时统一用 `photoAlbums.json` 与 `/images/photo-albums/*`；`assets:check` 为 234 个真实内容图片引用 0 缺失 |
+| **CSS / 布局** | ⚠️ 内页左导航、标准/tight gallery、graphic、gif、illustrator、photo 顶部/列数等已大幅收敛；下一轮优先 photo desktop/wide 图片宽度小残差 |
 | 网页 CMS | ✅ 保留为唯一后台演进方向，旧 Electron admin 已移除；已拆出样式、状态、预览、校验、导入/导出包、发布应用计划、资产路径、缺失资产阻止、真实发布 smoke、发布前备份、恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘 |
 
 **TaskList 当前任务**（按优先级）：
 
-- P0：执行并扩展视觉验证门禁
-- P1：消除整体缩放、列对齐残差，实测 gallery 断点列数
-- P2：迁移 photos 02-07 缺失图片（用户说后期手动补）
-- P3：继续扩展发布/恢复校验覆盖
+- P0：视觉/布局变更必须跑 `Validate.cmd` + `Smoke.cmd`；大节点继续截图对照
+- P1：复核并尽量收敛 `photo` / `photo_1` desktop/wide 图片宽度小残差
+- P1：继续用 `visual:guard` / `visual:image-audit` 守住 gallery 加载体验
+- P2：继续扩展 `/cms` 发布/恢复校验覆盖；旧 Electron admin 不再维护
 
 ---
 
@@ -117,9 +117,9 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 ## 推荐继续工作的步骤
 
-1. **视觉回归**：本地 build 后优先跑 `visual:guard`，再按需要跑 `visual:measure` 和 `visual:diff` 处理列对齐和断点残差。`visual:measure` 已新增 `mainAnchor`；优先看 `mainAnchor.y` / `thumbnails.y`，不要再把旧 `main.y` 列盒位置当成首个内容起点。Codes caption、bodycopy 行高、wide root font-size、codes/pixel 标准 gallery 顶部已收敛。
+1. **视觉回归**：本地 build 后优先跑 `visual:guard`，再按需要跑 `visual:measure` 和 `visual:diff` 处理列对齐和断点残差。`visual:measure` 已新增 `mainAnchor`；优先看 `mainAnchor.y` / `thumbnails.y`，不要再把旧 `main.y` 列盒位置当成首个内容起点。Codes caption、bodycopy 行高、wide root font-size、codes/pixel 标准 gallery 顶部、photo 顶部和列数已收敛。
 
-2. **gallery 断点列数**：用 Playwright 实测原站 375 / 768 / 1024 / 1440 / 1920 每个断点列数，写入 CSS 媒体查询。
+2. **photo 宽度残差**：下一轮先用 Playwright 读取原站/clone 首张图片、父级和祖先容器 bbox，确认 desktop/wide 约 `-2.5px` 到 `-3px` 的残差来源，再做 page-scoped 小改。
 
 3. **gallery 加载体验**：先用 `visual:guard --clone=http://localhost:4350` 做常规无截图门禁；当前 gallery + photo detail desktop clone 基线为 `217/217` 图片加载，mobile+desktop 扩展审计为 `434/434`。有 WARN 时再定向截图并补 `thumbSrc` poster 或 eager 范围。旧 photos 链路已移除，photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为准；可用 `visual:guard --full --skipLayout` 扩展复核移动端图片加载。
 
