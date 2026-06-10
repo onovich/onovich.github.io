@@ -30,6 +30,7 @@ interface Props {
   dense?: boolean;
   natural?: boolean;
   columns?: 2 | 3;
+  eagerThumbs?: boolean;
   showCaptions?: boolean;
   captionMode?: 'structured' | 'title-desc-links' | 'html';
   className?: string;
@@ -41,6 +42,7 @@ const {
   dense = false,
   natural = false,
   columns = 3,
+  eagerThumbs = false,
   showCaptions = true,
   captionMode = 'structured',
   className = '',
@@ -101,7 +103,7 @@ function generatedCaptionHtml(item: GalleryItemData) {
             class="thumb_image"
             src={item.thumbSrc ?? item.src}
             alt={item.title}
-            loading={index < 3 ? 'eager' : 'lazy'}
+            loading={eagerThumbs || index < 3 ? 'eager' : 'lazy'}
             decoding="async"
             fetchpriority={index === 0 ? 'high' : undefined}
           />

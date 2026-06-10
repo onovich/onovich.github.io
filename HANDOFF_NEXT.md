@@ -227,7 +227,7 @@ npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 
 ### Step 2 — 继续缩小视觉差异
 
-继续 main width 小残差，并复核剩余 gallery 断点列数与资源加载。Codes caption 已在 2026-06-10 切为 Cargo 风格 12px HTML caption；bodycopy / main content 行高也已同步为原站 `16px`，codes 5 断点列数 delta 为 0，wide root font-size 已修到 `15.55px`，home wide avatar 宽高与首个内容 y 已收敛，pixel mobile 横向溢出已修，pixel 第二段 natural/flush gallery 的 `g2` 列数与 desktop/wide 图片宽高也已收敛，game/gif/illustrator mobile/tablet/laptop/desktop/wide 列数与 tight 顶部已收敛，graphic 已恢复首张全栏图 `graphic-06.jpg`、后续长图顺序、laptop 2 列和 mobile/tablet/laptop 图片宽度，Cargo grid 横向 gutter / main width 已恢复到小残差（desktop/wide 约 4-5px），gif hero 在 mobile/tablet 的宽度 delta 已从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`，GIF gallery 已用 13 张 WebP poster 避免缩略图慢加载。注意：旧 `main.y` 测的是右栏列盒，不等于首个可见内容起点；继续看 `mainAnchor.y` / `thumbnails.y`。
+继续 main width 小残差，并复核剩余 gallery 断点列数与资源加载。Codes caption 已在 2026-06-10 切为 Cargo 风格 12px HTML caption；bodycopy / main content 行高也已同步为原站 `16px`，codes 5 断点列数 delta 为 0，wide root font-size 已修到 `15.55px`，home wide avatar 宽高与首个内容 y 已收敛，pixel mobile 横向溢出已修，pixel 第二段 natural/flush gallery 的 `g2` 列数与 desktop/wide 图片宽高也已收敛，game/gif/illustrator mobile/tablet/laptop/desktop/wide 列数与 tight 顶部已收敛，graphic 已恢复首张全栏图 `graphic-06.jpg`、后续长图顺序、laptop 2 列和 mobile/tablet/laptop 图片宽度，Cargo grid 横向 gutter / main width 已恢复到小残差（desktop/wide 约 4-5px），gif hero 在 mobile/tablet 的宽度 delta 已从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`，GIF gallery 已用 13 张 WebP poster + `eagerThumbs` 避免缩略图慢加载。注意：旧 `main.y` 测的是右栏列盒，不等于首个可见内容起点；继续看 `mainAnchor.y` / `thumbnails.y`。
 
 ### Step 3 — 如果仍偏差大
 
