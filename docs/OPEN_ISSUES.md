@@ -1,21 +1,20 @@
-# 当前阶段问题清单（OPEN_ISSUES）
+# 当前阶段收尾状态（OPEN_ISSUES）
 
-> 本文档记录项目**当前所有未解决的问题**，每个问题给出"症状 / 假设 / 下一步"。
+> 本文档记录项目当前收尾状态、已解决的关键问题和非阻塞 backlog。
 >
 > **持久化**：本文档已 commit，断会话不丢。
 >
-> **状态字段**：🔴 必须解决 / 🟡 后续解决 / 🟢 已知风险但暂不处理。
+> **状态字段**：✅ 已解决 / 🟡 非阻塞 backlog / 🟢 已知风险但暂不处理。
 
 ---
 
-## 当前 TODO 摘要（2026-06-10）
+## 当前收尾状态（2026-06-10）
 
-1. P0：视觉/布局变更必须跑 `Validate.cmd` + `Smoke.cmd`；涉及截图判断的大节点继续跑 `visual:measure` / `visual:diff` 并人工看关键截图，不能只靠 build 通过。
-2. P1：`photo` / `photo_1` desktop/wide 首图宽度小残差已收敛；`thumbImage.width` delta 从约 `-2.5px` 到 `-3px` 收到 desktop `-0.32px`、wide `-0.39px`，5 断点列数仍为 3 且无横向溢出。
-3. P1：全 gallery 加载体验扩展审计已通过；`visual:guard --full --skipLayout` 覆盖 mobile+desktop 共 30 个 clone 目标，图片 `434/434` 全加载，无 WARN。
-4. P2：下一轮进入全站最终回归：构建、资源、视觉门禁、线上 Actions / `200 OK`，并把剩余可测残差归档为已修或测量噪声。
-5. P3：CMS 后续增强暂缓，继续围绕唯一站内后台 `/cms`；旧 Electron `admin/` 已移除，不再维护双后台。
-6. 已关闭：旧 `photos.json` / `/images/photos/*` 内容链路已移除；photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为唯一来源，不再把 `photos 02-07` 当缺图任务。
+1. P0/P1 阻塞项已清零：左侧导航、核心布局、标准/tight/photo gallery、资源引用和图片加载门禁均已通过本地与线上回归。
+2. `photo` / `photo_1` desktop/wide 首图宽度小残差已收敛；`thumbImage.width` delta 从约 `-2.5px` 到 `-3px` 收到 desktop `-0.32px`、wide `-0.39px`，5 断点列数仍为 3 且无横向溢出。
+3. 全 gallery 加载体验扩展审计已通过；`visual:guard --full --skipLayout` 覆盖 mobile+desktop 共 30 个 clone 目标，图片 `434/434` 全加载，无 WARN。
+4. 旧 `photos.json` / `/images/photos/*` 内容链路已移除；photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为唯一来源，不再把 `photos 02-07` 当缺图任务。
+5. 后续只剩非阻塞 backlog：继续增强站内 `/cms` 的编辑体验、发布/恢复细节和资产管理；旧 Electron `admin/` 不再维护。
 
 ---
 
@@ -39,9 +38,9 @@
 
 ---
 
-## 🔴 2. 视觉复刻仍有尺寸/缩放残差
+## ✅ 2. 视觉复刻核心残差已收敛
 
-**症状**：当前 `https://blog.onovich.com/` 的样式与 `https://onovich.com/` 仍有可见残差：
+**状态**：当前 `https://blog.onovich.com/` 的核心视觉复刻已进入收尾状态；下列曾经的可测残差已逐项收敛：
 - v2.2.0 已修：左 4/8 grid、汉堡菜单、desktop root font-size 12.96px、avatar+hr+bio
 - 已修：codes gallery caption 从大字号 structured caption 改为 Cargo 风格 12px HTML caption；`visual:measure` 桌面 title/tags font-size 与 line-height delta 均为 0。
 - 已修：bodycopy / main content 行高改回原站绝对 `16px`；codes 5 断点 `bodycopy.lineHeight` delta 均为 0。
@@ -86,10 +85,10 @@
 **Ops wrapper**：`.codex/project-ops-workflow.json` 与 `docs/codex-ops-workflow.md` 已初始化；常规验证可用 `Validate.cmd` 跑 build + assets，`Smoke.cmd` 跑 `visual:guard` + 本地预览 HTTP 检查，减少后续手写命令和 token 消耗。
 **Measure 快扫**：`visual:measure` 已支持 `--imageTimeout`、`--scrollPasses`、`--scrollDelay`、`--navigationTimeout`、`--attempts`、`--loadImages=false`；原站较慢时先窄范围快扫，再用正常图片等待复核候选。
 
-**下一步**（任务 #18 后续 / P0）：
-1. 继续把 `Validate.cmd` / `Smoke.cmd` 作为提交前门禁；资源部分当前应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。
-2. 下一轮进入全站最终回归：复跑常规 `Smoke.cmd`、必要的 `visual:measure` 快扫、Actions 和线上 `https://blog.onovich.com/`。
-3. `gif/graphic` 顶部指标先按测量锚点噪声处理，不直接改 CSS，最终文档里只保留真实未解决项。
+**最终门禁**：
+1. 每次视觉/布局变更继续用 `Validate.cmd` 与 `Smoke.cmd` 作为提交前门禁。
+2. 涉及截图判断的大节点继续补 `visual:measure` / `visual:diff` 与人工看图。
+3. `gif/graphic` 顶部指标按测量锚点噪声归档，不作为未解决 CSS 任务。
 
 ---
 
@@ -115,7 +114,7 @@
 
 ---
 
-## 🟡 5. 网页 CMS 需要继续模块化和发布链路打磨
+## 🟡 5. 网页 CMS 后续增强（非阻塞 backlog）
 
 **当前**：项目不再维护双后台。旧 `admin/` Electron 管理端已移除，后续只沿站内 `/cms` 网页 CMS 演进。
 
@@ -141,8 +140,9 @@
 - `cms:apply` 会校验上传资源、允许包内上传资源满足 `/images/uploads/...` 引用，并把 base64 内容落盘到 `public/images/uploads/...`；备份/恢复会覆盖这些新建上传文件
 - `npm run cms:check` 已覆盖状态、预览、草稿校验、导出包、导入包、应用计划、资产路径和缺失资产阻止等纯逻辑；`npm run cms:smoke`、`npm run cms:apply:smoke`、`npm run cms:publish:smoke` 已可复用做网页 CMS/发布链路冒烟
 
-**下一步（拆成小节点）**：
-1. CMS 后续增强暂缓，优先回到视觉 P0/P1：字号/行高/列对齐和 gallery 断点列数。
+**后续小节点（非阻塞）**：
+1. 继续优化 `/cms` 编辑体验、资产管理、发布确认和恢复提示。
+2. 继续围绕 `site/scripts/apply-cms-publish.mjs`、`npm run cms:check`、`npm run cms:apply:smoke`、`npm run cms:publish:smoke` 完善覆盖。
 
 ---
 
@@ -186,7 +186,7 @@
 
 ## 索引：相关文档
 
-- `HANDOFF_NEXT.md` — 最新交接说明（当前工作区草稿/P0/P1）
+- `HANDOFF_NEXT.md` — 最新交接说明（收尾状态 / 维护门禁 / 非阻塞 backlog）
 - `AGENT_HANDOFF.md` — 给任意接手 agent 的完整指南
 - `HANDOFF.md` — 接手指南
 - `docs/CSS_SPEC.md` — 原站样式规范（事实归档）

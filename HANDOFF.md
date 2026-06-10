@@ -6,7 +6,7 @@
 >
 > - 当前线上版本与本地工作区差异
 > - 用户指出的 P0 问题
-> - 下一步推荐操作步骤与当前 TODO 摘要
+> - 当前收口状态、维护门禁与非阻塞 backlog
 
 ## 目标
 
@@ -52,14 +52,14 @@
 | DNS / CNAME | ✅ 主域名继续 Cargo，blog 子域名指向 GitHub Pages |
 | 内容数据（codes/games/pixel/illustrations/gifs/graphics/sns/poems） | ✅ 已填 |
 | 图片迁移 | ✅ 旧 `photos.json` / `/images/photos/*` 链路已移除；photo 运行时统一用 `photoAlbums.json` 与 `/images/photo-albums/*`；`assets:check` 为 234 个真实内容图片引用 0 缺失 |
-| **CSS / 布局** | ⚠️ 内页左导航、标准/tight gallery、graphic、gif、illustrator、photo 顶部/列数/desktop-wide 宽度等已大幅收敛；gallery 加载扩展审计已全绿，下一轮优先全站最终回归 |
+| **CSS / 布局** | ✅ 内页左导航、标准/tight/photo gallery、graphic、gif、illustrator、photo 顶部/列数/desktop-wide 宽度等核心残差已收口；gallery 加载扩展审计已全绿，后续按维护门禁防回归 |
 | 网页 CMS | ✅ 保留为唯一后台演进方向，旧 Electron admin 已移除；已拆出样式、状态、预览、校验、导入/导出包、发布应用计划、资产路径、缺失资产阻止、真实发布 smoke、发布前备份、恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘 |
 
-**TaskList 当前任务**（按优先级）：
+**TaskList 当前状态**：
 
-- P0：视觉/布局变更必须跑 `Validate.cmd` + `Smoke.cmd`；大节点继续截图对照
-- P1：全站最终回归：构建、资源、视觉门禁、线上 Actions / `200 OK`
-- P2：最终文档收口，只保留真实未解决项；CMS 增强列为非阻塞
+- 已完成：P0/P1 视觉与部署收口，构建、资源、视觉门禁、Actions 与线上 `200 OK` 已走通。
+- 维护门禁：后续视觉/布局变更必须跑 `Validate.cmd` + `Smoke.cmd`；大节点继续截图对照。
+- 非阻塞 backlog：CMS 增强继续围绕站内 `/cms`，旧 Electron admin 不再维护。
 
 ---
 
@@ -118,7 +118,7 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 1. **视觉回归**：本地 build 后优先跑 `visual:guard`，再按需要跑 `visual:measure` 和 `visual:diff` 处理列对齐和断点残差。`visual:measure` 已新增 `mainAnchor`；优先看 `mainAnchor.y` / `thumbnails.y`，不要再把旧 `main.y` 列盒位置当成首个内容起点。Codes caption、bodycopy 行高、wide root font-size、codes/pixel 标准 gallery 顶部、photo 顶部和列数已收敛。
 
-2. **最终回归**：下一轮复跑 `Validate.cmd` / `Smoke.cmd`，必要时补 `visual:measure` 快扫；推送后等 Actions 并确认 `https://blog.onovich.com/` 返回 `200 OK`。
+2. **最终回归**：本轮已复跑 `Validate.cmd` / `Smoke.cmd` 并推送确认；后续发布仍要等 Actions 绿，并确认 `https://blog.onovich.com/` 返回 `200 OK`。
 
 3. **photo / gallery 防回归**：photo 顶部、列数和 desktop/wide 宽度已收敛；gallery + photo detail mobile+desktop 图片审计为 `434/434`。旧 photos 链路已移除，photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为准。
 
@@ -131,7 +131,7 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 - `AGENT_HANDOFF.md` — **★ 给任何接手 agent（包括 GitHub Copilot）的入口指南**
 - `docs/CSS_SPEC.md` — **★ 原站样式规范（事实归档）**
 - `docs/RENDERING_REPORT.md` — **★ Playwright 实测渲染数据 + 自适应规则**
-- `docs/OPEN_ISSUES.md` — 当前所有未解决问题（断会话不丢）
+- `docs/OPEN_ISSUES.md` — 当前收尾状态与非阻塞 backlog（断会话不丢）
 - `docs/LESSONS.md` — 经验教训（避免重蹈覆辙）
 - `docs/WORKFLOW.md` — 工作流（抓站 / 部署 / 截图对照 / Git）
 - `_reference-site/` — 原站 HTML + CSS 归档（事实之源）

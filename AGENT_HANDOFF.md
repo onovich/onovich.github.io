@@ -16,11 +16,11 @@
 
 打开这 4 个文件按顺序读，就够了：
 
-1. `HANDOFF_NEXT.md` — **最新交接状态：当前工作区草稿、P0 问题、下一步操作**
+1. `HANDOFF_NEXT.md` — **最新收口状态、维护门禁、非阻塞 backlog**
 2. `HANDOFF.md` — 当前进度速览（项目状态表、文件路径）
 3. `docs/CSS_SPEC.md` — 原站样式规范（事实归档）
 4. `docs/RENDERING_REPORT.md` — Playwright 实测渲染数据
-5. `docs/OPEN_ISSUES.md` — 当前所有未解决问题
+5. `docs/OPEN_ISSUES.md` — 当前收尾状态与非阻塞 backlog
 
 读完之后：
 
@@ -38,7 +38,7 @@
 ├── docs/
 │   ├── CSS_SPEC.md              ← 原站样式规范（事实之源 #1）
 │   ├── RENDERING_REPORT.md      ← Playwright 实测数据（事实之源 #2）
-│   ├── OPEN_ISSUES.md           ← 当前所有未解决问题
+│   ├── OPEN_ISSUES.md           ← 当前收尾状态与非阻塞 backlog
 │   ├── LESSONS.md               ← 经验教训（避免重蹈覆辙）
 │   └── WORKFLOW.md              ← 抓站 / 部署 / Git / 截图对照工作流
 ├── _reference-site/             ← 原站 HTML+CSS 归档（commit 进仓库，断会话不丢）
@@ -126,10 +126,10 @@
 - ✅ 旧 Electron admin 已移除；后续只沿站内 `/cms` 网页 CMS 演进
 - ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份、备份恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘
 
-### 进行中 / 待做
-- 🟡 全站最终回归：复跑构建、资源、`Smoke.cmd`、必要视觉快扫，推送后确认 Actions 与线上 `200 OK`。
-- 🟡 最终文档收口：只保留真实未解决项；CMS 后续增强列为非阻塞。
-- 🟡 网页 CMS 后续增强：只围绕站内 `/cms`，旧 Electron admin 已移除且不再维护；优先级低于最终回归。
+### 收口状态 / 后续 backlog
+- ✅ 全站最终回归已完成：构建、资源、`Smoke.cmd`、必要视觉快扫、Actions 与线上 `200 OK` 均已走通。
+- ✅ 最终文档已收口：只保留已解决状态、真实风险和非阻塞 backlog。
+- 🟡 网页 CMS 后续增强：只围绕站内 `/cms`，旧 Electron admin 已移除且不再维护；属于非阻塞 backlog。
 
 ### 已知风险
 - Cargo runtime JS 注入的 inline style 单看 CSS 推不全
@@ -225,29 +225,28 @@ NODE
 
 ---
 
-## 9. 如何继续工作（建议优先级）
+## 9. 如何继续工作（维护优先级）
 
 ### P0：守住视觉验证门禁
 - 视觉/布局变更必须跑 `Validate.cmd` + `Smoke.cmd`
 - 大节点继续跑 `visual:measure` / `visual:diff` 并人工看关键截图
 - 不要只靠 build 通过就提交
 
-### P1：全站最终回归
-- 跑 `Validate.cmd` 与 `Smoke.cmd`
-- 必要时补 `visual:measure` 快扫和关键截图
-- 推送后等 Actions 成功，并确认线上 `https://blog.onovich.com/` 返回 `200 OK`
+### P1：已完成的全站最终回归
+- 当前基线已完成 `Validate.cmd`、`Smoke.cmd`、必要视觉复核、Actions 和线上 `200 OK`。
+- 后续发布仍按同一门禁执行，并在推送后等 Actions 成功。
 
-### P2：最终文档收口
-- `docs/OPEN_ISSUES.md` 只保留真实未解决项
-- `HANDOFF_NEXT.md` / `HANDOFF.md` / `AGENT_HANDOFF.md` 同步最终状态
-- CMS 后续增强列为非阻塞
+### P2：已完成的最终文档收口
+- `docs/OPEN_ISSUES.md` 只保留已解决状态、真实风险和非阻塞 backlog。
+- `HANDOFF_NEXT.md` / `HANDOFF.md` / `AGENT_HANDOFF.md` 已同步最终状态。
+- CMS 后续增强列为非阻塞。
 
-### P3：网页 CMS 继续演进
+### P3：网页 CMS 继续演进（非阻塞）
 - 保留 `site/src/pages/cms.astro` 作为唯一后台入口
 - 已拆出样式、状态管理、预览、草稿校验、导入/导出包、发布应用计划、资产路径校验、缺失资产阻止、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘
 - `npm run cms:publish:smoke` 已覆盖真实构建 seed → 发布包 → apply dry-run
 - `cms:apply` 写入前会备份覆盖目标到 `site/.cms-backups/` 并输出回滚提示，`npm run cms:restore -- .cms-backups/<timestamp>` 可恢复
-- 下一步优先回到视觉 P0/P1；CMS 后续增强继续围绕 `/cms`
+- CMS 后续增强继续围绕 `/cms`，不再回到旧 Electron admin。
 - 发布链路继续围绕 `site/scripts/apply-cms-publish.mjs`、`npm run cms:check`、`npm run cms:apply:smoke`、`npm run cms:publish:smoke` 完善
 
 ---

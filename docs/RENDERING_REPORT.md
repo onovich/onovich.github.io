@@ -121,7 +121,7 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：`visual:diff` 已增加 lazy image 预热和 `images=loaded/total` 日志；`illustrator` desktop clone 在 `--imageTimeout=25000 --scrollPasses=3` 下为 `29/29`，截图下半段不再被 false placeholder 干扰。
 - 2026-06-10 更新：新增 `visual:image-audit` 无截图加载审计；本地 clone 默认 gallery + photo detail desktop 审计为 `codes/game/pixel/illustrator/gif/graphic/photo/photo_1..photo_8` 共 `217/217` 图片加载，mobile+desktop 扩展审计为 `434/434` 图片加载。2026-06-10 后续复跑 `visual:guard --full --skipLayout --clone=http://127.0.0.1:4351`，30/30 target、434/434 图片加载，无 WARN。后续有加载疑问先看审计 WARN，再定向截图。
 - 2026-06-10 更新：photo index 与 photo detail 在 mobile/tablet 恢复原站 3 列，并按 5 断点校准返回链接与首图顶部；正常图片等待复核后，`backY` 最大 delta 约 `0.07px`，`thumbY` 最大 delta 约 `0.06px`，列数 5 断点均为 3。后续确认 desktop/wide 小残差来自 `.photo-columns` 左 margin；在 `body.page-photo` + `min-width:1200px` 收回后，`thumbImage.width` delta 从约 `-2.5px` 到 `-3px` 收到 desktop `-0.32px`、wide `-0.39px`，5 断点无横向溢出。
-- 残差：gallery 资源加载已完成 mobile+desktop 扩展复核；下一轮只做全站最终回归与文档关单。
+- 状态：gallery 资源加载已完成 mobile+desktop 扩展复核；全站最终回归与文档关单已完成，后续只在新视觉变更或线上疑问时复跑门禁。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid
