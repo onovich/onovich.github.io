@@ -70,6 +70,7 @@
 - 已修：新增 `visual:image-audit` 无截图加载审计；本地 clone 默认 gallery + photo detail desktop 审计为 `codes/game/pixel/illustrator/gif/graphic/photo/photo_1..photo_8` 共 `217/217` 图片加载，mobile+desktop 扩展审计为 `434/434`，避免为了判断加载状态反复生成截图。
 - 已修：`visual:check` / `visual:measure` 现在支持 photo detail 的 `< PHOTO` 返回链接；`--pages=photo-details` 桌面 clone 布局门禁通过 `56` assertions。
 - 已修：新增 `visual:guard` 无截图聚合门禁；`--clone=http://127.0.0.1:4351` 默认路径通过布局 `75` assertions + 图片 `217/217`，`--full --skipLayout` 通过 mobile+desktop 图片 `434/434`。
+- 已修：photo index 与 photo detail 在 mobile/tablet 恢复原站 3 列，并按 5 断点校准返回链接与首图顶部；正常图片等待复核后，`backY` 最大 delta 约 `0.07px`，`thumbY` 最大 delta 约 `0.06px`，列数 5 断点均为 3。
 - 残差：gallery 资源加载仍需按节点继续复核；后续先用 `visual:image-audit` 区分截图预热不足和真实页面体验问题，有 WARN 时再定向跑 `visual:diff` 截图。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game/gif/illustrator 当前 5 断点已恢复 3 列，graphic 当前 5 断点已保持 2 列。
 
@@ -86,7 +87,7 @@
 1. 继续把 `npm run assets:check` 作为资源门禁；当前应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。
 2. 缩略图列数和资源加载：先用 `visual:guard --clone=http://localhost:4350` 复核常规布局和 gallery + photo detail；有 WARN 时再用 `visual:diff --targets=clone` 定向截图，之后决定是否需要页面级 eager / poster 调整。
 3. 小幅图片尺寸残差：目前 gallery 尺寸类残差已收敛到数值门禁级别；继续以 `thumbImage.width/height` 为准防回归，不再把旧 `main.width` 假残差列为待修。
-4. 下一轮视觉小节点候选：`codes/pixel` 标准 gallery 缩略图宽度已收敛；继续用正常图片等待复核 `photo` 顶部约 `-5.6px`。`gif/graphic` 顶部指标先按测量锚点噪声处理，不直接改 CSS。
+4. 下一轮视觉小节点候选：`photo` 顶部和列数已收敛；继续复核 photo index 图片宽度小残差（desktop/wide 约 `-2.5px` 到 `-3px`）。`gif/graphic` 顶部指标先按测量锚点噪声处理，不直接改 CSS。
 
 ---
 
