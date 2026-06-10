@@ -213,8 +213,10 @@ npm run assets:check
 长 gallery 截图如果下半段出现占位，先看 `visual:diff` 输出的 `images=loaded/total`。需要排除截图预热不足时，加：
 
 ```txt
-npm run visual:diff -- --clone=http://localhost:4350 --pages=illustrator --imageTimeout=25000 --scrollPasses=3
+npm run visual:diff -- --clone=http://localhost:4350 --targets=clone --pages=illustrator --imageTimeout=25000 --scrollPasses=3
 ```
+
+说明：视觉复刻判断仍用默认 `original,clone`。只查本地 clone 的资源加载、占位或页面回归时，用 `--targets=clone`，可以少截一半图。
 
 **绝对禁止的事**：
 

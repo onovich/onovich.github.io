@@ -11,7 +11,7 @@
 cd site && node scripts/visual-diff.mjs                # 全量截图
 cd site && node scripts/visual-diff.mjs --pages=home   # 单页截图
 cd site && node scripts/visual-diff.mjs --clone=http://localhost:4350  # 用本地 dist 对照
-cd site && node scripts/visual-diff.mjs --pages=illustrator --imageTimeout=25000 --scrollPasses=3
+cd site && node scripts/visual-diff.mjs --targets=clone --pages=illustrator --imageTimeout=25000 --scrollPasses=3
 cd site && npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
 cd site && npm run visual:measure -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
 cd site && npm run assets:check                    # 本地资源引用/大缩略图候选
@@ -26,7 +26,7 @@ cd site && npm run assets:check                    # 本地资源引用/大缩�
 | desktop | 1440×900 |
 | wide    | 1920×1080 |
 
-每个视口对原站 + clone 各 fullPage screenshot，输出 `diff-screenshots/{slug}.{vp}.{label}.png`（gitignored）。`visual:diff` 会在截图前把 lazy images 临时改为 eager、滚动预热页面、等待图片，并输出 `images=loaded/total`；长 gallery 可加 `--imageTimeout=25000 --scrollPasses=3` 减少 false placeholder。
+每个视口对原站 + clone 各 fullPage screenshot，输出 `diff-screenshots/{slug}.{vp}.{label}.png`（gitignored）。默认 `--targets=original,clone`；只复核本地 clone 资源或长 gallery 加载时可用 `--targets=clone` 节省一半截图时间。`visual:diff` 会在截图前把 lazy images 临时改为 eager、滚动预热页面、等待图片，并输出 `images=loaded/total`；长 gallery 可加 `--imageTimeout=25000 --scrollPasses=3` 减少 false placeholder。
 
 页面（PAGES）：home, codes, game, pixel, illustrator, gif, graphic, photo, poem, sns, links, contact（contact 在原站路径是 `/contact-form`）。
 
