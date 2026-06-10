@@ -127,7 +127,7 @@
 
 ### 进行中 / 待做
 - 🟡 视觉残差消除（codes caption、bodycopy 行高、wide root font-size、home wide avatar、codes/pixel 标准 gallery 顶部、pixel mobile 横向溢出、pixel 第二段 natural/flush gallery、tight gallery 顶部与 game/gif/illustrator 断点列数、illustrator 5 断点缩略图尺寸、graphic 首张全栏图/长图顺序/laptop 2 列和 5 断点图片宽度、Cargo grid 横向 gutter / main width、gif hero/natural media 尺寸、GIF gallery WebP poster、illustrator 大候选 WebP poster 已收敛；顶部位置改看 `visual:measure` 的 `mainAnchor.y` / `thumbnails.y`，不要把旧 `main.y` 列盒位置当成首个内容起点；`mainColumn` 已改为取右栏最右候选，剩余 gallery 慢加载体验继续用 `visual:diff` 图片统计复核）
-- 🟡 gallery lazy placeholder 优化（先跑 `visual:image-audit` 看 `images=loaded/total`，必要时按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围；photo 已统一到 `photoAlbums.json`）
+- 🟡 gallery lazy placeholder 优化（先跑 `visual:guard` 看布局门禁和 `images=loaded/total`，必要时按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围；photo 已统一到 `photoAlbums.json`）
 - 🟡 网页 CMS 后续增强：围绕 `/cms`，但优先级低于视觉 P0/P1
 
 ### 已知风险
@@ -238,7 +238,7 @@ NODE
 
 ### P2：优化剩余 gallery lazy placeholder
 - 先跑 `npm run assets:check`，当前 0 缺失且无大候选 warning
-- 长 gallery 先用 `npm run visual:image-audit -- --clone=http://localhost:4350 --imageTimeout=25000 --scrollPasses=3` 无截图复核 `images=loaded/total`
+- 长 gallery 先用 `npm run visual:guard -- --clone=http://localhost:4350` 无截图复核布局和 `images=loaded/total`
 - 有 WARN 时再用 `npm run visual:diff -- --targets=clone --imageTimeout=25000 --scrollPasses=3` 定向截图
 - 如 clone 仍不能全加载，再按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围
 

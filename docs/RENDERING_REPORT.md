@@ -32,6 +32,8 @@ cd site && npm run assets:check                    # 本地资源引用/大缩�
 
 `visual:image-audit` 是无截图图片加载门禁：它复用 `visual:diff` 的页面/视口/图片等待逻辑，只输出 `OK/WARN images=loaded/total` 和未加载图片摘要。默认检查 clone 的 gallery + photo detail 桌面视口，用于先判断是否真的需要 poster/eager 调整；2026-06-10 当前本地 clone 基线为 desktop `15/15` target、`217/217` 图片加载，mobile+desktop 扩展审计为 `30/30` target、`434/434` 图片加载。
 
+`visual:guard` 是无截图聚合门禁：它串起 `visual:check` 和 `visual:image-audit`，默认覆盖 `home,codes,pixel,photo-details` 的布局检查与 gallery + photo detail 图片加载审计。常规小改优先跑这一条，避免重复拼长命令；移动端图片审计可加 `--full`。
+
 `visual:check` 是截图前的快速布局门禁：它用 Playwright 读取真实布局框，检查左侧 Onovich 导航、当前分类链接和内页 `< HOME` 返回链接是否仍在预期区域。它不能替代人工看截图，但能提前阻止内页导航消失这类 P0 回归。
 
 `visual:measure` 是数值探针：它复用同一套页面/视口/加载等待逻辑，输出原站和 clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns 和 delta。先跑 measure，再决定 CSS 改哪里。

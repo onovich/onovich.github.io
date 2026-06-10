@@ -201,15 +201,16 @@ npm run assets:check
 ```txt
 1. cd site && npm run build
 2. npm run preview -- --host 127.0.0.1 --port 4350
-3. npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
+3. npm run visual:guard -- --clone=http://localhost:4350
 4. npm run visual:measure -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
-5. npm run visual:image-audit -- --clone=http://localhost:4350
-6. npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
-7. Read 6 张关键截图（home/codes/pixel × desktop/mobile original/clone）
-8. 写出可见差异清单（量化或定性）
-9. 不通过 → 继续改 → 回到 1
-10. 通过 → commit + push → 等 Actions → curl 线上验 build-version
+5. npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
+6. Read 6 张关键截图（home/codes/pixel × desktop/mobile original/clone）
+7. 写出可见差异清单（量化或定性）
+8. 不通过 → 继续改 → 回到 1
+9. 通过 → commit + push → 等 Actions → curl 线上验 build-version
 ```
+
+`visual:guard` 是无截图聚合门禁，内部依次运行布局检查和图片加载审计。默认等价于常用的 `home,codes,pixel,photo-details` layout check + `galleries,photo-details` image audit；需要扩展图片审计到移动端时加 `--full`。
 
 长 gallery 截图如果下半段出现占位，先跑无截图审计：
 
