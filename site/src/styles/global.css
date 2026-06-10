@@ -595,6 +595,10 @@ body.page-gallery-tight .thumbnails-container {
   margin: -0.35rem 0 0 0;
 }
 
+body.page-graphic.page-gallery-tight .thumbnails-container {
+  width: calc(100% + 1.08rem);
+}
+
 body.page-gallery-tight .home-grid__col--main {
   padding-top: 5.85rem;
 }

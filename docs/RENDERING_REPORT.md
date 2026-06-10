@@ -104,7 +104,8 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：GIF gallery 13 个条目接入 `thumbSrc`，新增 `public/images/gifs/thumbs/*.webp` 静态 poster（约 `130KB` 总量），仅在 GIF 页面启用 `eagerThumbs`，并把 GIF 缩略图未加载占位兜底为方形黑底；点击仍打开原 GIF，本地 mobile/tablet 3 秒内 13/13 缩略图完成加载，截图无灰/空占位。
 - 2026-06-10 更新：`visual:measure` 的 `mainColumn` 选择规则改为取右栏最右候选，避免在原站 Cargo DOM 中误选其它可见 `[grid-col="8"]`；codes/graphic desktop/wide 的 `main.x` delta 归 0，`main.width` delta 收到 `+0.01/+0.02px`，原先约 `4-7px` 的 main width 残差判定为测量噪音。
 - 2026-06-10 更新：illustrator 在 `<=1024px` 使用 scoped `thumbnails-container` 宽度和 dense padding；mobile/tablet/laptop 首组 `thumbImage` width delta 从 `+5.9/+8.62/+4.28px` 收到 `+0.01/+0.01/+0.03px`，列数保持 3。
-- 残差：photo/graphic/gif 的资源加载、photo 缺图，以及 illustrator/graphic 等 desktop/wide 约 `1-3px` 的少量图片尺寸差仍需按节点继续复核。
+- 2026-06-10 更新：graphic desktop/wide 在 page-scoped 宽度下收回首张全栏图尺寸；`thumbImage` width delta 从 `+2.88/+3.43px` 收到 `+0.02/0px`，height delta 从 `+2.5/+2.98px` 收到 `0/0px`，列数仍为 2。
+- 残差：photo/gif 的资源加载、photo 缺图，以及 illustrator desktop/wide 约 `1px` 的少量图片尺寸差仍需按节点继续复核。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid
