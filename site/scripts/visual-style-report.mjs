@@ -169,7 +169,7 @@ async function collectStyleMetrics(page) {
 
     const back = Array.from(document.querySelectorAll(selectors.back))
       .find((element) => (element.textContent || '').replace(/\s+/g, ' ').trim() === '< HOME');
-    const mainColumn = pick(selectors.mainColumn);
+    const mainColumn = pick(selectors.mainColumn, { pick: 'right' });
     const mainAnchor = findMainAnchor(mainColumn);
 
     const thumbElements = Array.from(document.querySelectorAll(selectors.thumb)).filter(visible);

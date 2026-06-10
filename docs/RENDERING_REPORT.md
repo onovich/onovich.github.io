@@ -102,7 +102,8 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：Gallery 支持 `thumbSrc`，graphic 两张超长图新增 `public/images/graphics/thumbs/graphic-04.jpg` 与 `graphic-05.jpg` 轻量缩略图；前 3 张图改为 eager，`media.ts` 在图片已有自然尺寸时提前移除透明态，避免 graphic 线上长图下载慢时长时间显示灰色占位。
 - 2026-06-10 更新：gif hero 在 `<=768px` 改为 `calc(100% - 0.25rem)`，mobile/tablet hero width delta 从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`；5 断点 hero/natural media 宽高均在约 `5px` 内。
 - 2026-06-10 更新：GIF gallery 13 个条目接入 `thumbSrc`，新增 `public/images/gifs/thumbs/*.webp` 静态 poster（约 `130KB` 总量），仅在 GIF 页面启用 `eagerThumbs`，并把 GIF 缩略图未加载占位兜底为方形黑底；点击仍打开原 GIF，本地 mobile/tablet 3 秒内 13/13 缩略图完成加载，截图无灰/空占位。
-- 残差：main width 仅剩约 4-7px 小残差；photo/illustrator/graphic/gif 的断点列数和资源加载仍需按节点继续复核。
+- 2026-06-10 更新：`visual:measure` 的 `mainColumn` 选择规则改为取右栏最右候选，避免在原站 Cargo DOM 中误选其它可见 `[grid-col="8"]`；codes/graphic desktop/wide 的 `main.x` delta 归 0，`main.width` delta 收到 `+0.01/+0.02px`，原先约 `4-7px` 的 main width 残差判定为测量噪音。
+- 残差：photo/illustrator/graphic/gif 的断点列数、资源加载和少量图片尺寸差仍需按节点继续复核。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid

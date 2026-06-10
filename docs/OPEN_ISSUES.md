@@ -11,7 +11,7 @@
 ## 当前 TODO 摘要（2026-06-10）
 
 1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
-2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 顶部与 game/gif/illustrator 列数、graphic 首张全栏图与长图顺序、graphic mobile/tablet/laptop 图片宽度、Cargo grid 横向 gutter / main width、home wide avatar、gif hero/natural media 尺寸已收敛；下一步继续收 main width 小残差并复核剩余 gallery 断点/资源加载。
+2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 顶部与 game/gif/illustrator 列数、graphic 首张全栏图与长图顺序、graphic mobile/tablet/laptop 图片宽度、Cargo grid 横向 gutter / main width、home wide avatar、gif hero/natural media 尺寸已收敛；下一步继续复核剩余 gallery 断点/资源加载与小幅图片尺寸残差。
 3. P1：继续实测并复核 gallery 每个断点列数与资源加载；codes、pixel 第二段、game/gif/illustrator 当前 mobile/tablet/laptop/desktop/wide 列数已对齐；graphic 在 laptop/desktop/wide 保持 2 列，首张 `graphic-06.jpg` 已恢复为全栏图；GIF gallery 已接入轻量 WebP poster。
 4. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
 
@@ -59,7 +59,8 @@
 - 已修：Gallery 支持 `thumbSrc`，graphic 两张超长图新增 `public/images/graphics/thumbs/graphic-04.jpg` 与 `graphic-05.jpg` 轻量缩略图；前 3 张图改为 eager，`media.ts` 在图片已有自然尺寸时提前移除透明态，避免 graphic 线上长图下载慢时长时间显示灰色占位。
 - 已修：gif hero 在 `<=768px` 改为 `calc(100% - 0.25rem)`，mobile/tablet hero width delta 从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`；5 断点 hero/natural media 宽高均在约 `5px` 内。
 - 已修：GIF gallery 13 个条目接入 `thumbSrc`，新增 `public/images/gifs/thumbs/*.webp` 静态 poster（约 `130KB` 总量），仅在 GIF 页面启用 `eagerThumbs`，并把 GIF 缩略图未加载占位兜底为方形黑底；点击仍打开原 GIF，本地 mobile/tablet 3 秒内 13/13 缩略图完成加载，截图无灰/空占位。
-- 残差：main width 仅剩约 4-7px 小残差；photo/illustrator/graphic/gif 的断点列数和资源加载仍需按节点继续复核。
+- 已修：`visual:measure` 的 `mainColumn` 选择规则改为取右栏最右候选，避免在原站 Cargo DOM 中误选其它可见 `[grid-col="8"]`；codes/graphic desktop/wide 的 `main.x` delta 归 0，`main.width` delta 收到 `+0.01/+0.02px`，原先约 `4-7px` 的 main width 残差判定为测量噪音。
+- 残差：photo/illustrator/graphic/gif 的断点列数、资源加载和少量图片尺寸差仍需按节点继续复核。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game/gif/illustrator 当前 5 断点已恢复 3 列，graphic 当前 5 断点已保持 2 列。
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
@@ -68,8 +69,8 @@
 
 **下一步**（任务 #18 后续 / P0）：
 1. 用 `npm run visual:measure -- --clone=http://127.0.0.1:4350 --pages=gif,game,codes,pixel --viewports=mobile,tablet,laptop,desktop,wide` 继续抽精确像素值；多段 gallery 优先看 `g2` 指标。
-2. 继续收 main width 约 `4-7px` 小残差。
-3. 缩略图列数和资源加载：继续实测 photo / illustrator / graphic / gif 的断点列数与线上图片加载状态，再决定是否写进 `@media` 或补资源优化。
+2. 缩略图列数和资源加载：继续实测 photo / illustrator / graphic / gif 的断点列数与线上图片加载状态，再决定是否写进 `@media` 或补资源优化。
+3. 小幅图片尺寸残差：继续以 `thumbImage.width/height` 为准复核 graphic/codes 等页面，不再把旧 `main.width` 假残差列为待修。
 
 ---
 
