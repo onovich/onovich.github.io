@@ -116,7 +116,7 @@
 - ✅ `_reference-site/` 抓取归档（11 页 HTML + CSS）
 - ✅ DNS / Pages / Actions 部署链路全通，blog.onovich.com 能访问
 - ✅ 内容数据 codes/games/pixel/illustrations/gifs/graphics/sns/poems 完整
-- ✅ 图片迁移（旧 `photos.json` / `/images/photos/*` 链路已移除；illustrator 大候选已接入 poster；`assets:check` 当前 234 个真实内容图片引用 0 缺失且无大候选 warning）
+- ✅ 图片迁移（旧 `photos.json` / `/images/photos/*` 链路已移除；illustrator 大候选已接入 poster；`assets:check` 当前 234 个真实内容图片引用 0 缺失且无大候选 warning；`visual:diff` 已有 lazy 预热和图片加载统计）
 - ✅ Layout 重写为 Cargo 风格（右上角浮动汉堡 + 滑入黑色面板 + home 4/8 grid）
 - ✅ root font-size：desktop `12.96px`、wide `15.55px` 均已与原站实测对齐
 - ✅ Playwright 截图对照基础设施 + `visual:check` 布局门禁
@@ -125,8 +125,8 @@
 - ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份、备份恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘
 
 ### 进行中 / 待做
-- 🟡 视觉残差消除（codes caption、bodycopy 行高、wide root font-size、home wide avatar、codes/pixel 标准 gallery 顶部、pixel mobile 横向溢出、pixel 第二段 natural/flush gallery、tight gallery 顶部与 game/gif/illustrator 断点列数、illustrator 5 断点缩略图尺寸、graphic 首张全栏图/长图顺序/laptop 2 列/5 断点图片宽度、Cargo grid 横向 gutter / main width、gif hero/natural media 尺寸、GIF gallery WebP poster、illustrator 大候选 WebP poster 已收敛；顶部位置改看 `visual:measure` 的 `mainAnchor.y` / `thumbnails.y`，不要把旧 `main.y` 列盒位置当成首个内容起点；`mainColumn` 已改为取右栏最右候选，剩余 gallery lazy placeholder 体验继续逐项复核）
-- 🟡 gallery lazy placeholder 优化（必要时按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围；photo 已统一到 `photoAlbums.json`）
+- 🟡 视觉残差消除（codes caption、bodycopy 行高、wide root font-size、home wide avatar、codes/pixel 标准 gallery 顶部、pixel mobile 横向溢出、pixel 第二段 natural/flush gallery、tight gallery 顶部与 game/gif/illustrator 断点列数、illustrator 5 断点缩略图尺寸、graphic 首张全栏图/长图顺序/laptop 2 列和 5 断点图片宽度、Cargo grid 横向 gutter / main width、gif hero/natural media 尺寸、GIF gallery WebP poster、illustrator 大候选 WebP poster 已收敛；顶部位置改看 `visual:measure` 的 `mainAnchor.y` / `thumbnails.y`，不要把旧 `main.y` 列盒位置当成首个内容起点；`mainColumn` 已改为取右栏最右候选，剩余 gallery 慢加载体验继续用 `visual:diff` 图片统计复核）
+- 🟡 gallery lazy placeholder 优化（先看 `images=loaded/total`，必要时按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围；photo 已统一到 `photoAlbums.json`）
 - 🟡 网页 CMS 后续增强：围绕 `/cms`，但优先级低于视觉 P0/P1
 
 ### 已知风险
@@ -237,7 +237,8 @@ NODE
 
 ### P2：优化剩余 gallery lazy placeholder
 - 先跑 `npm run assets:check`，当前 0 缺失且无大候选 warning
-- 如截图仍有下半段 placeholder，再按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围
+- 长 gallery 截图用 `npm run visual:diff -- --imageTimeout=25000 --scrollPasses=3`，先看 `images=loaded/total`
+- 如 clone 仍不能全加载，再按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围
 
 ### P3：网页 CMS 继续演进
 - 保留 `site/src/pages/cms.astro` 作为唯一后台入口

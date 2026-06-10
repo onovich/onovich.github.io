@@ -20,6 +20,7 @@ import {
   selectPages,
   selectViewports,
   gotoVisualPage,
+  numberArg,
   targetUrl,
 } from './visual-config.mjs';
 
@@ -29,6 +30,9 @@ const CLONE = args.clone || DEFAULT_CLONE_URL;
 const OUT_DIR = VISUAL_OUT_DIR;
 const PAGES = selectPages(args.pages);
 const VIEWPORTS = selectViewports(args.viewports);
+const IMAGE_TIMEOUT = numberArg(args.imageTimeout, 16000);
+const SCROLL_PASSES = numberArg(args.scrollPasses, 2);
+const SCROLL_DELAY = numberArg(args.scrollDelay, 80);
 
 await mkdir(OUT_DIR, { recursive: true });
 
@@ -48,10 +52,14 @@ for (const vp of VIEWPORTS) {
       try {
         // Cargo can keep network requests open or close them late; wait for the
         // DOM, then give runtime layout JS a fixed settling window.
-        await gotoVisualPage(page, url, label === 'original' ? 1500 : 500);
+        const result = await gotoVisualPage(page, url, label === 'original' ? 1500 : 500, {
+          imageTimeout: IMAGE_TIMEOUT,
+          scrollPasses: SCROLL_PASSES,
+          scrollDelay: SCROLL_DELAY,
+        });
         await page.screenshot({ path: out, fullPage: true });
         summary.push({ slug: p.slug, vp: vp.name, label, ok: true });
-        console.log('OK ', vp.name, p.slug, label);
+        console.log('OK ', vp.name, p.slug, label, formatImageStats(result?.imageStats));
       } catch (e) {
         summary.push({ slug: p.slug, vp: vp.name, label, ok: false, err: e.message });
         console.log('ERR', vp.name, p.slug, label, e.message);
@@ -70,3 +78,9 @@ if (failed.length) {
   process.exitCode = 1;
 }
 console.log('Output dir:', OUT_DIR);
+
+function formatImageStats(stats) {
+  if (!stats) return '';
+  const pending = Math.max(0, stats.total - stats.loaded);
+  return `images=${stats.loaded}/${stats.total}${pending ? ` pending=${pending}` : ''}`;
+}
