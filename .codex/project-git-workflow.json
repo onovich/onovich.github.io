@@ -1,4 +1,4 @@
-﻿{
+{
     "schemaVersion":  1,
     "initializedMarker":  "codex-project-git-workflow: initialized",
     "initializedAt":  "2026-06-09 04:58:26 +08:00",
@@ -7,7 +7,8 @@
     "safeDirectory":  "<PROJECT_ROOT>",
     "statusCommand":  "git -c safe.directory=<PROJECT_ROOT> status --short --branch",
     "validationCommands":  [
-                               "npm --prefix site run build"
+                               "npm --prefix site run build",
+                               "npm --prefix site run assets:check"
                            ],
     "stagingPolicy":  "ask each time",
     "commitCommand":  "",

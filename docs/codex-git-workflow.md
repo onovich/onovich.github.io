@@ -1,4 +1,4 @@
-﻿<!-- codex-project-git-workflow: initialized -->
+<!-- codex-project-git-workflow: initialized -->
 <!-- initialized-at: 2026-06-09 04:58:26 +08:00 -->
 
 # Codex Git Workflow
@@ -44,9 +44,10 @@ Run these before commit or push, in order:
 ```
 powershell
 npm --prefix site run build
+npm --prefix site run assets:check
 ```
 
-`site` build runs `prebuild -> npm run cms:check` first, so commits are blocked if the CMS template/preset/content invariants drift.
+`site` build runs `prebuild -> npm run cms:check` first, so commits are blocked if the CMS template/preset/content invariants drift. `assets:check` then blocks missing `/images/` references and large thumbnail candidates without `thumbSrc`.
 ## Staging Policy
 
 ask each time
