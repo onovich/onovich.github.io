@@ -599,6 +599,10 @@ body.page-graphic.page-gallery-tight .thumbnails-container {
   width: calc(100% + 1.08rem);
 }
 
+body.page-illustrator.page-gallery-tight .thumbnails-container {
+  width: calc(100% + 1.075rem);
+}
+
 body.page-gallery-tight .home-grid__col--main {
   padding-top: 5.85rem;
 }

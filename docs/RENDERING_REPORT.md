@@ -98,14 +98,15 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：tight gallery 顶部按 5 断点校准，`game/illustrator` 的 `mainAnchor.y` 与 `thumbnails.y` delta 已约为 0，`gif` 保留原站 `< HOME` 高 16px 的特例；`.thumbnails--columns-2` 提升 specificity，避免 `graphic` 在 1024 laptop 被通用 3 列规则覆盖。
 - 2026-06-10 更新：Cargo grid 横向 gutter / column padding 已恢复为 row 左右 `-0.75rem` + col 左右 `0.75rem` 的模型；desktop/wide 的 main width 残差从约 17-20px 收到约 4-5px，graphic desktop/wide 图片宽度残差约 3px，未引入横向滚动。
 - 2026-06-10 更新：home wide avatar 按原站宽视口等效尺寸校准为 `6.25rem`，wide 下头像宽高 delta 从 `-10.8px` 收到 `0px`，首个内容 y delta 从 `-19.11px` 收到 `+0.01px`；desktop 头像保持约 `-0.34px` 小残差。
-- 2026-06-10 更新：graphic 在 `page-graphic page-gallery-tight` 范围内收回小断点横向扩展；mobile/tablet/laptop 首张全栏图宽度 delta 从 `+17.7/+25.86/+12.78px` 收到 `+0.04/+0.03/-1.59px`，列数 delta 归 0，desktop/wide 维持约 `+3px` 小残差。
+- 2026-06-10 更新：graphic 在 `page-graphic page-gallery-tight` 范围内收回小断点横向扩展；mobile/tablet/laptop 首张全栏图宽度 delta 从 `+17.7/+25.86/+12.78px` 收到 `+0.04/+0.03/-1.59px`，列数 delta 归 0；desktop/wide 后续已收至归零级别。
 - 2026-06-10 更新：Gallery 支持 `thumbSrc`，graphic 两张超长图新增 `public/images/graphics/thumbs/graphic-04.jpg` 与 `graphic-05.jpg` 轻量缩略图；前 3 张图改为 eager，`media.ts` 在图片已有自然尺寸时提前移除透明态，避免 graphic 线上长图下载慢时长时间显示灰色占位。
 - 2026-06-10 更新：gif hero 在 `<=768px` 改为 `calc(100% - 0.25rem)`，mobile/tablet hero width delta 从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`；5 断点 hero/natural media 宽高均在约 `5px` 内。
 - 2026-06-10 更新：GIF gallery 13 个条目接入 `thumbSrc`，新增 `public/images/gifs/thumbs/*.webp` 静态 poster（约 `130KB` 总量），仅在 GIF 页面启用 `eagerThumbs`，并把 GIF 缩略图未加载占位兜底为方形黑底；点击仍打开原 GIF，本地 mobile/tablet 3 秒内 13/13 缩略图完成加载，截图无灰/空占位。
 - 2026-06-10 更新：`visual:measure` 的 `mainColumn` 选择规则改为取右栏最右候选，避免在原站 Cargo DOM 中误选其它可见 `[grid-col="8"]`；codes/graphic desktop/wide 的 `main.x` delta 归 0，`main.width` delta 收到 `+0.01/+0.02px`，原先约 `4-7px` 的 main width 残差判定为测量噪音。
 - 2026-06-10 更新：illustrator 在 `<=1024px` 使用 scoped `thumbnails-container` 宽度和 dense padding；mobile/tablet/laptop 首组 `thumbImage` width delta 从 `+5.9/+8.62/+4.28px` 收到 `+0.01/+0.01/+0.03px`，列数保持 3。
 - 2026-06-10 更新：graphic desktop/wide 在 page-scoped 宽度下收回首张全栏图尺寸；`thumbImage` width delta 从 `+2.88/+3.43px` 收到 `+0.02/0px`，height delta 从 `+2.5/+2.98px` 收到 `0/0px`，列数仍为 2。
-- 残差：photo/gif 的资源加载、photo 缺图，以及 illustrator desktop/wide 约 `1px` 的少量图片尺寸差仍需按节点继续复核。
+- 2026-06-10 更新：illustrator desktop/wide 在 page-scoped 宽度下收回首组与第二组尺寸；首组 `thumbImage` width delta 从 `+0.97/+1.17px` 收到 `0/0px`，height delta 从 `+1.7/+2.08px` 收到 `0/0px`，两组列数仍为 3。
+- 残差：photo/gif 的资源加载与 photo 缺图仍需按节点继续复核。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid
