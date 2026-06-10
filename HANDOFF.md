@@ -117,11 +117,11 @@ curl -sL -A "Mozilla/5.0 ..." "https://blog.onovich.com/" | grep -E "build-versi
 
 ## 推荐继续工作的步骤
 
-1. **视觉回归**：本地 build 后跑 `visual:check`、`visual:measure` 和 `visual:diff`，再处理列对齐和断点残差。`visual:measure` 已新增 `mainAnchor`；优先看 `mainAnchor.y` / `thumbnails.y`，不要再把旧 `main.y` 列盒位置当成首个内容起点。Codes caption、bodycopy 行高、wide root font-size、codes/pixel 标准 gallery 顶部已收敛。
+1. **视觉回归**：本地 build 后跑 `visual:check`、`visual:measure`、`visual:image-audit` 和必要的 `visual:diff`，再处理列对齐和断点残差。`visual:measure` 已新增 `mainAnchor`；优先看 `mainAnchor.y` / `thumbnails.y`，不要再把旧 `main.y` 列盒位置当成首个内容起点。Codes caption、bodycopy 行高、wide root font-size、codes/pixel 标准 gallery 顶部已收敛。
 
 2. **gallery 断点列数**：用 Playwright 实测原站 375 / 768 / 1024 / 1440 / 1920 每个断点列数，写入 CSS 媒体查询。
 
-3. **photos 02-07**：从 `_reference-site/photo.html` 提取 `freight.cargo.site` 的真实图片 URL，curl 下载。
+3. **gallery 加载体验**：先用 `visual:image-audit --imageTimeout=25000 --scrollPasses=3` 做无截图加载审计；当前主要 gallery desktop clone 基线为 `113/113` 图片加载，mobile+desktop 扩展审计为 `226/226`。有 WARN 时再定向截图并补 `thumbSrc` poster 或 eager 范围。旧 photos 链路已移除，photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为准。
 
 4. **网页 CMS 演进**：CMS 上传/富文本/发布链路已有小节点覆盖；后续增强继续围绕 `/cms`，不再维护旧 Electron admin。
 

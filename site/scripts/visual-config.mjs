@@ -86,6 +86,12 @@ export function targetUrl(baseUrl, route) {
   return `${base}${suffix}`;
 }
 
+export function formatImageStats(stats) {
+  if (!stats) return '';
+  const pending = stats.pending ?? Math.max(0, stats.total - stats.loaded);
+  return `images=${stats.loaded}/${stats.total}${pending ? ` pending=${pending}` : ''}`;
+}
+
 export async function gotoVisualPage(page, url, settleMs, options = {}) {
   const attempts = options.attempts ?? 2;
   const timeout = options.timeout ?? 45000;
@@ -141,8 +147,33 @@ async function revealLazyImages(page, options) {
 async function waitForImages(page, timeout) {
   return page.evaluate(async (imageTimeout) => {
     const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+    const round = (value) => Math.round(value * 100) / 100;
     const images = Array.from(document.images);
     const isRenderable = (img) => img.complete && img.naturalWidth > 0 && img.naturalHeight > 0;
+    const compactSrc = (src) => {
+      if (!src) return '';
+      try {
+        const url = new URL(src, window.location.href);
+        return url.origin === window.location.origin ? `${url.pathname}${url.search}` : url.href;
+      } catch {
+        return src;
+      }
+    };
+    const describeImage = (img) => {
+      const rect = img.getBoundingClientRect();
+      return {
+        src: compactSrc(img.currentSrc || img.getAttribute('src') || ''),
+        alt: img.getAttribute('alt') || '',
+        loading: img.loading || '',
+        complete: img.complete,
+        naturalWidth: img.naturalWidth,
+        naturalHeight: img.naturalHeight,
+        x: round(rect.x),
+        y: round(rect.y),
+        width: round(rect.width),
+        height: round(rect.height),
+      };
+    };
     const settled = Promise.all(images.map((img) => {
       if (isRenderable(img) || img.complete) return true;
       return new Promise((resolve) => {
@@ -154,9 +185,13 @@ async function waitForImages(page, timeout) {
     await Promise.race([settled, sleep(imageTimeout)]);
     window.scrollTo(0, 0);
 
+    const unloaded = images.filter((img) => !isRenderable(img));
+
     return {
       total: images.length,
       loaded: images.filter(isRenderable).length,
+      pending: unloaded.length,
+      unloaded: unloaded.map(describeImage),
     };
   }, timeout);
 }

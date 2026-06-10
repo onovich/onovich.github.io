@@ -12,7 +12,7 @@
 
 1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
 2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 顶部与 game/gif/illustrator 列数、illustrator 5 断点缩略图尺寸、graphic 首张全栏图与长图顺序、graphic 5 断点图片宽度、Cargo grid 横向 gutter / main width、home wide avatar、gif hero/natural media 尺寸已收敛；下一步继续复核剩余 gallery 资源加载。
-3. P1：继续实测并复核 gallery 资源加载；`assets:check` 已确认 234 个真实内容图片引用 0 缺失，且没有超过 `1MB` 仍缺 `thumbSrc` 的候选。
+3. P1：继续实测并复核 gallery 资源加载；`assets:check` 已确认 234 个真实内容图片引用 0 缺失，且没有超过 `1MB` 仍缺 `thumbSrc` 的候选；`visual:image-audit` 当前确认主要 gallery desktop clone 为 `113/113` 图片加载，mobile+desktop 扩展审计为 `226/226`。
 4. P2：旧 `photos.json` / `/images/photos/*` 内容链路已移除；photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为唯一来源；illustrator 3 个大候选已补轻量 WebP poster。
 
 ---
@@ -66,17 +66,19 @@
 - 已修：`assets:check` 资源门禁已加入；旧 `photos.json` / `/images/photos/*` 链路已移除，photo 运行时来源统一为 `photoAlbums.json`；当前 234 个真实内容图片引用均存在。
 - 已修：illustrator 3 个大候选 `128.gif`、`ref-18.png`、`ref-20.png` 已接入同尺寸比例 WebP poster（约 93KB、39KB、88KB），点击仍打开原 GIF/PNG；`assets:check` 当前 234 个真实内容图片引用 0 缺失，且无大缩略图 warning。
 - 已修：`visual:diff` 增加 lazy image 预热、`images=loaded/total` 日志和 `--targets=clone`；`illustrator` desktop clone 在 `--imageTimeout=25000 --scrollPasses=3` 下为 `29/29`，下半段截图不再出现 false placeholder。
-- 残差：gallery 资源加载仍需按节点继续复核；后续先用 `visual:diff` 的图片加载统计区分截图预热不足和真实页面体验问题。
+- 已修：新增 `visual:image-audit` 无截图加载审计；本地 clone 默认主要 gallery desktop 审计为 `codes/game/pixel/illustrator/gif/graphic/photo` 共 `113/113` 图片加载，mobile+desktop 扩展审计为 `226/226`，避免为了判断加载状态反复生成截图。
+- 残差：gallery 资源加载仍需按节点继续复核；后续先用 `visual:image-audit` 区分截图预热不足和真实页面体验问题，有 WARN 时再定向跑 `visual:diff` 截图。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game/gif/illustrator 当前 5 断点已恢复 3 列，graphic 当前 5 断点已保持 2 列。
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
 **自动门禁**：`site/scripts/visual-layout-check.mjs` 已加入，npm 脚本为 `npm run visual:check`；用于快速阻止左导航/返回链接消失这类 P0 回归。
 **数值探针**：`site/scripts/visual-style-report.mjs` 已加入，npm 脚本为 `npm run visual:measure`；用于输出原站/clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns delta，并在多段 gallery 页面输出 `g2` 第二段列数、图片尺寸和段落高度。
+**图片加载审计**：`site/scripts/visual-image-audit.mjs` 已加入，npm 脚本为 `npm run visual:image-audit`；用于无截图复核 clone/original 的 `images=loaded/total`，默认检查主要 gallery 页 desktop。
 **资源门禁**：`site/scripts/assets-check.mjs` 已加入，npm 脚本为 `npm run assets:check`；用于快速检查内容 JSON 的 `/images/` 引用是否缺失，并列出超过 `1MB` 且没有 `thumbSrc` 的大缩略图候选。
 
 **下一步**（任务 #18 后续 / P0）：
 1. 继续把 `npm run assets:check` 作为资源门禁；当前应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。
-2. 缩略图列数和资源加载：继续用 `visual:diff --targets=clone --imageTimeout=25000 --scrollPasses=3` 复核长 gallery，再决定是否需要页面级 eager / poster 调整。
+2. 缩略图列数和资源加载：先用 `visual:image-audit --clone=http://localhost:4350 --imageTimeout=25000 --scrollPasses=3` 复核主要 gallery；有 WARN 时再用 `visual:diff --targets=clone` 定向截图，之后决定是否需要页面级 eager / poster 调整。
 3. 小幅图片尺寸残差：目前 gallery 尺寸类残差已收敛到数值门禁级别；继续以 `thumbImage.width/height` 为准防回归，不再把旧 `main.width` 假残差列为待修。
 
 ---

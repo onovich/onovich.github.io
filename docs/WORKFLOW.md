@@ -203,20 +203,27 @@ npm run assets:check
 2. npm run preview -- --host 127.0.0.1 --port 4350
 3. npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
 4. npm run visual:measure -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
-5. npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
-6. Read 6 张关键截图（home/codes/pixel × desktop/mobile original/clone）
-7. 写出可见差异清单（量化或定性）
-8. 不通过 → 继续改 → 回到 1
-9. 通过 → commit + push → 等 Actions → curl 线上验 build-version
+5. npm run visual:image-audit -- --clone=http://localhost:4350
+6. npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
+7. Read 6 张关键截图（home/codes/pixel × desktop/mobile original/clone）
+8. 写出可见差异清单（量化或定性）
+9. 不通过 → 继续改 → 回到 1
+10. 通过 → commit + push → 等 Actions → curl 线上验 build-version
 ```
 
-长 gallery 截图如果下半段出现占位，先看 `visual:diff` 输出的 `images=loaded/total`。需要排除截图预热不足时，加：
+长 gallery 截图如果下半段出现占位，先跑无截图审计：
+
+```txt
+npm run visual:image-audit -- --clone=http://localhost:4350 --pages=illustrator,gif,graphic --viewports=desktop --imageTimeout=25000 --scrollPasses=3
+```
+
+`visual:image-audit` 复用 `visual:diff` 的 lazy image 预热和图片等待，但不保存 PNG；输出全是 `OK images=loaded/total` 时，说明优先问题不是资源加载。需要排除截图预热不足时，再定向截图：
 
 ```txt
 npm run visual:diff -- --clone=http://localhost:4350 --targets=clone --pages=illustrator --imageTimeout=25000 --scrollPasses=3
 ```
 
-说明：视觉复刻判断仍用默认 `original,clone`。只查本地 clone 的资源加载、占位或页面回归时，用 `--targets=clone`，可以少截一半图。
+说明：视觉复刻判断仍用默认 `original,clone`。只查本地 clone 的资源加载、占位或页面回归时，先用 `visual:image-audit`；必须看截图时再用 `--targets=clone`，可以少截一半图。
 
 **绝对禁止的事**：
 

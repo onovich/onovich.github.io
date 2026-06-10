@@ -18,6 +18,7 @@
     "assets:check": "node scripts/assets-check.mjs",
     "visual:check": "node scripts/visual-layout-check.mjs",
     "visual:diff": "node scripts/visual-diff.mjs",
+    "visual:image-audit": "node scripts/visual-image-audit.mjs",
     "visual:measure": "node scripts/visual-style-report.mjs",
     "preview": "astro preview",
     "astro": "astro"
