@@ -12,8 +12,8 @@
 
 1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
 2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 顶部与 game/gif/illustrator 列数、illustrator 5 断点缩略图尺寸、graphic 首张全栏图与长图顺序、graphic 5 断点图片宽度、Cargo grid 横向 gutter / main width、home wide avatar、gif hero/natural media 尺寸已收敛；下一步继续复核剩余 gallery 资源加载。
-3. P1：继续实测并复核 gallery 资源加载；`assets:check` 已确认 231 个真实内容图片引用 0 缺失；当前大缩略图候选只剩 `128.gif`、`ref-20.png`、`ref-18.png`。
-4. P2：旧 `photos.json` / `/images/photos/*` 内容链路已移除；photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为唯一来源。
+3. P1：继续实测并复核 gallery 资源加载；`assets:check` 已确认 234 个真实内容图片引用 0 缺失，且没有超过 `1MB` 仍缺 `thumbSrc` 的候选。
+4. P2：旧 `photos.json` / `/images/photos/*` 内容链路已移除；photo 运行时以 `photoAlbums.json` 和 `/images/photo-albums/*` 为唯一来源；illustrator 3 个大候选已补轻量 WebP poster。
 
 ---
 
@@ -63,8 +63,9 @@
 - 已修：illustrator 在 `<=1024px` 使用 scoped `thumbnails-container` 宽度和 dense padding；mobile/tablet/laptop 首组 `thumbImage` width delta 从 `+5.9/+8.62/+4.28px` 收到 `+0.01/+0.01/+0.03px`，列数保持 3。
 - 已修：graphic desktop/wide 在 page-scoped 宽度下收回首张全栏图尺寸；`thumbImage` width delta 从 `+2.88/+3.43px` 收到 `+0.02/0px`，height delta 从 `+2.5/+2.98px` 收到 `0/0px`，列数仍为 2。
 - 已修：illustrator desktop/wide 在 page-scoped 宽度下收回首组与第二组尺寸；首组 `thumbImage` width delta 从 `+0.97/+1.17px` 收到 `0/0px`，height delta 从 `+1.7/+2.08px` 收到 `0/0px`，两组列数仍为 3。
-- 已修：`assets:check` 资源门禁已加入；旧 `photos.json` / `/images/photos/*` 链路已移除，photo 运行时来源统一为 `photoAlbums.json`；当前 231 个真实内容图片引用均存在。
-- 残差：gallery 资源加载仍需按节点继续复核；当前大缩略图候选为 `128.gif`、`ref-20.png`、`ref-18.png`，GIF gallery 已有轻量 WebP poster。
+- 已修：`assets:check` 资源门禁已加入；旧 `photos.json` / `/images/photos/*` 链路已移除，photo 运行时来源统一为 `photoAlbums.json`；当前 234 个真实内容图片引用均存在。
+- 已修：illustrator 3 个大候选 `128.gif`、`ref-18.png`、`ref-20.png` 已接入同尺寸比例 WebP poster（约 93KB、39KB、88KB），点击仍打开原 GIF/PNG；`assets:check` 当前 234 个真实内容图片引用 0 缺失，且无大缩略图 warning。
+- 残差：gallery 资源加载仍需按节点继续复核；desktop/wide 截图里 lower lazy thumbnails 仍可能显示 placeholder，后续可单独评估是否提高 eager 范围或补更多 poster。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game/gif/illustrator 当前 5 断点已恢复 3 列，graphic 当前 5 断点已保持 2 列。
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
@@ -73,8 +74,8 @@
 **资源门禁**：`site/scripts/assets-check.mjs` 已加入，npm 脚本为 `npm run assets:check`；用于快速检查内容 JSON 的 `/images/` 引用是否缺失，并列出超过 `1MB` 且没有 `thumbSrc` 的大缩略图候选。
 
 **下一步**（任务 #18 后续 / P0）：
-1. 用 `npm run assets:check` 快速确认本地资源引用和大缩略图候选，再决定是否补 `thumbSrc`。
-2. 缩略图列数和资源加载：继续实测 gif / illustrator 的线上图片加载状态，再决定是否补资源优化。
+1. 继续把 `npm run assets:check` 作为资源门禁；当前应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。
+2. 缩略图列数和资源加载：继续实测 illustrator lower lazy placeholder，再决定是否提高 eager 范围或补更多 poster。
 3. 小幅图片尺寸残差：目前 gallery 尺寸类残差已收敛到数值门禁级别；继续以 `thumbImage.width/height` 为准防回归，不再把旧 `main.width` 假残差列为待修。
 
 ---
@@ -95,9 +96,9 @@
 - 实际页面和 CMS 均使用 `photoAlbums.json`，不读取 `photos.json`。
 - `site/public/images/photo-albums/*` 是 photo 运行时来源，当前体积约 4.6MB。
 - 旧 `photos.json` 和 `/images/photos/*` 已从运行时仓库移除，减少约 31MB 陈旧资源。
-- `npm run assets:check` 已确认 231 个真实内容图片引用 0 缺失。
+- `npm run assets:check` 已确认 234 个真实内容图片引用 0 缺失。
 
-**下一步**：photo 后续不再按缺图处理；资源优化优先转向 illustrator 大候选。
+**下一步**：photo 后续不再按缺图处理；资源优化优先转向剩余 lazy placeholder 体验。
 
 ---
 

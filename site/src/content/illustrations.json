@@ -4,6 +4,7 @@
     "section": 1,
     "title": "悬魂梯",
     "src": "/images/illustrations/128.gif",
+    "thumbSrc": "/images/illustrations/thumbs/128.webp",
     "width": 1122,
     "height": 1981,
     "captionHtml": "悬魂梯<br>2020.11"
@@ -157,6 +158,7 @@
     "section": 2,
     "title": "行脚僧",
     "src": "/images/illustrations/ref-18.png",
+    "thumbSrc": "/images/illustrations/thumbs/ref-18.webp",
     "width": 2048,
     "height": 2732,
     "captionHtml": "行脚僧<br>2020.11"
@@ -175,6 +177,7 @@
     "section": 2,
     "title": "热海先生",
     "src": "/images/illustrations/ref-20.png",
+    "thumbSrc": "/images/illustrations/thumbs/ref-20.webp",
     "width": 2328,
     "height": 2724,
     "captionHtml": "热海先生<br>2020.11"
