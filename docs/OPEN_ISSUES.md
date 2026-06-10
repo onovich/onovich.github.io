@@ -78,6 +78,7 @@
 **图片加载审计**：`site/scripts/visual-image-audit.mjs` 已加入，npm 脚本为 `npm run visual:image-audit`；用于无截图复核 clone/original 的 `images=loaded/total`，默认检查 gallery + photo detail desktop。
 **聚合门禁**：`site/scripts/visual-guard.mjs` 已加入，npm 脚本为 `npm run visual:guard`；用于一条命令执行常规 layout + image audit。
 **资源门禁**：`site/scripts/assets-check.mjs` 已加入，npm 脚本为 `npm run assets:check`；用于快速检查内容 JSON 的 `/images/` 引用是否缺失，并列出超过 `1MB` 且没有 `thumbSrc` 的大缩略图候选。
+**Ops wrapper**：`.codex/project-ops-workflow.json` 与 `docs/codex-ops-workflow.md` 已初始化；常规验证可用 `Validate.cmd` 跑 build + assets，`Smoke.cmd` 跑 `visual:guard` + 本地预览 HTTP 检查，减少后续手写命令和 token 消耗。
 
 **下一步**（任务 #18 后续 / P0）：
 1. 继续把 `npm run assets:check` 作为资源门禁；当前应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。

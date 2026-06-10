@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "initializedMarker": "codex-project-ops-workflow: initialized",
+  "initializedAt": "2026-06-10 19:00:00 +08:00",
+  "projectName": "Onovich",
+  "repoRoot": "<PROJECT_ROOT>",
+  "validateSequence": [
+    "build",
+    "structureCheck"
+  ],
+  "operations": {
+    "envCheck": {
+      "commands": [
+        "node --version",
+        "npm --version"
+      ]
+    },
+    "restoreDeps": {
+      "commands": [
+        "npm --prefix site ci"
+      ]
+    },
+    "installDeps": {
+      "commands": [
+        "npm --prefix site install"
+      ]
+    },
+    "build": {
+      "commands": [
+        "npm --prefix site run build"
+      ]
+    },
+    "test": {
+      "commands": [
+        "npm --prefix site run cms:check"
+      ]
+    },
+    "lint": {
+      "commands": []
+    },
+    "format": {
+      "commands": []
+    },
+    "typecheck": {
+      "commands": []
+    },
+    "structureCheck": {
+      "commands": [
+        "npm --prefix site run assets:check"
+      ]
+    },
+    "codegen": {
+      "commands": []
+    },
+    "docsCheck": {
+      "commands": []
+    },
+    "smoke": {
+      "commands": [
+        "npm --prefix site run visual:guard -- --clone=http://127.0.0.1:4351"
+      ],
+      "urls": [
+        "http://127.0.0.1:4351/"
+      ]
+    },
+    "package": {
+      "commands": [
+        "npm --prefix site run build"
+      ]
+    },
+    "releaseDryRun": {
+      "commands": [
+        "npm --prefix site run build",
+        "npm --prefix site run assets:check"
+      ]
+    }
+  },
+  "devServer": {
+    "startCommand": "npm --prefix site run preview -- --host 127.0.0.1 --port 4351",
+    "healthUrl": "http://127.0.0.1:4351/",
+    "readyText": "Onovich",
+    "startupTimeoutSeconds": 30,
+    "pidFile": ".codex/project-ops-devserver.pid"
+  },
+  "forbiddenPolicy": "Do not run destructive clean/reset/deploy commands unless the user explicitly asks."
+}

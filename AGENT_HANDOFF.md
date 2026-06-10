@@ -121,6 +121,7 @@
 - ✅ Layout 重写为 Cargo 风格（右上角浮动汉堡 + 滑入黑色面板 + home 4/8 grid）
 - ✅ root font-size：desktop `12.96px`、wide `15.55px` 均已与原站实测对齐
 - ✅ Playwright 截图对照基础设施 + `visual:check` 布局门禁
+- ✅ Project ops workflow 已初始化：`Validate.cmd` 跑 build + assets，`Smoke.cmd` 跑 `visual:guard` + 本地预览 HTTP 检查
 - ✅ 文档体系（HANDOFF / CSS_SPEC / RENDERING_REPORT / OPEN_ISSUES / LESSONS / WORKFLOW）
 - ✅ 旧 Electron admin 已移除；后续只沿站内 `/cms` 网页 CMS 演进
 - ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份、备份恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘

@@ -58,6 +58,15 @@ npm run visual:check -- --pages=codes --viewports=desktop --targets=original,clo
 
 不要直接修改 → push。必须执行视觉验证门禁：
 
+现在已经初始化 project ops workflow；常规小节点可优先用这些 wrapper 节省 token：
+
+```txt
+<USER_HOME>\.codex\skills\project-ops-workflow\scripts\ops\Validate.cmd
+<USER_HOME>\.codex\skills\project-ops-workflow\scripts\ops\Smoke.cmd
+```
+
+`Validate.cmd` 跑 build（含 `cms:check`）+ `assets:check`；`Smoke.cmd` 假设 `http://127.0.0.1:4351` 预览可用，并跑 `visual:guard` + HTTP root 检查。需要手工看图的大节点仍按下面流程跑 `visual:diff` 并读关键截图。
+
 ```txt
 edit code
   ↓
