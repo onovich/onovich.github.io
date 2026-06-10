@@ -15,6 +15,7 @@
     "cms:publish:smoke": "node scripts/cms-publish-smoke.mjs",
     "cms:restore": "node scripts/restore-cms-backup.mjs",
     "cms:smoke": "node scripts/cms-smoke.mjs",
+    "assets:check": "node scripts/assets-check.mjs",
     "visual:check": "node scripts/visual-layout-check.mjs",
     "visual:diff": "node scripts/visual-diff.mjs",
     "visual:measure": "node scripts/visual-style-report.mjs",

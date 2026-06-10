@@ -11,9 +11,9 @@
 ## 当前 TODO 摘要（2026-06-10）
 
 1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
-2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 顶部与 game/gif/illustrator 列数、illustrator 5 断点缩略图尺寸、graphic 首张全栏图与长图顺序、graphic 5 断点图片宽度、Cargo grid 横向 gutter / main width、home wide avatar、gif hero/natural media 尺寸已收敛；下一步继续复核剩余 gallery 资源加载与 photo 缺图。
-3. P1：继续实测并复核 gallery 资源加载；codes、pixel 第二段、game/gif/illustrator 当前 mobile/tablet/laptop/desktop/wide 列数已对齐；illustrator 5 断点首组缩略图尺寸已收齐；graphic 在 laptop/desktop/wide 保持 2 列，首张 `graphic-06.jpg` 已恢复为全栏图，desktop/wide 首张宽高 delta 已归零级别；GIF gallery 已接入轻量 WebP poster。
-4. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
+2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 顶部与 game/gif/illustrator 列数、illustrator 5 断点缩略图尺寸、graphic 首张全栏图与长图顺序、graphic 5 断点图片宽度、Cargo grid 横向 gutter / main width、home wide avatar、gif hero/natural media 尺寸已收敛；下一步继续复核剩余 gallery 资源加载。
+3. P1：继续实测并复核 gallery 资源加载；`assets:check` 已确认 238 个本地图片引用 0 缺失，photo 02-07 已存在；当前大缩略图候选是 `128.gif`、`ref-20.png`、`ref-18.png` 和 photo index 原图。
+4. P2：photos 02-07 缺图已解决；后续如处理 photo，重点转为 index/detail 原图体积和 `thumbSrc` 优化。
 
 ---
 
@@ -63,16 +63,18 @@
 - 已修：illustrator 在 `<=1024px` 使用 scoped `thumbnails-container` 宽度和 dense padding；mobile/tablet/laptop 首组 `thumbImage` width delta 从 `+5.9/+8.62/+4.28px` 收到 `+0.01/+0.01/+0.03px`，列数保持 3。
 - 已修：graphic desktop/wide 在 page-scoped 宽度下收回首张全栏图尺寸；`thumbImage` width delta 从 `+2.88/+3.43px` 收到 `+0.02/0px`，height delta 从 `+2.5/+2.98px` 收到 `0/0px`，列数仍为 2。
 - 已修：illustrator desktop/wide 在 page-scoped 宽度下收回首组与第二组尺寸；首组 `thumbImage` width delta 从 `+0.97/+1.17px` 收到 `0/0px`，height delta 从 `+1.7/+2.08px` 收到 `0/0px`，两组列数仍为 3。
-- 残差：photo/gif 的资源加载与 photo 缺图仍需按节点继续复核。
+- 已修：`assets:check` 资源门禁已加入；当前 238 个本地图片引用均存在，photo 02-07 已在仓库中，过期的缺图 TODO 已清掉。
+- 残差：gallery 资源加载仍需按节点继续复核；当前大缩略图候选为 `128.gif`、`ref-20.png`、`ref-18.png` 和 photo index 原图，GIF gallery 已有轻量 WebP poster。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game/gif/illustrator 当前 5 断点已恢复 3 列，graphic 当前 5 断点已保持 2 列。
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
 **自动门禁**：`site/scripts/visual-layout-check.mjs` 已加入，npm 脚本为 `npm run visual:check`；用于快速阻止左导航/返回链接消失这类 P0 回归。
 **数值探针**：`site/scripts/visual-style-report.mjs` 已加入，npm 脚本为 `npm run visual:measure`；用于输出原站/clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns delta，并在多段 gallery 页面输出 `g2` 第二段列数、图片尺寸和段落高度。
+**资源门禁**：`site/scripts/assets-check.mjs` 已加入，npm 脚本为 `npm run assets:check`；用于快速检查内容 JSON 的 `/images/` 引用是否缺失，并列出超过 `1MB` 且没有 `thumbSrc` 的大缩略图候选。
 
 **下一步**（任务 #18 后续 / P0）：
-1. 用 `npm run visual:measure -- --clone=http://127.0.0.1:4350 --pages=gif,game,codes,pixel --viewports=mobile,tablet,laptop,desktop,wide` 继续抽精确像素值；多段 gallery 优先看 `g2` 指标。
-2. 缩略图列数和资源加载：继续实测 photo / gif 的线上图片加载状态，再决定是否补资源优化。
+1. 用 `npm run assets:check` 快速确认本地资源引用和大缩略图候选，再决定是否补 `thumbSrc`。
+2. 缩略图列数和资源加载：继续实测 photo / gif / illustrator 的线上图片加载状态，再决定是否补资源优化。
 3. 小幅图片尺寸残差：目前 gallery 尺寸类残差已收敛到数值门禁级别；继续以 `thumbImage.width/height` 为准防回归，不再把旧 `main.width` 假残差列为待修。
 
 ---
@@ -85,17 +87,15 @@
 
 ---
 
-## 🟡 4. photos 02-07 缺图片
+## ✅ 4. photos 02-07 缺图片已补齐
 
-**症状**：`site/public/images/photos/photo-02.jpg` 到 `photo-07.jpg` 不存在；`photos.json` 已引用，线上会 404。
+**历史症状**：`site/public/images/photos/photo-02.jpg` 到 `photo-07.jpg` 曾不存在；`photos.json` 已引用，线上会 404。
 
-**已知**：
-- 旧仓库（`_old-site/`）也没这 6 张
-- 需要从原站 `https://onovich.com/photo` 抓真实 freight.cargo.site URL 后下载
+**当前状态**：
+- `site/public/images/photos/photo-01.jpg` 到 `photo-07.jpg` 均已存在并被 git 跟踪。
+- `npm run assets:check` 已确认 238 个本地图片引用 0 缺失。
 
-**临时处理**：用户已说"非关键路径，后期手动补"。
-
-**下一步**：等用户主动要求时，按 `docs/WORKFLOW.md` E 节方法迁移。
+**下一步**：如继续优化 photo，重点改为原图体积和 `thumbSrc`，不再按缺图处理。
 
 ---
 
