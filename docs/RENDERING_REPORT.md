@@ -100,6 +100,7 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 5 断点复核：codes `mainAnchor.y` delta 约 mobile `-33.32px`、tablet `-25.54px`、laptop `-18.56px`、desktop `-4.51px`、wide `-27.44px`。
 - 2026-06-10 更新：wide 断点 root font-size 上限已调到原站实测 `15.55px`；desktop 仍为 `12.96px`，wide `html.fontSize` / `bodycopy.fontSize` delta 均为 0，wide `mainAnchor.y` 从约 `-27.44px` 收到 `-8.24px`。
 - 2026-06-10 更新：codes/pixel 已标记为 `page-gallery-standard`，并按 5 断点校准右栏顶部与 `< HOME` 到 gallery 的间距；标准 gallery 的 `mainAnchor.y` / `thumbnails.y` delta 在 5 断点均约为 0。
+- 2026-06-10 更新：codes/pixel 标准 gallery 横向容器已按三段断点校准。5 断点复核后，`thumbImage.width/height` 与 pixel 第二段 `g2` 宽高 delta 最大约 `0.47px`，列数保持 mobile/tablet 2 列、laptop/desktop/wide 3 列。
 - 2026-06-10 更新：gallery grid item 增加 `min-width: 0`，pixel mobile 横向溢出已消除（375px viewport 下 `scrollWidth` 从约 626px 回到 375px），首屏方形缩略图尺寸也回到与 original 接近。
 - 2026-06-10 更新：pixel 第二段 natural/flush gallery 已按原站恢复 3 列与左右内缩；natural thumbnails 退出 `content-visibility:auto` 占位高度，避免第二段 grid 行高被 320px placeholder 压缩。`visual:measure` 已新增 `g2` 输出，desktop/wide 第二段图片宽高 delta 已收至约 `0.1px`。
 - 2026-06-10 更新：tight dense gallery 在 mobile/tablet 重新保持 dense modifier 优先级，`game/gif/illustrator` 移动和平板断点恢复 3 列；`graphic` 继续保持显式 2 列。

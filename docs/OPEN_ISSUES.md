@@ -47,6 +47,7 @@
 - 已澄清：旧 `main.y` 测到的是右栏列盒，不能代表首个可见内容；`visual:measure` 已新增 `mainAnchor`。桌面 home 首个内容 delta 约 `-0.62px`，codes/pixel `< HOME` delta 约 `-4.51px`，gallery 顶部 `thumbnails.y` delta 约 `-10.96px`。
 - 5 断点复核：wide root 修复前 codes 的 `mainAnchor.y` delta 约 mobile `-33.32px`、tablet `-25.54px`、laptop `-18.56px`、desktop `-4.51px`、wide `-27.44px`；wide root 修复后 wide `mainAnchor.y` 收到约 `-8.24px`。
 - 已修：codes/pixel 走 `page-gallery-standard` 变体，按 5 断点校准右栏顶部和 `< HOME` 到 gallery 的间距；codes/pixel 的 `mainAnchor.y` 与 `thumbnails.y` delta 在 mobile/tablet/laptop/desktop/wide 均约为 0。
+- 已修：codes/pixel 标准 gallery 横向容器按 mobile/tablet、laptop、desktop/wide 三段校准；5 断点正常图片等待复核后，`thumbImage.width/height` 与 pixel 第二段 `g2` 宽高 delta 最大约 `0.47px`，列数保持 mobile/tablet 2 列、laptop/desktop/wide 3 列。
 - 已修：gallery grid item 增加 `min-width: 0`，pixel mobile 横向溢出已消除（375px viewport 下 `scrollWidth` 从约 626px 回到 375px），首屏方形缩略图尺寸也回到与 original 接近。
 - 已修：pixel 第二段 natural/flush gallery 已对齐 5 断点列数，desktop/wide 第二段图片宽高 delta 已收至约 `0.1px`；`visual:measure` 已新增 `g2` 输出，直接报告第二段列数、图片尺寸和段落高度。
 - 已修：tight dense gallery 在 mobile/tablet 重新保持 dense modifier 优先级，`game/gif/illustrator` 在移动和平板断点恢复 3 列；`graphic` 保持显式 2 列。
@@ -85,7 +86,7 @@
 1. 继续把 `npm run assets:check` 作为资源门禁；当前应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。
 2. 缩略图列数和资源加载：先用 `visual:guard --clone=http://localhost:4350` 复核常规布局和 gallery + photo detail；有 WARN 时再用 `visual:diff --targets=clone` 定向截图，之后决定是否需要页面级 eager / poster 调整。
 3. 小幅图片尺寸残差：目前 gallery 尺寸类残差已收敛到数值门禁级别；继续以 `thumbImage.width/height` 为准防回归，不再把旧 `main.width` 假残差列为待修。
-4. 下一轮视觉小节点候选：用正常图片等待复核 desktop 快扫里的 `codes/pixel` 缩略图宽度约 `-2px`、`photo` 顶部约 `-5.6px`；`gif/graphic` 顶部指标先按测量锚点噪声处理，不直接改 CSS。
+4. 下一轮视觉小节点候选：`codes/pixel` 标准 gallery 缩略图宽度已收敛；继续用正常图片等待复核 `photo` 顶部约 `-5.6px`。`gif/graphic` 顶部指标先按测量锚点噪声处理，不直接改 CSS。
 
 ---
 
