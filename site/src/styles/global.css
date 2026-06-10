@@ -921,6 +921,12 @@ body.menu-open .site-menu__backdrop {
   body.page-graphic.page-gallery-tight .thumbnails-container {
     width: 100%;
   }
+  body.page-illustrator.page-gallery-tight .thumbnails-container {
+    width: calc(100% - 0.6rem);
+  }
+  body.page-illustrator .thumbnails--dense {
+    padding: 0.125rem;
+  }
   body.page-inner.page-gallery-standard .home-grid__col--main {
     padding-top: 7.18rem;
   }
@@ -979,6 +985,9 @@ body.menu-open .site-menu__backdrop {
     margin: 0;
   }
   body.page-graphic.page-gallery-tight .thumbnails-container {
+    width: calc(100% - 0.335rem);
+  }
+  body.page-illustrator.page-gallery-tight .thumbnails-container {
     width: calc(100% - 0.335rem);
   }
   .thumbnails {

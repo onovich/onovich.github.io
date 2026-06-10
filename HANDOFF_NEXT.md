@@ -50,7 +50,7 @@ npm run visual:check -- --clone=http://127.0.0.1:4350 --pages=home,codes,pixel -
 npm run visual:check -- --pages=codes --viewports=desktop --targets=original,clone
 ```
 
-`codes.desktop.clone.png` 已人工查看，左侧导航存在；线上 `blog.onovich.com/codes` 与原站同样通过布局框检查。`visual:measure` 已新增 `mainAnchor`，旧 `main.y` 只是右栏列盒位置，不再单独作为视觉残差依据；`mainColumn` 现在取右栏最右候选，codes/graphic desktop/wide 的 `main.x` 与 `main.width` 已归零级别。wide root font-size 已修到原站实测 `15.55px`；codes/pixel 标准 gallery 顶部也已按 5 断点收敛；pixel mobile 横向溢出已修；pixel 第二段 natural/flush gallery 已收敛；tight gallery 顶部和 game/gif/illustrator 断点列数已收敛；graphic 已恢复原站首张 `graphic-06.jpg` 全栏图、后续长图顺序、laptop 2 列和 mobile/tablet/laptop 图片宽度；Cargo grid 横向 gutter / main width 已收敛；home wide avatar 已收敛；gif hero/natural media 尺寸已收敛；GIF gallery 已接入轻量 WebP poster。当前最高优先级改为：**复核剩余 gallery 断点列数、资源加载和小幅图片尺寸残差**，同时把 `visual:check` + `visual:measure` + `visual:diff` 作为每次视觉变更的门禁。
+`codes.desktop.clone.png` 已人工查看，左侧导航存在；线上 `blog.onovich.com/codes` 与原站同样通过布局框检查。`visual:measure` 已新增 `mainAnchor`，旧 `main.y` 只是右栏列盒位置，不再单独作为视觉残差依据；`mainColumn` 现在取右栏最右候选，codes/graphic desktop/wide 的 `main.x` 与 `main.width` 已归零级别。wide root font-size 已修到原站实测 `15.55px`；codes/pixel 标准 gallery 顶部也已按 5 断点收敛；pixel mobile 横向溢出已修；pixel 第二段 natural/flush gallery 已收敛；tight gallery 顶部和 game/gif/illustrator 断点列数已收敛；illustrator mobile/tablet/laptop 缩略图尺寸已收齐；graphic 已恢复原站首张 `graphic-06.jpg` 全栏图、后续长图顺序、laptop 2 列和 mobile/tablet/laptop 图片宽度；Cargo grid 横向 gutter / main width 已收敛；home wide avatar 已收敛；gif hero/natural media 尺寸已收敛；GIF gallery 已接入轻量 WebP poster。当前最高优先级改为：**复核剩余 gallery 资源加载、photo 缺图和 desktop/wide 小幅图片尺寸残差**，同时把 `visual:check` + `visual:measure` + `visual:diff` 作为每次视觉变更的门禁。
 
 ---
 
@@ -227,7 +227,7 @@ npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 
 ### Step 2 — 继续缩小视觉差异
 
-继续复核剩余 gallery 断点列数、资源加载和小幅图片尺寸残差。Codes caption 已在 2026-06-10 切为 Cargo 风格 12px HTML caption；bodycopy / main content 行高也已同步为原站 `16px`，codes 5 断点列数 delta 为 0，wide root font-size 已修到 `15.55px`，home wide avatar 宽高与首个内容 y 已收敛，pixel mobile 横向溢出已修，pixel 第二段 natural/flush gallery 的 `g2` 列数与 desktop/wide 图片宽高也已收敛，game/gif/illustrator mobile/tablet/laptop/desktop/wide 列数与 tight 顶部已收敛，graphic 已恢复首张全栏图 `graphic-06.jpg`、后续长图顺序、laptop 2 列和 mobile/tablet/laptop 图片宽度，Cargo grid 横向 gutter / main width 已归零级别，gif hero 在 mobile/tablet 的宽度 delta 已从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`，GIF gallery 已用 13 张 WebP poster + `eagerThumbs` 避免缩略图慢加载。注意：旧 `main.y` 测的是右栏列盒，不等于首个可见内容起点；继续看 `mainAnchor.y` / `thumbnails.y`，图片尺寸看 `thumbImage.width/height`。
+继续复核剩余 gallery 资源加载、photo 缺图和 desktop/wide 小幅图片尺寸残差。Codes caption 已在 2026-06-10 切为 Cargo 风格 12px HTML caption；bodycopy / main content 行高也已同步为原站 `16px`，codes 5 断点列数 delta 为 0，wide root font-size 已修到 `15.55px`，home wide avatar 宽高与首个内容 y 已收敛，pixel mobile 横向溢出已修，pixel 第二段 natural/flush gallery 的 `g2` 列数与 desktop/wide 图片宽高也已收敛，game/gif/illustrator mobile/tablet/laptop/desktop/wide 列数与 tight 顶部已收敛，illustrator mobile/tablet/laptop 首组 `thumbImage` width delta 已从 `+5.9/+8.62/+4.28px` 收到 `+0.01/+0.01/+0.03px`，graphic 已恢复首张全栏图 `graphic-06.jpg`、后续长图顺序、laptop 2 列和 mobile/tablet/laptop 图片宽度，Cargo grid 横向 gutter / main width 已归零级别，gif hero 在 mobile/tablet 的宽度 delta 已从 `-69.86/-151.95px` 收到 `+0.95/+1.36px`，GIF gallery 已用 13 张 WebP poster + `eagerThumbs` 避免缩略图慢加载。注意：旧 `main.y` 测的是右栏列盒，不等于首个可见内容起点；继续看 `mainAnchor.y` / `thumbnails.y`，图片尺寸看 `thumbImage.width/height`。
 
 ### Step 3 — 如果仍偏差大
 
@@ -261,7 +261,7 @@ npm run visual:diff -- --clone=http://localhost:4350 --pages=home,codes,pixel
 
 - P0：执行并扩展视觉验证门禁（不要再绕过）
 - P1：消除整体缩放、列对齐残差
-- P1：实测并复刻 gallery 每个断点列数
+- P1：复核剩余 gallery 资源加载和 desktop/wide 小幅图片尺寸残差
 - P2：photos 02-07 缺图（用户说后期手动补）
 - P3：继续扩展发布/恢复校验覆盖
 
