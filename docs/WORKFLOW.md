@@ -162,7 +162,7 @@ npm run assets:check
 - 缺失 `/images/` 本地引用会失败
 - 超过 `1MB` 且没有 `thumbSrc` 的缩略图候选会以警告列出
 
-当前基线：231 个真实内容图片引用 0 缺失；旧 `photos.json` / `/images/photos/*` 链路已移除，后续资源优化优先看 `128.gif`、`ref-20.png`、`ref-18.png`。
+当前基线：234 个真实内容图片引用 0 缺失，且无超过 `1MB` 仍缺 `thumbSrc` 的候选；旧 `photos.json` / `/images/photos/*` 链路已移除。
 
 ---
 

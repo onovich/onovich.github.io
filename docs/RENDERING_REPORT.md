@@ -109,8 +109,9 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：illustrator 在 `<=1024px` 使用 scoped `thumbnails-container` 宽度和 dense padding；mobile/tablet/laptop 首组 `thumbImage` width delta 从 `+5.9/+8.62/+4.28px` 收到 `+0.01/+0.01/+0.03px`，列数保持 3。
 - 2026-06-10 更新：graphic desktop/wide 在 page-scoped 宽度下收回首张全栏图尺寸；`thumbImage` width delta 从 `+2.88/+3.43px` 收到 `+0.02/0px`，height delta 从 `+2.5/+2.98px` 收到 `0/0px`，列数仍为 2。
 - 2026-06-10 更新：illustrator desktop/wide 在 page-scoped 宽度下收回首组与第二组尺寸；首组 `thumbImage` width delta 从 `+0.97/+1.17px` 收到 `0/0px`，height delta 从 `+1.7/+2.08px` 收到 `0/0px`，两组列数仍为 3。
-- 2026-06-10 更新：`assets:check` 已加入；旧 `photos.json` / `/images/photos/*` 链路已移除，photo 运行时来源统一为 `photoAlbums.json`。当前 231 个真实内容图片引用均存在，大缩略图候选集中在 `128.gif`、`ref-20.png`、`ref-18.png`。
-- 残差：gallery 资源加载仍需按节点继续复核；GIF gallery 已有轻量 WebP poster。
+- 2026-06-10 更新：`assets:check` 已加入；旧 `photos.json` / `/images/photos/*` 链路已移除，photo 运行时来源统一为 `photoAlbums.json`。当前 234 个真实内容图片引用均存在，且没有超过 `1MB` 仍缺 `thumbSrc` 的候选。
+- 2026-06-10 更新：illustrator 3 个大候选 `128.gif`、`ref-18.png`、`ref-20.png` 已接入同尺寸比例 WebP poster（约 93KB、39KB、88KB），点击仍打开原 GIF/PNG；desktop/wide `thumbImage` 宽高 delta 维持 `0px`。
+- 残差：gallery 资源加载仍需按节点继续复核；GIF gallery 已有轻量 WebP poster，illustrator lower lazy thumbnails 仍可单独评估。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid

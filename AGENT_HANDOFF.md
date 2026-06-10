@@ -116,7 +116,7 @@
 - ✅ `_reference-site/` 抓取归档（11 页 HTML + CSS）
 - ✅ DNS / Pages / Actions 部署链路全通，blog.onovich.com 能访问
 - ✅ 内容数据 codes/games/pixel/illustrations/gifs/graphics/sns/poems 完整
-- ✅ 图片迁移（旧 `photos.json` / `/images/photos/*` 链路已移除；`assets:check` 当前 231 个真实内容图片引用 0 缺失）
+- ✅ 图片迁移（旧 `photos.json` / `/images/photos/*` 链路已移除；illustrator 大候选已接入 poster；`assets:check` 当前 234 个真实内容图片引用 0 缺失且无大候选 warning）
 - ✅ Layout 重写为 Cargo 风格（右上角浮动汉堡 + 滑入黑色面板 + home 4/8 grid）
 - ✅ root font-size：desktop `12.96px`、wide `15.55px` 均已与原站实测对齐
 - ✅ Playwright 截图对照基础设施 + `visual:check` 布局门禁
@@ -125,8 +125,8 @@
 - ✅ CMS 已拆出页面样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、真实发布包 smoke、发布前备份、备份恢复命令、富文本工具栏命令、选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘
 
 ### 进行中 / 待做
-- 🟡 视觉残差消除（codes caption、bodycopy 行高、wide root font-size、home wide avatar、codes/pixel 标准 gallery 顶部、pixel mobile 横向溢出、pixel 第二段 natural/flush gallery、tight gallery 顶部与 game/gif/illustrator 断点列数、illustrator 5 断点缩略图尺寸、graphic 首张全栏图/长图顺序/laptop 2 列/5 断点图片宽度、Cargo grid 横向 gutter / main width、gif hero/natural media 尺寸、GIF gallery WebP poster 已收敛；顶部位置改看 `visual:measure` 的 `mainAnchor.y` / `thumbnails.y`，不要把旧 `main.y` 列盒位置当成首个内容起点；`mainColumn` 已改为取右栏最右候选，剩余 gallery 资源加载与 illustrator 大缩略图候选继续逐项复核）
-- 🟡 illustrator 大缩略图优化（必要时补 `thumbSrc` poster；photo 已统一到 `photoAlbums.json`）
+- 🟡 视觉残差消除（codes caption、bodycopy 行高、wide root font-size、home wide avatar、codes/pixel 标准 gallery 顶部、pixel mobile 横向溢出、pixel 第二段 natural/flush gallery、tight gallery 顶部与 game/gif/illustrator 断点列数、illustrator 5 断点缩略图尺寸、graphic 首张全栏图/长图顺序/laptop 2 列/5 断点图片宽度、Cargo grid 横向 gutter / main width、gif hero/natural media 尺寸、GIF gallery WebP poster、illustrator 大候选 WebP poster 已收敛；顶部位置改看 `visual:measure` 的 `mainAnchor.y` / `thumbnails.y`，不要把旧 `main.y` 列盒位置当成首个内容起点；`mainColumn` 已改为取右栏最右候选，剩余 gallery lazy placeholder 体验继续逐项复核）
+- 🟡 gallery lazy placeholder 优化（必要时按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围；photo 已统一到 `photoAlbums.json`）
 - 🟡 网页 CMS 后续增强：围绕 `/cms`，但优先级低于视觉 P0/P1
 
 ### 已知风险
@@ -235,9 +235,9 @@ NODE
 - 我们用 `grid-template-columns: repeat(N, 1fr)` 在媒体查询里写死即可
 - 用 Playwright 测原站每个断点实际列数（375/768/1024/1440/1920），写进 CSS
 
-### P2：优化 illustration 大缩略图
-- 先跑 `npm run assets:check`，当前 0 缺失；大候选集中在 `128.gif`、`ref-20.png`、`ref-18.png`
-- 必要时补 `thumbSrc` poster，保持点击仍打开原始大图/GIF
+### P2：优化剩余 gallery lazy placeholder
+- 先跑 `npm run assets:check`，当前 0 缺失且无大候选 warning
+- 如截图仍有下半段 placeholder，再按页面补更多 `thumbSrc` poster 或提高首屏 eager 范围
 
 ### P3：网页 CMS 继续演进
 - 保留 `site/src/pages/cms.astro` 作为唯一后台入口
