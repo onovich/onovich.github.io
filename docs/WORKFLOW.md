@@ -150,7 +150,23 @@ curl -sL \
 
 ---
 
-## F. 任务管理约定
+## F. 本地资源门禁
+
+```bash
+cd site
+npm run assets:check
+```
+
+用途：
+- 读取 `src/content/*.json` 和 `public/images`
+- 缺失 `/images/` 本地引用会失败
+- 超过 `1MB` 且没有 `thumbSrc` 的缩略图候选会以警告列出
+
+当前基线：238 个本地图片引用 0 缺失；后续资源优化优先看 `128.gif`、`ref-20.png`、`ref-18.png` 和 photo index 原图。
+
+---
+
+## G. 任务管理约定
 
 - 用 `TaskList` / `TaskCreate` / `TaskUpdate` 维护当前 todo
 - 跨会话状态在 `HANDOFF.md`（人工维护，覆盖 7 天 memory 限制）
@@ -159,7 +175,7 @@ curl -sL \
 
 ---
 
-## G. 常见反模式（不要做）
+## H. 常见反模式（不要做）
 
 | 反模式 | 替代 |
 |---|---|
@@ -174,7 +190,7 @@ curl -sL \
 
 ---
 
-## H. Pre-push 视觉验证门禁（必须）
+## I. Pre-push 视觉验证门禁（必须）
 
 **任何**修改 BaseLayout、global.css、page 结构后，push 之前必须执行：
 

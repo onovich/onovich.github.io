@@ -13,6 +13,7 @@ cd site && node scripts/visual-diff.mjs --pages=home   # 单页截图
 cd site && node scripts/visual-diff.mjs --clone=http://localhost:4350  # 用本地 dist 对照
 cd site && npm run visual:check -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
 cd site && npm run visual:measure -- --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
+cd site && npm run assets:check                    # 本地资源引用/大缩略图候选
 ```
 
 视口（VIEWPORTS）：
@@ -31,6 +32,8 @@ cd site && npm run visual:measure -- --clone=http://localhost:4350 --pages=home,
 `visual:check` 是截图前的快速布局门禁：它用 Playwright 读取真实布局框，检查左侧 Onovich 导航、当前分类链接和内页 `< HOME` 返回链接是否仍在预期区域。它不能替代人工看截图，但能提前阻止内页导航消失这类 P0 回归。
 
 `visual:measure` 是数值探针：它复用同一套页面/视口/加载等待逻辑，输出原站和 clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns 和 delta。先跑 measure，再决定 CSS 改哪里。
+
+`assets:check` 是资源探针：它不启动浏览器，只读取 `src/content/*.json` 和 `public/images`，缺失 `/images/` 引用会失败，超过 `1MB` 且没有 `thumbSrc` 的缩略图候选会列为警告。
 
 ---
 
@@ -106,7 +109,8 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：illustrator 在 `<=1024px` 使用 scoped `thumbnails-container` 宽度和 dense padding；mobile/tablet/laptop 首组 `thumbImage` width delta 从 `+5.9/+8.62/+4.28px` 收到 `+0.01/+0.01/+0.03px`，列数保持 3。
 - 2026-06-10 更新：graphic desktop/wide 在 page-scoped 宽度下收回首张全栏图尺寸；`thumbImage` width delta 从 `+2.88/+3.43px` 收到 `+0.02/0px`，height delta 从 `+2.5/+2.98px` 收到 `0/0px`，列数仍为 2。
 - 2026-06-10 更新：illustrator desktop/wide 在 page-scoped 宽度下收回首组与第二组尺寸；首组 `thumbImage` width delta 从 `+0.97/+1.17px` 收到 `0/0px`，height delta 从 `+1.7/+2.08px` 收到 `0/0px`，两组列数仍为 3。
-- 残差：photo/gif 的资源加载与 photo 缺图仍需按节点继续复核。
+- 2026-06-10 更新：`assets:check` 已加入；当前 238 个本地图片引用均存在，photo 02-07 已在仓库中。大缩略图候选集中在 `128.gif`、`ref-20.png`、`ref-18.png` 和 photo index 原图。
+- 残差：gallery 资源加载仍需按节点继续复核；GIF gallery 已有轻量 WebP poster。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid
