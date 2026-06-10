@@ -21,7 +21,6 @@ const contentFiles = [
   'illustrations.json',
   'gifs.json',
   'graphics.json',
-  'photos.json',
   'photoAlbums.json',
 ];
 
