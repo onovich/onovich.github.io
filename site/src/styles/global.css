@@ -903,6 +903,9 @@ body.menu-open .site-menu__backdrop {
     --content-padding: 2.4rem;
     --thumbnails-width: 80%;
   }
+  body.page-graphic.page-gallery-tight .thumbnails-container {
+    width: 100%;
+  }
   body.page-inner.page-gallery-standard .home-grid__col--main {
     padding-top: 7.18rem;
   }
@@ -956,6 +959,9 @@ body.menu-open .site-menu__backdrop {
   .thumbnails-container {
     width: 100%;
     margin: 0;
+  }
+  body.page-graphic.page-gallery-tight .thumbnails-container {
+    width: calc(100% - 0.335rem);
   }
   .thumbnails {
     grid-template-columns: repeat(2, 1fr);

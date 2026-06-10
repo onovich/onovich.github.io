@@ -98,7 +98,8 @@ font-family h2:    "Nunito, Icons"
 - 2026-06-10 更新：tight gallery 顶部按 5 断点校准，`game/illustrator` 的 `mainAnchor.y` 与 `thumbnails.y` delta 已约为 0，`gif` 保留原站 `< HOME` 高 16px 的特例；`.thumbnails--columns-2` 提升 specificity，避免 `graphic` 在 1024 laptop 被通用 3 列规则覆盖。
 - 2026-06-10 更新：Cargo grid 横向 gutter / column padding 已恢复为 row 左右 `-0.75rem` + col 左右 `0.75rem` 的模型；desktop/wide 的 main width 残差从约 17-20px 收到约 4-5px，graphic desktop/wide 图片宽度残差约 3px，未引入横向滚动。
 - 2026-06-10 更新：home wide avatar 按原站宽视口等效尺寸校准为 `6.25rem`，wide 下头像宽高 delta 从 `-10.8px` 收到 `0px`，首个内容 y delta 从 `-19.11px` 收到 `+0.01px`；desktop 头像保持约 `-0.34px` 小残差。
-- 残差：main width 仅剩约 4-7px 小残差；graphic mobile/tablet 图片宽度和 gif hero/natural media 尺寸仍需后续节点继续收。
+- 2026-06-10 更新：graphic 在 `page-graphic page-gallery-tight` 范围内收回小断点横向扩展；mobile/tablet/laptop 首张全栏图宽度 delta 从 `+17.7/+25.86/+12.78px` 收到 `+0.04/+0.03/-1.59px`，列数 delta 归 0，desktop/wide 维持约 `+3px` 小残差。
+- 残差：main width 仅剩约 4-7px 小残差；gif hero/natural media 尺寸仍需后续节点继续收。
 
 ### Pixel / Illustrations / GIFs / Graphics / Photos
 - 原站：1:1 缩略图 grid

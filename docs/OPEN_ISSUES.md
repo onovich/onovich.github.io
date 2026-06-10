@@ -11,7 +11,7 @@
 ## 当前 TODO 摘要（2026-06-10）
 
 1. P0：视觉变更必须跑 `visual:check` + `visual:diff`，后续不能只靠 build 通过。
-2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 顶部与 game/gif/illustrator 列数、graphic 首张全栏图与长图顺序、Cargo grid 横向 gutter / main width、home wide avatar 已收敛；下一步继续处理 graphic mobile/tablet 图片宽度和 gif hero/natural media 尺寸残差。
+2. P1：标准 gallery（codes/pixel）顶部、pixel mobile 横向溢出、pixel 第二段 natural 缩略图尺寸/高度、tight gallery 顶部与 game/gif/illustrator 列数、graphic 首张全栏图与长图顺序、graphic mobile/tablet/laptop 图片宽度、Cargo grid 横向 gutter / main width、home wide avatar 已收敛；下一步继续处理 gif hero/natural media 尺寸残差。
 3. P1：继续实测并复核 gallery 每个断点列数；codes、pixel 第二段、game/gif/illustrator 当前 mobile/tablet/laptop/desktop/wide 列数已对齐；graphic 在 laptop/desktop/wide 保持 2 列，首张 `graphic-06.jpg` 已恢复为全栏图。
 4. P2：photos 02-07 缺图，用户已说后期手动补，暂不抢优先级。
 
@@ -55,7 +55,8 @@
 - 已修：关闭态 mobile site menu 增加 `visibility/pointer-events` 防护；thumbnail caption 增加安全换行，避免长中英混排标题撑出横向滚动或 full-page screenshot 黑边。
 - 已修：Cargo grid 横向 gutter / column padding 已恢复为 row 左右 `-0.75rem` + col 左右 `0.75rem` 的模型；desktop/wide 的 main width 残差从约 17-20px 收到约 4-5px，graphic desktop/wide 图片宽度残差约 3px，未引入横向滚动。
 - 已修：home wide avatar 按原站宽视口等效尺寸校准为 `6.25rem`，wide 下头像宽高 delta 从 `-10.8px` 收到 `0px`，首个内容 y delta 从 `-19.11px` 收到 `+0.01px`；desktop 头像保持约 `-0.34px` 小残差。
-- 残差：main width 仅剩约 4-7px 小残差；graphic mobile/tablet 图片宽度仍偏大；gif hero/natural media 尺寸仍需单独复核。
+- 已修：graphic 在 `page-graphic page-gallery-tight` 范围内收回小断点横向扩展；mobile/tablet/laptop 首张全栏图宽度 delta 从 `+17.7/+25.86/+12.78px` 收到 `+0.04/+0.03/-1.59px`，列数 delta 归 0，desktop/wide 维持约 `+3px` 小残差。
+- 残差：main width 仅剩约 4-7px 小残差；gif hero/natural media 尺寸仍需单独复核。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game/gif/illustrator 当前 5 断点已恢复 3 列，graphic 当前 5 断点已保持 2 列。
 
 **已归档证据**：`diff-screenshots/{slug}.{vp}.{original|clone}.png`（gitignored）— 共 120 张
@@ -63,8 +64,8 @@
 **数值探针**：`site/scripts/visual-style-report.mjs` 已加入，npm 脚本为 `npm run visual:measure`；用于输出原站/clone 的 bbox、font-size、line-height、`mainAnchor`、gallery columns delta，并在多段 gallery 页面输出 `g2` 第二段列数、图片尺寸和段落高度。
 
 **下一步**（任务 #18 后续 / P0）：
-1. 用 `npm run visual:measure -- --clone=http://127.0.0.1:4350 --pages=graphic,gif,game,codes,pixel --viewports=mobile,tablet,laptop,desktop,wide` 继续抽精确像素值；多段 gallery 优先看 `g2` 指标。
-2. 优先收 graphic mobile/tablet 图片宽度和 gif hero/natural media 尺寸。
+1. 用 `npm run visual:measure -- --clone=http://127.0.0.1:4350 --pages=gif,game,codes,pixel --viewports=mobile,tablet,laptop,desktop,wide` 继续抽精确像素值；多段 gallery 优先看 `g2` 指标。
+2. 优先收 gif hero/natural media 尺寸。
 3. 缩略图列数：继续实测 photo / illustrator / graphic 的断点列数，再决定是否写进 `@media`。
 
 ---
