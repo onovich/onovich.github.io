@@ -13,33 +13,20 @@
 import { chromium } from 'playwright';
 
 import {
-  DEFAULT_CLONE_URL,
-  DEFAULT_ORIGINAL_URL,
   USER_AGENT,
   gotoVisualPage,
   parseVisualArgs,
   selectPages,
+  selectTargets,
   selectViewports,
-  splitListArg,
   targetUrl,
 } from './visual-config.mjs';
 
 const args = parseVisualArgs();
-const ORIGINAL = args.original || DEFAULT_ORIGINAL_URL;
-const CLONE = args.clone || DEFAULT_CLONE_URL;
 const PAGES = selectPages(args.pages || 'home,codes,pixel');
 const VIEWPORTS = selectViewports(args.viewports || 'mobile,tablet,laptop,desktop,wide');
-const TARGETS = splitListArg(args.targets || 'original,clone');
+const TARGETS = selectTargets(args.targets, 'original,clone', args);
 const FORMAT = args.format || 'text';
-
-const targetConfigs = {
-  original: { baseUrl: ORIGINAL, routeKey: 'original', waitMs: 1500 },
-  clone: { baseUrl: CLONE, routeKey: 'clone', waitMs: 500 },
-};
-
-for (const target of TARGETS) {
-  if (!targetConfigs[target]) throw new Error(`Unknown visual target "${target}".`);
-}
 
 const browser = await chromium.launch();
 const records = [];
@@ -54,15 +41,15 @@ try {
 
     for (const pageInfo of PAGES) {
       for (const target of TARGETS) {
-        const config = targetConfigs[target];
+        const config = target;
         const url = targetUrl(config.baseUrl, pageInfo[config.routeKey]);
 
         try {
           await gotoVisualPage(page, url, config.waitMs);
           const metrics = await collectStyleMetrics(page);
-          records.push({ target, viewport: viewport.name, page: pageInfo.slug, url, ok: true, metrics });
+          records.push({ target: config.name, viewport: viewport.name, page: pageInfo.slug, url, ok: true, metrics });
         } catch (error) {
-          records.push({ target, viewport: viewport.name, page: pageInfo.slug, url, ok: false, error: error.message });
+          records.push({ target: config.name, viewport: viewport.name, page: pageInfo.slug, url, ok: false, error: error.message });
         }
       }
     }

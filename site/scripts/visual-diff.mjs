@@ -13,39 +13,26 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
 import {
-  DEFAULT_CLONE_URL,
-  DEFAULT_ORIGINAL_URL,
   USER_AGENT,
   VISUAL_OUT_DIR,
   formatImageStats,
   parseVisualArgs,
   selectPages,
+  selectTargets,
   selectViewports,
   gotoVisualPage,
   numberArg,
-  splitListArg,
   targetUrl,
 } from './visual-config.mjs';
 
 const args = parseVisualArgs();
-const ORIGINAL = args.original || DEFAULT_ORIGINAL_URL;
-const CLONE = args.clone || DEFAULT_CLONE_URL;
 const OUT_DIR = VISUAL_OUT_DIR;
 const PAGES = selectPages(args.pages);
 const VIEWPORTS = selectViewports(args.viewports);
 const IMAGE_TIMEOUT = numberArg(args.imageTimeout, 16000);
 const SCROLL_PASSES = numberArg(args.scrollPasses, 2);
 const SCROLL_DELAY = numberArg(args.scrollDelay, 80);
-const TARGETS = splitListArg(args.targets || 'original,clone');
-
-const targetConfigs = {
-  original: { baseUrl: ORIGINAL, routeKey: 'original', waitMs: 1500 },
-  clone: { baseUrl: CLONE, routeKey: 'clone', waitMs: 500 },
-};
-
-for (const target of TARGETS) {
-  if (!targetConfigs[target]) throw new Error(`Unknown visual target "${target}".`);
-}
+const TARGETS = selectTargets(args.targets, 'original,clone', args);
 
 await mkdir(OUT_DIR, { recursive: true });
 
@@ -57,9 +44,9 @@ for (const vp of VIEWPORTS) {
   const page = await ctx.newPage();
   for (const p of PAGES) {
     for (const target of TARGETS) {
-      const config = targetConfigs[target];
+      const config = target;
       const url = targetUrl(config.baseUrl, p[config.routeKey]);
-      const out = path.join(OUT_DIR, `${p.slug}.${vp.name}.${target}.png`);
+      const out = path.join(OUT_DIR, `${p.slug}.${vp.name}.${config.name}.png`);
       try {
         // Cargo can keep network requests open or close them late; wait for the
         // DOM, then give runtime layout JS a fixed settling window.
@@ -69,11 +56,11 @@ for (const vp of VIEWPORTS) {
           scrollDelay: SCROLL_DELAY,
         });
         await page.screenshot({ path: out, fullPage: true });
-        summary.push({ slug: p.slug, vp: vp.name, label: target, ok: true });
-        console.log('OK ', vp.name, p.slug, target, formatImageStats(result?.imageStats));
+        summary.push({ slug: p.slug, vp: vp.name, label: config.name, ok: true });
+        console.log('OK ', vp.name, p.slug, config.name, formatImageStats(result?.imageStats));
       } catch (e) {
-        summary.push({ slug: p.slug, vp: vp.name, label: target, ok: false, err: e.message });
-        console.log('ERR', vp.name, p.slug, target, e.message);
+        summary.push({ slug: p.slug, vp: vp.name, label: config.name, ok: false, err: e.message });
+        console.log('ERR', vp.name, p.slug, config.name, e.message);
       }
     }
   }

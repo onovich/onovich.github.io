@@ -102,6 +102,22 @@ export function selectViewports(value) {
   });
 }
 
+export function selectTargets(value, defaultValue, urls = {}) {
+  const original = urls.original || DEFAULT_ORIGINAL_URL;
+  const clone = urls.clone || DEFAULT_CLONE_URL;
+  const requested = splitListArg(value || defaultValue);
+  const configs = {
+    original: { name: 'original', baseUrl: original, routeKey: 'original', waitMs: 1500 },
+    clone: { name: 'clone', baseUrl: clone, routeKey: 'clone', waitMs: 500 },
+  };
+
+  return requested.map((target) => {
+    const config = configs[target];
+    if (!config) throw new Error(`Unknown visual target "${target}".`);
+    return config;
+  });
+}
+
 export function targetUrl(baseUrl, route) {
   const base = baseUrl.replace(/\/+$/, '');
   const suffix = route.startsWith('/') ? route : `/${route}`;

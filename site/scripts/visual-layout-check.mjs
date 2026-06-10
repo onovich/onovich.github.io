@@ -13,32 +13,19 @@
 import { chromium } from 'playwright';
 
 import {
-  DEFAULT_CLONE_URL,
-  DEFAULT_ORIGINAL_URL,
   USER_AGENT,
   parseVisualArgs,
   selectPages,
+  selectTargets,
   selectViewports,
-  splitListArg,
   gotoVisualPage,
   targetUrl,
 } from './visual-config.mjs';
 
 const args = parseVisualArgs();
-const ORIGINAL = args.original || DEFAULT_ORIGINAL_URL;
-const CLONE = args.clone || DEFAULT_CLONE_URL;
 const PAGES = selectPages(args.pages || 'home,codes,pixel');
 const VIEWPORTS = selectViewports(args.viewports || 'desktop');
-const TARGETS = splitListArg(args.targets || 'clone');
-
-const targetConfigs = {
-  original: { baseUrl: ORIGINAL, routeKey: 'original', waitMs: 1500 },
-  clone: { baseUrl: CLONE, routeKey: 'clone', waitMs: 500 },
-};
-
-for (const target of TARGETS) {
-  if (!targetConfigs[target]) throw new Error(`Unknown visual target "${target}".`);
-}
+const TARGETS = selectTargets(args.targets, 'clone', args);
 
 const browser = await chromium.launch();
 const failures = [];
@@ -54,7 +41,7 @@ try {
 
     for (const pageInfo of PAGES) {
       for (const target of TARGETS) {
-        const config = targetConfigs[target];
+        const config = target;
         const route = pageInfo[config.routeKey];
         const url = targetUrl(config.baseUrl, route);
 
@@ -62,24 +49,24 @@ try {
           await gotoVisualPage(page, url, config.waitMs, { loadImages: false });
         } catch (error) {
           const message = `navigation failed: ${error.message}`;
-          failures.push({ target, slug: pageInfo.slug, viewport: viewport.name, url, errors: [message], facts: null });
-          console.log('ERR', viewport.name, pageInfo.slug, target, message);
+          failures.push({ target: config.name, slug: pageInfo.slug, viewport: viewport.name, url, errors: [message], facts: null });
+          console.log('ERR', viewport.name, pageInfo.slug, config.name, message);
           continue;
         }
 
         const facts = await collectLayoutFacts(page, pageInfo);
-        const result = validateLayout({ target, pageInfo, viewport, facts });
+        const result = validateLayout({ target: config.name, pageInfo, viewport, facts });
         checks += result.checked;
 
         if (result.errors.length > 0) {
-          failures.push({ target, slug: pageInfo.slug, viewport: viewport.name, url, errors: result.errors, facts });
-          console.log('ERR', viewport.name, pageInfo.slug, target, result.errors.join('; '));
+          failures.push({ target: config.name, slug: pageInfo.slug, viewport: viewport.name, url, errors: result.errors, facts });
+          console.log('ERR', viewport.name, pageInfo.slug, config.name, result.errors.join('; '));
         } else {
           console.log(
             'OK ',
             viewport.name,
             pageInfo.slug,
-            target,
+            config.name,
             `nav=${formatRect(facts.navLink?.rect)}`,
             `logo=${formatRect(facts.logo?.rect)}`,
             facts.backLink?.rect ? `back=${formatRect(facts.backLink.rect)}` : ''
