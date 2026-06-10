@@ -15,6 +15,7 @@ interface GalleryItemData {
   desc?: string;
   year?: string;
   src: string;
+  thumbSrc?: string;
   width?: number;
   height?: number;
   links?: GalleryLink[];
@@ -98,7 +99,7 @@ function generatedCaptionHtml(item: GalleryItemData) {
         >
           <img
             class="thumb_image"
-            src={item.src}
+            src={item.thumbSrc ?? item.src}
             alt={item.title}
             loading={index < 3 ? 'eager' : 'lazy'}
             decoding="async"
