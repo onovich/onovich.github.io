@@ -16,6 +16,6 @@ import items from '../content/gifs.json';
     />
   </div>
   {items.length > 0
-    ? <Gallery items={items} dense={true} natural={true} showCaptions={false} />
+    ? <Gallery items={items} dense={true} natural={true} eagerThumbs={true} showCaptions={false} />
     : <p style="color: rgba(0,0,0,0.4); font-size: 1.1rem;">暂无内容</p>}
 </BaseLayout>
