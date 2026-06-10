@@ -93,6 +93,10 @@ console.log('截图完成，看 diff/ 目录');
 
 ## C. 部署验证
 
+当前 GitHub Pages workflow：
+- build runtime 使用 `node-version: '22'`，匹配 `site/package.json engines.node >=22.12.0`
+- workflow env 设置 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'`，提前让 GitHub JavaScript actions 使用 Node 24
+
 ```bash
 # 1. 看最近 5 次 Actions（不需要 gh CLI）
 curl -s "https://api.github.com/repos/onovich/onovich.github.io/actions/runs?per_page=5" \
