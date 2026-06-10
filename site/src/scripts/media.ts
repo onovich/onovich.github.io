@@ -4,16 +4,32 @@ function markLoaded(img: HTMLImageElement) {
   img.classList.add('is-loaded');
 }
 
+function hasRenderableSize(img: HTMLImageElement) {
+  return img.naturalWidth > 0 && img.naturalHeight > 0;
+}
+
 function enhanceImage(img: HTMLImageElement) {
   if (img.classList.contains('is-loaded')) return;
 
-  if (img.complete) {
+  if (img.complete || hasRenderableSize(img)) {
     markLoaded(img);
     return;
   }
 
   img.addEventListener('load', () => markLoaded(img), { once: true });
   img.addEventListener('error', () => markLoaded(img), { once: true });
+
+  let attempts = 0;
+  const revealWhenRenderable = () => {
+    if (img.classList.contains('is-loaded')) return;
+    if (hasRenderableSize(img)) {
+      markLoaded(img);
+      return;
+    }
+    attempts += 1;
+    if (attempts < 60) window.setTimeout(revealWhenRenderable, 100);
+  };
+  window.setTimeout(revealWhenRenderable, 100);
 }
 
 function enhanceImages(root: ParentNode = document) {
