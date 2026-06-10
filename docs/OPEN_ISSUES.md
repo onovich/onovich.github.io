@@ -65,7 +65,7 @@
 - 已修：illustrator desktop/wide 在 page-scoped 宽度下收回首组与第二组尺寸；首组 `thumbImage` width delta 从 `+0.97/+1.17px` 收到 `0/0px`，height delta 从 `+1.7/+2.08px` 收到 `0/0px`，两组列数仍为 3。
 - 已修：`assets:check` 资源门禁已加入；旧 `photos.json` / `/images/photos/*` 链路已移除，photo 运行时来源统一为 `photoAlbums.json`；当前 234 个真实内容图片引用均存在。
 - 已修：illustrator 3 个大候选 `128.gif`、`ref-18.png`、`ref-20.png` 已接入同尺寸比例 WebP poster（约 93KB、39KB、88KB），点击仍打开原 GIF/PNG；`assets:check` 当前 234 个真实内容图片引用 0 缺失，且无大缩略图 warning。
-- 已修：`visual:diff` 增加 lazy image 预热和 `images=loaded/total` 日志；`illustrator` desktop clone 在 `--imageTimeout=25000 --scrollPasses=3` 下为 `29/29`，下半段截图不再出现 false placeholder。
+- 已修：`visual:diff` 增加 lazy image 预热、`images=loaded/total` 日志和 `--targets=clone`；`illustrator` desktop clone 在 `--imageTimeout=25000 --scrollPasses=3` 下为 `29/29`，下半段截图不再出现 false placeholder。
 - 残差：gallery 资源加载仍需按节点继续复核；后续先用 `visual:diff` 的图片加载统计区分截图预热不足和真实页面体验问题。
 - 缩略图列数需要继续复核其它 gallery 页面；codes 当前 5 断点已对齐（mobile/tablet 2 列，laptop/desktop/wide 3 列），game/gif/illustrator 当前 5 断点已恢复 3 列，graphic 当前 5 断点已保持 2 列。
 
@@ -76,7 +76,7 @@
 
 **下一步**（任务 #18 后续 / P0）：
 1. 继续把 `npm run assets:check` 作为资源门禁；当前应为 234 个真实内容图片引用 0 缺失、0 大候选 warning。
-2. 缩略图列数和资源加载：继续用 `visual:diff --imageTimeout=25000 --scrollPasses=3` 复核长 gallery，再决定是否需要页面级 eager / poster 调整。
+2. 缩略图列数和资源加载：继续用 `visual:diff --targets=clone --imageTimeout=25000 --scrollPasses=3` 复核长 gallery，再决定是否需要页面级 eager / poster 调整。
 3. 小幅图片尺寸残差：目前 gallery 尺寸类残差已收敛到数值门禁级别；继续以 `thumbImage.width/height` 为准防回归，不再把旧 `main.width` 假残差列为待修。
 
 ---

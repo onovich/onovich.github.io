@@ -6,6 +6,7 @@
  *   cd site && node scripts/visual-diff.mjs
  *   node scripts/visual-diff.mjs --pages=home,codes
  *   node scripts/visual-diff.mjs --clone=http://localhost:4321
+ *   node scripts/visual-diff.mjs --targets=clone --pages=illustrator
  */
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
@@ -21,6 +22,7 @@ import {
   selectViewports,
   gotoVisualPage,
   numberArg,
+  splitListArg,
   targetUrl,
 } from './visual-config.mjs';
 
@@ -33,6 +35,16 @@ const VIEWPORTS = selectViewports(args.viewports);
 const IMAGE_TIMEOUT = numberArg(args.imageTimeout, 16000);
 const SCROLL_PASSES = numberArg(args.scrollPasses, 2);
 const SCROLL_DELAY = numberArg(args.scrollDelay, 80);
+const TARGETS = splitListArg(args.targets || 'original,clone');
+
+const targetConfigs = {
+  original: { baseUrl: ORIGINAL, routeKey: 'original', waitMs: 1500 },
+  clone: { baseUrl: CLONE, routeKey: 'clone', waitMs: 500 },
+};
+
+for (const target of TARGETS) {
+  if (!targetConfigs[target]) throw new Error(`Unknown visual target "${target}".`);
+}
 
 await mkdir(OUT_DIR, { recursive: true });
 
@@ -43,26 +55,24 @@ for (const vp of VIEWPORTS) {
   const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height }, userAgent: USER_AGENT });
   const page = await ctx.newPage();
   for (const p of PAGES) {
-    for (const [label, base, route] of [
-      ['original', ORIGINAL, p.original],
-      ['clone',    CLONE,    p.clone],
-    ]) {
-      const url = targetUrl(base, route);
-      const out = path.join(OUT_DIR, `${p.slug}.${vp.name}.${label}.png`);
+    for (const target of TARGETS) {
+      const config = targetConfigs[target];
+      const url = targetUrl(config.baseUrl, p[config.routeKey]);
+      const out = path.join(OUT_DIR, `${p.slug}.${vp.name}.${target}.png`);
       try {
         // Cargo can keep network requests open or close them late; wait for the
         // DOM, then give runtime layout JS a fixed settling window.
-        const result = await gotoVisualPage(page, url, label === 'original' ? 1500 : 500, {
+        const result = await gotoVisualPage(page, url, config.waitMs, {
           imageTimeout: IMAGE_TIMEOUT,
           scrollPasses: SCROLL_PASSES,
           scrollDelay: SCROLL_DELAY,
         });
         await page.screenshot({ path: out, fullPage: true });
-        summary.push({ slug: p.slug, vp: vp.name, label, ok: true });
-        console.log('OK ', vp.name, p.slug, label, formatImageStats(result?.imageStats));
+        summary.push({ slug: p.slug, vp: vp.name, label: target, ok: true });
+        console.log('OK ', vp.name, p.slug, target, formatImageStats(result?.imageStats));
       } catch (e) {
-        summary.push({ slug: p.slug, vp: vp.name, label, ok: false, err: e.message });
-        console.log('ERR', vp.name, p.slug, label, e.message);
+        summary.push({ slug: p.slug, vp: vp.name, label: target, ok: false, err: e.message });
+        console.log('ERR', vp.name, p.slug, target, e.message);
       }
     }
   }
