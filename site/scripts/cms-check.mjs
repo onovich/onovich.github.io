@@ -12,6 +12,7 @@ import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
 import { cmsRichTextSelectionBelongsToEditor, collectCmsRichTextHtmlIssues, createCmsRichTextLinkPanel, createCmsRichTextSelectionStore, isCmsRichTextAllowedTag, isCmsRichTextCommand, normalizeCmsRichTextHref, pasteCmsRichText, runCmsRichTextCommand } from '../src/cms/richText.js';
 import { CMS_UPLOAD_TARGET_DIR, cmsUploadApplyRelativePath, cmsUploadAssetBase64, cmsUploadPreviewSrc, collectCmsUploadAssetIssues, collectCmsUploadPublishIssues, createCmsUploadAsset, normalizeCmsUploadFileName, upsertCmsUploadAsset } from '../src/cms/uploadAssets.js';
+import { createCmsAssetItemPatch, createCmsAssetLibrary } from '../src/cms/assetLibrary.js';
 import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, formatCmsRestoreSummary, restoreCmsApplyBackup, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -330,6 +331,41 @@ function checkCmsUploadAssets() {
   assert(cmsUploadAssetBase64(asset) === 'AAAA', 'CMS upload assets must expose base64 publish content');
   assert(collectCmsUploadPublishIssues({ assets: [asset] }).length === 0, 'CMS upload publish validation must accept complete upload assets');
   assert(collectCmsUploadPublishIssues({ assets: [{ ...asset, dataUrl: '' }] }).some(issue => issue.code === 'upload-asset-data-missing'), 'CMS upload publish validation must require publish data');
+}
+
+function checkCmsAssetLibrary() {
+  const asset = createCmsUploadAsset({
+    fileName: 'Library Upload.png',
+    mimeType: 'image/png',
+    width: 640,
+    height: 480,
+    size: 2048,
+    dataUrl: 'data:image/png;base64,AAAA',
+  });
+  const state = {
+    assets: [asset],
+    pages: [{
+      id: 'codes',
+      title: 'Codes',
+      sections: [{
+        id: 'gallery',
+        items: [
+          { id: 'hero', src: asset.src },
+          { id: 'other', src: '/images/codes/other.png' },
+        ],
+      }],
+    }],
+  };
+  const library = createCmsAssetLibrary({ state });
+  const patch = createCmsAssetItemPatch(asset);
+
+  assert(library.length === 1, 'CMS asset library must list uploaded assets from state.assets');
+  assert(library[0].src === '/images/uploads/library-upload.png', 'CMS asset library must expose upload public paths');
+  assert(library[0].targetPath === 'images/uploads/library-upload.png', 'CMS asset library must expose upload target paths');
+  assert(library[0].size === 2048, 'CMS asset library must expose upload byte size');
+  assert(library[0].usedBy.length === 1 && library[0].usedBy[0].itemId === 'hero', 'CMS asset library must count item usage');
+  assert(patch.src === asset.src && patch.width === 640 && patch.height === 480, 'CMS asset library must create reusable item patches');
+  assert(patch.originalUrl === asset.src, 'CMS asset library item patches must preserve upload origin');
 }
 
 function checkCmsPublishPackage() {
@@ -734,6 +770,7 @@ const cmsReviewSource = read('src/cms/publishReview.js');
 const cmsImportSource = read('src/cms/importPackage.js');
 const cmsRichTextSource = read('src/cms/richText.js');
 const cmsUploadSource = read('src/cms/uploadAssets.js');
+const cmsAssetLibrarySource = read('src/cms/assetLibrary.js');
 const cmsApplyPlanSource = read('src/cms/applyPackagePlan.js');
 const cmsAssetSource = read('src/cms/assetReferences.js');
 const cmsDraftValidationSource = read('src/cms/draftValidation.js');
@@ -765,6 +802,7 @@ assert(cmsSource.includes('sectionPresetInput'), 'CMS UI must expose section pre
 assert(cmsSource.includes('cms-validation-seed'), 'CMS UI must expose validation seed data');
 assert(cmsSource.includes('richLinkInput'), 'CMS UI must expose the rich text link panel');
 assert(cmsSource.includes('itemUploadInput'), 'CMS UI must expose image upload controls');
+assert(cmsSource.includes('assetLibraryList'), 'CMS UI must expose the uploaded asset library');
 assert(cmsSource.includes('publishReviewPanel'), 'CMS UI must expose the publish review panel');
 assert(cmsSource.includes('publishReviewAcknowledge'), 'CMS UI must expose warning acknowledgement before export');
 assert(cmsSource.includes("import '../cms/client'"), 'CMS page must load the browser client module');
@@ -781,6 +819,8 @@ assert(!cmsClientSource.includes("prompt('链接 URL')"), 'CMS client must not u
 assert(cmsClientSource.includes('readCmsUploadFile'), 'CMS client must use the shared upload file reader');
 assert(cmsClientSource.includes('upsertCmsUploadAsset'), 'CMS client must use the shared upload asset upsert helper');
 assert(cmsClientSource.includes('cmsUploadPreviewSrc'), 'CMS client must use upload data URLs for local previews');
+assert(cmsClientSource.includes('createCmsAssetLibrary'), 'CMS client must use the shared asset library helper');
+assert(cmsClientSource.includes('createCmsAssetItemPatch'), 'CMS client must use shared asset reuse patches');
 assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(cmsReviewSource.includes('createCmsPublishPackage'), 'CMS publish review helper must derive its data from publish packages');
 assert(cmsReviewSource.includes('hasBlockingCmsPublishIssues'), 'CMS publish review helper must expose blocking state');
@@ -792,6 +832,8 @@ assert(cmsRichTextSource.includes('createCmsRichTextLinkPanel'), 'CMS rich text 
 assert(cmsUploadSource.includes('CMS_UPLOAD_TARGET_DIR'), 'CMS upload module must own upload target paths');
 assert(cmsUploadSource.includes('readCmsUploadFile'), 'CMS upload module must own browser file metadata reading');
 assert(cmsUploadSource.includes('cmsUploadPreviewSrc'), 'CMS upload module must own preview source resolution');
+assert(cmsAssetLibrarySource.includes('collectCmsUploadAssets'), 'CMS asset library must derive from uploaded asset helpers');
+assert(cmsAssetLibrarySource.includes('usedBy'), 'CMS asset library must expose usage counts');
 assert(cmsApplyPlanSource.includes('cmsUploadApplyRelativePath'), 'CMS apply plan must use shared upload target resolution');
 assert(applyFileOpsSource.includes("encoding === 'base64'"), 'CMS apply file writer must support uploaded binary targets');
 assert(applyScriptSource.includes('collectCmsUploadPublishIssues'), 'CMS apply script must validate upload assets before writing');
@@ -832,6 +874,7 @@ checkCmsPreviewRenderer();
 checkCmsDraftValidation();
 checkCmsAssetReferences();
 checkCmsUploadAssets();
+checkCmsAssetLibrary();
 checkCmsPublishPackage();
 checkCmsPublishReview();
 checkCmsImportPackage();

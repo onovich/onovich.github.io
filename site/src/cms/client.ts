@@ -5,6 +5,7 @@ import { createCmsPublishReview, hasBlockingCmsPublishIssues } from './publishRe
 import { parseCmsPackageJson, parseCmsPackageJsonOrFallback } from './importPackage.js';
 import { bindCmsRichTextToolbar } from './richText.js';
 import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './uploadAssets.js';
+import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.js';
 
 (() => {
   const STORAGE_KEY = 'onovich:cms:draft';
@@ -79,6 +80,7 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
     itemCaptionHtml: document.getElementById('itemCaptionHtmlInput'),
     itemBodyHtml: document.getElementById('itemBodyHtmlInput'),
     itemLinks: document.getElementById('itemLinksInput'),
+    assetLibraryList: document.getElementById('assetLibraryList'),
     richEditor: document.getElementById('richEditor'),
     rawJson: document.getElementById('rawJson'),
     validationList: document.getElementById('validationList'),
@@ -161,6 +163,7 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
     renderPageSettings(page);
     renderSections(page);
     renderItems(page);
+    renderAssetLibrary();
     renderTextEditor(page);
     renderRaw();
     renderValidation();
@@ -313,6 +316,34 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
     els.itemCaptionHtml.value = item.captionHtml || '';
     els.itemBodyHtml.value = item.bodyHtml || '';
     els.itemLinks.value = JSON.stringify(item.links || [], null, 2);
+  }
+
+  function renderAssetLibrary() {
+    const assets = createCmsAssetLibrary({ state });
+    if (!assets.length) {
+      els.assetLibraryList.innerHTML = '<div class="cms-asset-empty">暂无上传资源</div>';
+      return;
+    }
+
+    els.assetLibraryList.innerHTML = assets.map(asset => {
+      const dimensions = asset.width && asset.height ? `${asset.width} x ${asset.height}` : '尺寸未知';
+      const size = asset.size ? formatBytes(asset.size) : '大小未知';
+      return `
+        <div class="cms-asset-row">
+          <img class="cms-asset-thumb" src="${escapeAttr(cmsUploadPreviewSrc(asset.src, state.assets))}" alt="" />
+          <span class="cms-asset-info">
+            <span class="cms-asset-title">${escapeHtml(asset.alt || asset.id || asset.src)}</span>
+            <span class="cms-asset-meta">${escapeHtml(dimensions)} · ${escapeHtml(size)} · 使用 ${asset.usedBy.length} 次</span>
+            <span class="cms-asset-path">${escapeHtml(asset.targetPath || asset.src)}</span>
+          </span>
+          <button class="cms-button" type="button" data-asset-src="${escapeAttr(asset.src)}">套用</button>
+        </div>
+      `;
+    }).join('');
+
+    els.assetLibraryList.querySelectorAll('[data-asset-src]').forEach(button => {
+      button.addEventListener('click', () => reuseAssetForActiveItem(button.dataset.assetSrc));
+    });
   }
 
   function renderTextEditor(page) {
@@ -545,6 +576,23 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
     } catch {
       setStatus('图片上传失败');
     }
+  }
+
+  function reuseAssetForActiveItem(assetSrc) {
+    const asset = createCmsAssetLibrary({ state }).find(item => item.src === assetSrc);
+    if (!asset) return;
+    const section = activeSection();
+    section.items = section.items || [];
+    let item = section.items[activeItemIndex];
+    if (!item) {
+      item = { id: `item-${section.items.length + 1}`, links: [] };
+      section.items.push(item);
+      activeItemIndex = section.items.length - 1;
+    }
+    Object.assign(item, createCmsAssetItemPatch(asset));
+    if (!item.title) item.title = asset.alt || asset.id || item.id;
+    saveDraft(`已套用资源 ${asset.src}`);
+    render();
   }
 
   function addPage() {
