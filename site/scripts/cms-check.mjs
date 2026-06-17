@@ -6,6 +6,7 @@ import { clone, createCmsStateHelpers } from '../src/cms/state.js';
 import { renderCmsPreview } from '../src/cms/preview.js';
 import { collectCmsDraftIssues } from '../src/cms/draftValidation.js';
 import { CMS_PUBLISH_TARGETS, createCmsPublishPackage } from '../src/cms/publishPackage.js';
+import { createCmsPublishReview, hasBlockingCmsPublishIssues } from '../src/cms/publishReview.js';
 import { isCmsPackage, parseCmsPackageJson, parseCmsPackageJsonOrFallback } from '../src/cms/importPackage.js';
 import { createCmsApplyPlan } from '../src/cms/applyPackagePlan.js';
 import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, collectCmsAssetReferences } from '../src/cms/assetReferences.js';
@@ -408,6 +409,53 @@ function checkCmsPublishPackage() {
   assert(payload.manifest.publishTargets.includes('site/public/images/uploads'), 'CMS publish package must target uploaded images');
 }
 
+function checkCmsPublishReview() {
+  const uploadAsset = createCmsUploadAsset({
+    fileName: 'Review Upload.png',
+    mimeType: 'image/png',
+    width: 320,
+    height: 200,
+    size: 512,
+    dataUrl: 'data:image/png;base64,AAAA',
+  });
+  const state = {
+    schemaVersion: 2,
+    assets: [uploadAsset],
+    sidebar: [{ id: 'codes', path: '/codes' }],
+    pages: [{
+      id: 'codes',
+      title: 'Codes',
+      templateId: 'gallery-page',
+      sections: [{ id: 'gallery', presetId: 'gallery-roomy-3', items: [] }],
+    }],
+  };
+  const issues = [
+    { level: 'error', message: 'Blocking issue' },
+    { level: 'warning', message: 'Soft warning' },
+  ];
+  const review = createCmsPublishReview({
+    state,
+    issues,
+    exportedAt: '2026-06-09T00:00:00.000Z',
+  });
+
+  assert(hasBlockingCmsPublishIssues(review), 'CMS publish review must flag blocking errors');
+  assert(review.payload.manifest.name === 'onovich-cms-publish', 'CMS publish review must carry the publish payload');
+  assert(review.pageCount === 1 && review.visibleNavCount === 1, 'CMS publish review must expose manifest page and nav counts');
+  assert(review.errors.length === 1 && review.errors[0].message === 'Blocking issue', 'CMS publish review must expose blocking errors');
+  assert(review.warnings.length === 1 && review.warnings[0].message === 'Soft warning', 'CMS publish review must expose warnings');
+  assert(review.templates.includes('gallery-page'), 'CMS publish review must expose templates used');
+  assert(review.sectionPresets.includes('gallery-roomy-3'), 'CMS publish review must expose section presets used');
+  assert(review.uploads.count === 1, 'CMS publish review must expose upload count');
+  assert(review.uploads.totalBytes === 512, 'CMS publish review must expose upload total bytes');
+  assert(review.uploads.targetDir === CMS_UPLOAD_TARGET_DIR, 'CMS publish review must expose upload target directory');
+  assert(review.uploads.paths.includes('images/uploads/review-upload.png'), 'CMS publish review must expose upload target paths');
+  assert(review.publishTargets.includes('site/src/content/site.json'), 'CMS publish review must expose publish targets');
+
+  const warningOnlyReview = createCmsPublishReview({ state, issues: [{ level: 'warning', message: 'Warning only' }] });
+  assert(!hasBlockingCmsPublishIssues(warningOnlyReview), 'CMS publish review must allow warning-only packages after acknowledgement');
+}
+
 function checkCmsImportPackage() {
   const fallback = {
     schemaVersion: 1,
@@ -682,6 +730,7 @@ const adapterSource = read('src/cms/currentContent.ts');
 const cmsSource = read('src/pages/cms.astro');
 const cmsClientSource = read('src/cms/client.ts');
 const cmsPublishSource = read('src/cms/publishPackage.js');
+const cmsReviewSource = read('src/cms/publishReview.js');
 const cmsImportSource = read('src/cms/importPackage.js');
 const cmsRichTextSource = read('src/cms/richText.js');
 const cmsUploadSource = read('src/cms/uploadAssets.js');
@@ -716,12 +765,16 @@ assert(cmsSource.includes('sectionPresetInput'), 'CMS UI must expose section pre
 assert(cmsSource.includes('cms-validation-seed'), 'CMS UI must expose validation seed data');
 assert(cmsSource.includes('richLinkInput'), 'CMS UI must expose the rich text link panel');
 assert(cmsSource.includes('itemUploadInput'), 'CMS UI must expose image upload controls');
+assert(cmsSource.includes('publishReviewPanel'), 'CMS UI must expose the publish review panel');
+assert(cmsSource.includes('publishReviewAcknowledge'), 'CMS UI must expose warning acknowledgement before export');
 assert(cmsSource.includes("import '../cms/client'"), 'CMS page must load the browser client module');
 assert(cmsClientSource.includes('activeSectionId'), 'CMS UI must keep section-level editing state');
 assert(cmsClientSource.includes('createCmsStateHelpers'), 'CMS client must use shared state helpers');
 assert(cmsClientSource.includes('renderCmsPreview'), 'CMS client must use the shared preview renderer');
 assert(cmsClientSource.includes('collectCmsDraftIssues'), 'CMS client must use the shared draft validator');
-assert(cmsClientSource.includes('createCmsPublishPackage'), 'CMS client must use the shared publish package builder');
+assert(cmsClientSource.includes('createCmsPublishReview'), 'CMS client must use the shared publish review helper');
+assert(cmsClientSource.includes('hasBlockingCmsPublishIssues'), 'CMS client must use shared publish blocking logic');
+assert(!cmsClientSource.includes('仍要导出吗'), 'CMS export must not rely on a browser confirm for blocking publish issues');
 assert(cmsClientSource.includes('parseCmsPackageJson'), 'CMS client must use the shared import package parser');
 assert(cmsClientSource.includes('bindCmsRichTextToolbar'), 'CMS client must use the shared rich text toolbar binder');
 assert(!cmsClientSource.includes("prompt('链接 URL')"), 'CMS client must not use browser prompt for rich text links');
@@ -729,6 +782,8 @@ assert(cmsClientSource.includes('readCmsUploadFile'), 'CMS client must use the s
 assert(cmsClientSource.includes('upsertCmsUploadAsset'), 'CMS client must use the shared upload asset upsert helper');
 assert(cmsClientSource.includes('cmsUploadPreviewSrc'), 'CMS client must use upload data URLs for local previews');
 assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a manifest');
+assert(cmsReviewSource.includes('createCmsPublishPackage'), 'CMS publish review helper must derive its data from publish packages');
+assert(cmsReviewSource.includes('hasBlockingCmsPublishIssues'), 'CMS publish review helper must expose blocking state');
 assert(cmsImportSource.includes('invalid cms package'), 'CMS import package must centralize invalid package handling');
 assert(cmsRichTextSource.includes('execCommand'), 'CMS rich text module must own rich text command execution');
 assert(cmsRichTextSource.includes('createCmsRichTextSelectionStore'), 'CMS rich text module must own editor selection persistence');
@@ -753,6 +808,7 @@ assert(applyScriptSource.includes('collectCmsAssetPublishIssues'), 'CMS apply sc
 assert(applyScriptSource.includes('backupCmsApplyTargets'), 'CMS apply script must back up target files before writing');
 assert(applyScriptSource.includes('targets.length'), 'CMS apply script must report the actual number of written files');
 assert(applyFileOpsSource.includes('CMS publish backup'), 'CMS apply file ops must provide a rollback hint');
+assert(applyFileOpsSource.includes('npm run cms:restore --'), 'CMS apply rollback hint must include the exact restore command');
 assert(applyFileOpsSource.includes('restoreCmsApplyBackup'), 'CMS apply file ops must provide restore behavior');
 assert(restoreScriptSource.includes('cms:restore'), 'CMS restore script must expose npm usage text');
 assert(cmsApplyPlanSource.includes("section.type === 'gallery'"), 'CMS apply plan must publish gallery sections without GIF hero items');
@@ -777,6 +833,7 @@ checkCmsDraftValidation();
 checkCmsAssetReferences();
 checkCmsUploadAssets();
 checkCmsPublishPackage();
+checkCmsPublishReview();
 checkCmsImportPackage();
 checkCmsApplyPlan();
 checkCmsApplyFileOps();

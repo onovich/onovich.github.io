@@ -71,6 +71,12 @@ try {
       throw new Error(`CMS apply smoke missing target: ${target}`);
     }
   }
+  if (!result.stdout.includes('CMS publish dry run')) {
+    throw new Error('CMS apply smoke must report dry-run mode.');
+  }
+  if (result.stdout.includes('CMS publish backup') || result.stdout.includes('npm run cms:restore --')) {
+    throw new Error('CMS apply dry run must not report a new backup or restore command.');
+  }
 
   console.log('CMS apply smoke passed.');
 } finally {

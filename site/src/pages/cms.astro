@@ -282,6 +282,40 @@ const validationJson = JSON.stringify(seedIssues).replace(/</g, '\\u003c');
       </main>
     </div>
 
+    <div class="cms-review" id="publishReviewPanel" hidden>
+      <div class="cms-review__surface" role="dialog" aria-modal="true" aria-labelledby="publishReviewTitle">
+        <header class="cms-review__head">
+          <div>
+            <div class="cms-kicker">Publish review</div>
+            <h2 id="publishReviewTitle">发布包检查</h2>
+          </div>
+          <div class="cms-review__badge" id="publishReviewSummary"></div>
+        </header>
+
+        <div class="cms-review__metrics" id="publishReviewMetrics"></div>
+
+        <section class="cms-review__section">
+          <div class="cms-pane__head">问题</div>
+          <div class="cms-review__issues" id="publishReviewIssues"></div>
+        </section>
+
+        <section class="cms-review__section">
+          <div class="cms-pane__head">发布目标</div>
+          <div class="cms-review__targets" id="publishReviewTargets"></div>
+        </section>
+
+        <label class="cms-check cms-review__ack" id="publishReviewAcknowledgeWrap" hidden>
+          <input id="publishReviewAcknowledge" type="checkbox" />
+          我已确认这些警告
+        </label>
+
+        <footer class="cms-review__actions">
+          <button class="cms-button" id="publishReviewCancelBtn" type="button">取消</button>
+          <button class="cms-button cms-button--primary" id="publishReviewDownloadBtn" type="button">下载发布包</button>
+        </footer>
+      </div>
+    </div>
+
 
     <script>
       import '../cms/client';

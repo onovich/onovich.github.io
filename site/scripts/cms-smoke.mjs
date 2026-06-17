@@ -177,8 +177,49 @@ try {
     panelHidden: document.querySelector('#richLinkPanel')?.hidden ?? null,
   }));
 
+  await page.evaluate(() => {
+    const seed = JSON.parse(document.querySelector('#cms-seed').textContent);
+    seed.pages[0].path = 'missing-leading-slash';
+    localStorage.setItem('onovich:cms:draft', JSON.stringify(seed));
+  });
+  await page.reload({ waitUntil: 'load' });
+  await page.click('#exportBtn');
+  await page.waitForSelector('#publishReviewPanel:not([hidden])');
+  const afterErrorReview = await page.evaluate(() => ({
+    panelOpen: !document.querySelector('#publishReviewPanel')?.hidden,
+    downloadDisabled: document.querySelector('#publishReviewDownloadBtn')?.disabled ?? null,
+    text: document.querySelector('#publishReviewPanel')?.textContent || '',
+  }));
+  await page.click('#publishReviewCancelBtn');
+
+  await page.evaluate(() => {
+    const seed = JSON.parse(document.querySelector('#cms-seed').textContent);
+    const pageWithItem = seed.pages.find(page => (page.sections || []).some(section => (section.items || []).length));
+    const sectionWithItem = pageWithItem.sections.find(section => (section.items || []).length);
+    const item = sectionWithItem.items[0];
+    item.src = 'https://example.com/warning.png';
+    item.width = 100;
+    item.height = 100;
+    localStorage.setItem('onovich:cms:draft', JSON.stringify(seed));
+  });
+  await page.reload({ waitUntil: 'load' });
+  await page.click('#exportBtn');
+  await page.waitForSelector('#publishReviewPanel:not([hidden])');
+  const afterWarningBeforeAck = await page.evaluate(() => ({
+    panelOpen: !document.querySelector('#publishReviewPanel')?.hidden,
+    acknowledgeHidden: document.querySelector('#publishReviewAcknowledgeWrap')?.hidden ?? null,
+    downloadDisabled: document.querySelector('#publishReviewDownloadBtn')?.disabled ?? null,
+    text: document.querySelector('#publishReviewPanel')?.textContent || '',
+  }));
+  await page.check('#publishReviewAcknowledge');
+  const afterWarningReview = await page.evaluate(() => ({
+    downloadDisabled: document.querySelector('#publishReviewDownloadBtn')?.disabled ?? null,
+    acknowledged: document.querySelector('#publishReviewAcknowledge')?.checked ?? null,
+  }));
+
   assert(errors.length === 0, `Console/page errors: ${errors.join(' | ')}`);
   assert(!dialogs.includes('链接 URL'), 'Rich text links must use the inline panel instead of browser prompt');
+  assert(!dialogs.some(message => message.includes('仍要导出')), 'Publish export must not use a browser confirm for review');
   assert(before.title === 'Onovich CMS', 'Bad CMS title');
   assert(before.pageButtons >= 10, `Too few CMS pages: ${before.pageButtons}`);
   assert(before.structurePanelActive, 'Structure panel was not active initially');
@@ -194,8 +235,16 @@ try {
   assert(!afterPaste.html.includes('onclick') && !afterPaste.html.includes('script') && !afterPaste.html.includes('javascript:'), 'Rich text paste did not sanitize unsafe HTML');
   assert(afterLink.html.includes('<a href="https://example.com/smoke">link</a>'), 'Rich text link panel did not apply the selected link');
   assert(afterLink.panelHidden, 'Rich text link panel did not close after applying a link');
+  assert(afterErrorReview.panelOpen, 'Publish review panel did not open for blocking errors');
+  assert(afterErrorReview.downloadDisabled, 'Publish review must disable download when errors exist');
+  assert(afterErrorReview.text.includes('错误'), 'Publish review must show blocking error state');
+  assert(afterWarningBeforeAck.panelOpen, 'Publish review panel did not open for warnings');
+  assert(afterWarningBeforeAck.acknowledgeHidden === false, 'Publish review must show warning acknowledgement');
+  assert(afterWarningBeforeAck.downloadDisabled, 'Publish review must require warning acknowledgement');
+  assert(afterWarningBeforeAck.text.includes('警告'), 'Publish review must show warning state');
+  assert(afterWarningReview.acknowledged && !afterWarningReview.downloadDisabled, 'Warning acknowledgement must enable publish package download');
 
-  console.log(JSON.stringify({ before, afterAdd, afterUpload, afterRaw, afterPaste, afterLink, dialogs, errors }, null, 2));
+  console.log(JSON.stringify({ before, afterAdd, afterUpload, afterRaw, afterPaste, afterLink, afterErrorReview, afterWarningBeforeAck, afterWarningReview, dialogs, errors }, null, 2));
 } finally {
   await browser.close();
   await closeServer();
