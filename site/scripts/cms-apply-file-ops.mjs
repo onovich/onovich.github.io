@@ -81,7 +81,7 @@ export function restoreCmsApplyBackup({ root, backupRelativePath, dryRun = false
 }
 
 export function formatCmsApplyRollbackHint(backup) {
-  return `CMS publish backup: ${backup.backupRelativePath}\nRestore by copying files back from this directory before committing.`;
+  return `CMS publish backup: ${backup.backupRelativePath}\nRestore command:\n  npm run cms:restore -- ${backup.backupRelativePath}`;
 }
 
 export function formatCmsRestoreSummary(result) {

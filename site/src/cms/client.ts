@@ -1,7 +1,7 @@
 import { clone, createCmsStateHelpers } from './state.js';
 import { renderCmsPreview } from './preview.js';
 import { collectCmsDraftIssues } from './draftValidation.js';
-import { createCmsPublishPackage } from './publishPackage.js';
+import { createCmsPublishReview, hasBlockingCmsPublishIssues } from './publishReview.js';
 import { parseCmsPackageJson, parseCmsPackageJsonOrFallback } from './importPackage.js';
 import { bindCmsRichTextToolbar } from './richText.js';
 import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './uploadAssets.js';
@@ -18,6 +18,7 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
   let activePageId = state.pages[0]?.id || 'home';
   let activeSectionId = state.pages[0]?.sections?.[0]?.id || '';
   let activeItemIndex = 0;
+  let pendingPublishReview = null;
   const {
     slugify,
     ensurePage,
@@ -82,6 +83,15 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
     rawJson: document.getElementById('rawJson'),
     validationList: document.getElementById('validationList'),
     preview: document.getElementById('previewFrame'),
+    publishReviewPanel: document.getElementById('publishReviewPanel'),
+    publishReviewSummary: document.getElementById('publishReviewSummary'),
+    publishReviewMetrics: document.getElementById('publishReviewMetrics'),
+    publishReviewIssues: document.getElementById('publishReviewIssues'),
+    publishReviewTargets: document.getElementById('publishReviewTargets'),
+    publishReviewAcknowledgeWrap: document.getElementById('publishReviewAcknowledgeWrap'),
+    publishReviewAcknowledge: document.getElementById('publishReviewAcknowledge'),
+    publishReviewCancel: document.getElementById('publishReviewCancelBtn'),
+    publishReviewDownload: document.getElementById('publishReviewDownloadBtn'),
   };
 
   function loadState() {
@@ -104,6 +114,18 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
 
   function escapeAttr(value) {
     return escapeHtml(value).replace(/`/g, '&#96;');
+  }
+
+  function formatBytes(value) {
+    const bytes = Number(value) || 0;
+    if (bytes < 1024) return `${bytes} bytes`;
+    const kb = bytes / 1024;
+    if (kb < 1024) return `${kb < 10 ? kb.toFixed(1) : Math.round(kb)} KB`;
+    return `${(kb / 1024).toFixed(1)} MB`;
+  }
+
+  function joinList(values) {
+    return values.length ? values.join(', ') : '无';
   }
 
   function activePage() {
@@ -326,6 +348,89 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
       site: state.site,
       assets: state.assets,
     });
+  }
+
+  function renderPublishReviewMetrics(review) {
+    const metrics = [
+      ['页面', review.pageCount],
+      ['可见导航', review.visibleNavCount],
+      ['模板', joinList(review.templates)],
+      ['分段预设', joinList(review.sectionPresets)],
+      ['上传文件', `${review.uploads.count} 个`],
+      ['上传大小', formatBytes(review.uploads.totalBytes)],
+      ['上传目录', review.uploads.targetDir || '无'],
+      ['发布目标', `${review.publishTargets.length} 个`],
+    ];
+    els.publishReviewMetrics.innerHTML = metrics.map(([label, value]) => `
+      <div class="cms-review__metric">
+        <span>${escapeHtml(label)}</span>
+        <strong>${escapeHtml(value)}</strong>
+      </div>
+    `).join('');
+  }
+
+  function renderPublishReviewIssues(review) {
+    const issueItems = [
+      ...review.errors.slice(0, 6).map(issue => ({ type: 'error', label: '错误', message: issue?.message })),
+      ...review.warnings.slice(0, 6).map(issue => ({ type: 'warning', label: '警告', message: issue?.message })),
+    ];
+    const remaining = review.errors.length + review.warnings.length - issueItems.length;
+
+    if (!issueItems.length) {
+      els.publishReviewIssues.innerHTML = '<div class="cms-review__empty">没有错误或警告。</div>';
+      return;
+    }
+
+    els.publishReviewIssues.innerHTML = [
+      ...issueItems.map(issue => `
+        <div class="cms-review__item is-${escapeAttr(issue.type)}">
+          <small>${escapeHtml(issue.label)}</small>
+          <div>${escapeHtml(issue.message || '(empty issue)')}</div>
+        </div>
+      `),
+      remaining > 0 ? `<div class="cms-review__empty">另有 ${remaining} 条未显示。</div>` : '',
+    ].join('');
+  }
+
+  function renderPublishReviewTargets(review) {
+    const targets = [
+      ...review.publishTargets.map(target => ({ label: '目标', value: target })),
+      ...review.uploads.paths.map(target => ({ label: '上传', value: target })),
+    ];
+
+    els.publishReviewTargets.innerHTML = targets.length ? targets.map(target => `
+      <div class="cms-review__item">
+        <small>${escapeHtml(target.label)}</small>
+        <div>${escapeHtml(target.value)}</div>
+      </div>
+    `).join('') : '<div class="cms-review__empty">没有发布目标。</div>';
+  }
+
+  function updatePublishReviewDownloadState() {
+    if (!pendingPublishReview) return;
+    const needsWarningAcknowledgement = pendingPublishReview.warnings.length > 0 && !els.publishReviewAcknowledge.checked;
+    els.publishReviewDownload.disabled = hasBlockingCmsPublishIssues(pendingPublishReview) || needsWarningAcknowledgement;
+  }
+
+  function openPublishReview(review) {
+    pendingPublishReview = review;
+    const blocked = hasBlockingCmsPublishIssues(review);
+    els.publishReviewSummary.textContent = blocked
+      ? `${review.errors.length} 个错误，${review.warnings.length} 个警告`
+      : `0 个错误，${review.warnings.length} 个警告`;
+    els.publishReviewSummary.classList.toggle('is-blocked', blocked);
+    renderPublishReviewMetrics(review);
+    renderPublishReviewIssues(review);
+    renderPublishReviewTargets(review);
+    els.publishReviewAcknowledge.checked = false;
+    els.publishReviewAcknowledgeWrap.hidden = review.warnings.length === 0;
+    els.publishReviewPanel.hidden = false;
+    updatePublishReviewDownloadState();
+  }
+
+  function closePublishReview() {
+    pendingPublishReview = null;
+    els.publishReviewPanel.hidden = true;
   }
 
   function updatePageFromInputs() {
@@ -579,11 +684,7 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
     render();
   }
 
-  function exportPackage() {
-    const issues = collectDraftIssues();
-    const errors = issues.filter(issue => issue.level === 'error');
-    if (errors.length && !confirm(`当前有 ${errors.length} 个错误，仍要导出吗？`)) return;
-    const payload = createCmsPublishPackage({ state, issues });
+  function downloadPublishPackage(payload) {
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -592,6 +693,23 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
     a.click();
     URL.revokeObjectURL(url);
     setStatus('发布包已导出');
+  }
+
+  function exportPackage() {
+    const review = createCmsPublishReview({ state, issues: collectDraftIssues() });
+    openPublishReview(review);
+    setStatus(`发布包检查完成：${review.errors.length} 个错误，${review.warnings.length} 个警告`);
+  }
+
+  function confirmPublishExport() {
+    if (!pendingPublishReview) return;
+    updatePublishReviewDownloadState();
+    if (els.publishReviewDownload.disabled) {
+      setStatus('发布包尚未通过检查');
+      return;
+    }
+    downloadPublishPackage(pendingPublishReview.payload);
+    closePublishReview();
   }
 
   function applyImported(file) {
@@ -615,13 +733,14 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
   function publishPreview() {
     const issues = collectDraftIssues();
     const errors = issues.filter(issue => issue.level === 'error');
+    const warnings = issues.filter(issue => issue.level !== 'error');
     if (errors.length) {
-      setStatus(`发布预览已阻止：${errors.length} 个错误`);
+      setStatus(`本地预览已阻止：${errors.length} 个错误，${warnings.length} 个警告`);
       return;
     }
     saveDraft();
     localStorage.setItem(PUBLISHED_KEY, JSON.stringify(state));
-    setStatus(`已发布到本地预览，${issues.length} 个提醒`);
+    setStatus(`本地预览已保存：0 个错误，${warnings.length} 个警告`);
   }
 
   [
@@ -641,6 +760,9 @@ import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './
   document.getElementById('saveDraftBtn').addEventListener('click', () => saveDraft());
   document.getElementById('publishBtn').addEventListener('click', publishPreview);
   document.getElementById('exportBtn').addEventListener('click', exportPackage);
+  els.publishReviewCancel.addEventListener('click', closePublishReview);
+  els.publishReviewDownload.addEventListener('click', confirmPublishExport);
+  els.publishReviewAcknowledge.addEventListener('change', updatePublishReviewDownloadState);
   document.getElementById('resetBtn').addEventListener('click', () => {
     if (!confirm('重置 CMS 草稿?')) return;
     localStorage.removeItem(STORAGE_KEY);
