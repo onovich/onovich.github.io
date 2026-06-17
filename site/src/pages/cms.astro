@@ -238,6 +238,17 @@ const validationJson = JSON.stringify(seedIssues).replace(/</g, '\\u003c');
                   <label>字幕 HTML<textarea id="itemCaptionHtmlInput" spellcheck="false"></textarea></label>
                   <label>正文 HTML<textarea id="itemBodyHtmlInput" spellcheck="false"></textarea></label>
                   <label>文字链接 JSON<textarea id="itemLinksInput" spellcheck="false"></textarea></label>
+                  <div class="cms-link-editor">
+                    <div id="itemLinksList" class="cms-link-list"></div>
+                    <div class="cms-field-grid">
+                      <label>链接文字<input id="itemLinkLabelInput" type="text" /></label>
+                      <label>链接 URL<input id="itemLinkUrlInput" type="url" inputmode="url" /></label>
+                    </div>
+                    <div class="cms-row-actions">
+                      <button class="cms-button" id="addItemLinkBtn" type="button">添加/更新链接</button>
+                      <button class="cms-button cms-button--danger" id="removeItemLinkBtn" type="button">删除选中链接</button>
+                    </div>
+                  </div>
                   <div class="cms-row-actions">
                     <button class="cms-button cms-button--primary" id="saveItemBtn" type="button">保存条目</button>
                   </div>

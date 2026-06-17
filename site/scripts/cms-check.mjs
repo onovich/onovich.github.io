@@ -13,6 +13,7 @@ import { classifyCmsAssetSrc, cmsAssetPublicPath, collectCmsAssetPublishIssues, 
 import { cmsRichTextSelectionBelongsToEditor, collectCmsRichTextHtmlIssues, createCmsRichTextLinkPanel, createCmsRichTextSelectionStore, isCmsRichTextAllowedTag, isCmsRichTextCommand, normalizeCmsRichTextHref, pasteCmsRichText, runCmsRichTextCommand } from '../src/cms/richText.js';
 import { CMS_UPLOAD_TARGET_DIR, cmsUploadApplyRelativePath, cmsUploadAssetBase64, cmsUploadPreviewSrc, collectCmsUploadAssetIssues, collectCmsUploadPublishIssues, createCmsUploadAsset, normalizeCmsUploadFileName, upsertCmsUploadAsset } from '../src/cms/uploadAssets.js';
 import { createCmsAssetItemPatch, createCmsAssetLibrary } from '../src/cms/assetLibrary.js';
+import { normalizeCmsItemLinks, removeCmsItemLink, upsertCmsItemLink } from '../src/cms/itemLinks.js';
 import { backupCmsApplyTargets, CMS_APPLY_BACKUP_DIR, formatCmsApplyRollbackHint, formatCmsRestoreSummary, restoreCmsApplyBackup, writeCmsApplyTargets } from './cms-apply-file-ops.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -366,6 +367,23 @@ function checkCmsAssetLibrary() {
   assert(library[0].usedBy.length === 1 && library[0].usedBy[0].itemId === 'hero', 'CMS asset library must count item usage');
   assert(patch.src === asset.src && patch.width === 640 && patch.height === 480, 'CMS asset library must create reusable item patches');
   assert(patch.originalUrl === asset.src, 'CMS asset library item patches must preserve upload origin');
+}
+
+function checkCmsItemLinks() {
+  const normalized = normalizeCmsItemLinks([
+    { label: ' Play ', url: ' https://example.com/play ' },
+    { label: '', url: '' },
+    { label: 'Docs' },
+  ]);
+  const added = upsertCmsItemLink(normalized, { label: 'Trailer', url: 'https://example.com/trailer' });
+  const updated = upsertCmsItemLink(added, { label: 'Play now', url: 'https://example.com/play-now' }, 0);
+  const removed = removeCmsItemLink(updated, 1);
+
+  assert(normalized.length === 2, 'CMS item links must drop empty entries');
+  assert(normalized[0].label === 'Play' && normalized[0].url === 'https://example.com/play', 'CMS item links must trim labels and URLs');
+  assert(added.length === 3 && added[2].label === 'Trailer', 'CMS item links must append new structured links');
+  assert(updated[0].label === 'Play now', 'CMS item links must update selected links');
+  assert(removed.length === 2 && !removed.some(link => link.label === 'Docs'), 'CMS item links must remove selected links');
 }
 
 function checkCmsPublishPackage() {
@@ -771,6 +789,7 @@ const cmsImportSource = read('src/cms/importPackage.js');
 const cmsRichTextSource = read('src/cms/richText.js');
 const cmsUploadSource = read('src/cms/uploadAssets.js');
 const cmsAssetLibrarySource = read('src/cms/assetLibrary.js');
+const cmsItemLinksSource = read('src/cms/itemLinks.js');
 const cmsApplyPlanSource = read('src/cms/applyPackagePlan.js');
 const cmsAssetSource = read('src/cms/assetReferences.js');
 const cmsDraftValidationSource = read('src/cms/draftValidation.js');
@@ -803,6 +822,7 @@ assert(cmsSource.includes('cms-validation-seed'), 'CMS UI must expose validation
 assert(cmsSource.includes('richLinkInput'), 'CMS UI must expose the rich text link panel');
 assert(cmsSource.includes('itemUploadInput'), 'CMS UI must expose image upload controls');
 assert(cmsSource.includes('assetLibraryList'), 'CMS UI must expose the uploaded asset library');
+assert(cmsSource.includes('itemLinksList'), 'CMS UI must expose structured item link controls');
 assert(cmsSource.includes('publishReviewPanel'), 'CMS UI must expose the publish review panel');
 assert(cmsSource.includes('publishReviewAcknowledge'), 'CMS UI must expose warning acknowledgement before export');
 assert(cmsSource.includes("import '../cms/client'"), 'CMS page must load the browser client module');
@@ -821,6 +841,9 @@ assert(cmsClientSource.includes('upsertCmsUploadAsset'), 'CMS client must use th
 assert(cmsClientSource.includes('cmsUploadPreviewSrc'), 'CMS client must use upload data URLs for local previews');
 assert(cmsClientSource.includes('createCmsAssetLibrary'), 'CMS client must use the shared asset library helper');
 assert(cmsClientSource.includes('createCmsAssetItemPatch'), 'CMS client must use shared asset reuse patches');
+assert(cmsClientSource.includes('normalizeCmsItemLinks'), 'CMS client must use shared item link normalization');
+assert(cmsClientSource.includes('upsertCmsItemLink'), 'CMS client must use shared item link updates');
+assert(cmsClientSource.includes('removeCmsItemLink'), 'CMS client must use shared item link removal');
 assert(cmsPublishSource.includes('manifest'), 'CMS export package must include a manifest');
 assert(cmsReviewSource.includes('createCmsPublishPackage'), 'CMS publish review helper must derive its data from publish packages');
 assert(cmsReviewSource.includes('hasBlockingCmsPublishIssues'), 'CMS publish review helper must expose blocking state');
@@ -834,6 +857,8 @@ assert(cmsUploadSource.includes('readCmsUploadFile'), 'CMS upload module must ow
 assert(cmsUploadSource.includes('cmsUploadPreviewSrc'), 'CMS upload module must own preview source resolution');
 assert(cmsAssetLibrarySource.includes('collectCmsUploadAssets'), 'CMS asset library must derive from uploaded asset helpers');
 assert(cmsAssetLibrarySource.includes('usedBy'), 'CMS asset library must expose usage counts');
+assert(cmsItemLinksSource.includes('normalizeCmsItemLinks'), 'CMS item link helper must expose normalization');
+assert(cmsItemLinksSource.includes('upsertCmsItemLink'), 'CMS item link helper must expose structured updates');
 assert(cmsApplyPlanSource.includes('cmsUploadApplyRelativePath'), 'CMS apply plan must use shared upload target resolution');
 assert(applyFileOpsSource.includes("encoding === 'base64'"), 'CMS apply file writer must support uploaded binary targets');
 assert(applyScriptSource.includes('collectCmsUploadPublishIssues'), 'CMS apply script must validate upload assets before writing');
@@ -875,6 +900,7 @@ checkCmsDraftValidation();
 checkCmsAssetReferences();
 checkCmsUploadAssets();
 checkCmsAssetLibrary();
+checkCmsItemLinks();
 checkCmsPublishPackage();
 checkCmsPublishReview();
 checkCmsImportPackage();

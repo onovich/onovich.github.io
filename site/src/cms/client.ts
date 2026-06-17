@@ -6,6 +6,7 @@ import { parseCmsPackageJson, parseCmsPackageJsonOrFallback } from './importPack
 import { bindCmsRichTextToolbar } from './richText.js';
 import { cmsUploadPreviewSrc, readCmsUploadFile, upsertCmsUploadAsset } from './uploadAssets.js';
 import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.js';
+import { normalizeCmsItemLinks, removeCmsItemLink, upsertCmsItemLink } from './itemLinks.js';
 
 (() => {
   const STORAGE_KEY = 'onovich:cms:draft';
@@ -19,6 +20,7 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
   let activePageId = state.pages[0]?.id || 'home';
   let activeSectionId = state.pages[0]?.sections?.[0]?.id || '';
   let activeItemIndex = 0;
+  let activeItemLinkIndex = -1;
   let pendingPublishReview = null;
   const {
     slugify,
@@ -80,6 +82,9 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
     itemCaptionHtml: document.getElementById('itemCaptionHtmlInput'),
     itemBodyHtml: document.getElementById('itemBodyHtmlInput'),
     itemLinks: document.getElementById('itemLinksInput'),
+    itemLinksList: document.getElementById('itemLinksList'),
+    itemLinkLabel: document.getElementById('itemLinkLabelInput'),
+    itemLinkUrl: document.getElementById('itemLinkUrlInput'),
     assetLibraryList: document.getElementById('assetLibraryList'),
     richEditor: document.getElementById('richEditor'),
     rawJson: document.getElementById('rawJson'),
@@ -216,6 +221,7 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
     const page = activePage();
     activeSectionId = page.sections[0]?.id || '';
     activeItemIndex = 0;
+    activeItemLinkIndex = -1;
     render();
   }
 
@@ -255,6 +261,7 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
       button.addEventListener('click', () => {
         activeSectionId = button.dataset.section;
         activeItemIndex = 0;
+        activeItemLinkIndex = -1;
         render();
       });
     });
@@ -294,6 +301,7 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
     els.itemList.querySelectorAll('[data-item]').forEach(button => {
       button.addEventListener('click', () => {
         activeItemIndex = Number(button.dataset.item);
+        activeItemLinkIndex = -1;
         renderItems(activePage());
         renderTextEditor(activePage());
         renderPreview(activePage());
@@ -315,7 +323,30 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
     els.itemHeight.value = item.height || '';
     els.itemCaptionHtml.value = item.captionHtml || '';
     els.itemBodyHtml.value = item.bodyHtml || '';
-    els.itemLinks.value = JSON.stringify(item.links || [], null, 2);
+    const links = normalizeCmsItemLinks(item.links || []);
+    els.itemLinks.value = JSON.stringify(links, null, 2);
+    renderItemLinkEditor(links);
+  }
+
+  function renderItemLinkEditor(links) {
+    if (activeItemLinkIndex >= links.length) activeItemLinkIndex = -1;
+    els.itemLinksList.innerHTML = links.length ? links.map((link, index) => `
+      <button class="cms-link-row ${index === activeItemLinkIndex ? 'is-active' : ''}" type="button" data-link-index="${index}">
+        <span>${escapeHtml(link.label || link.url || 'Untitled link')}</span>
+        <small>${escapeHtml(link.url || '')}</small>
+      </button>
+    `).join('') : '<div class="cms-link-empty">暂无文字链接</div>';
+
+    const selected = links[activeItemLinkIndex] || { label: '', url: '' };
+    els.itemLinkLabel.value = selected.label;
+    els.itemLinkUrl.value = selected.url;
+
+    els.itemLinksList.querySelectorAll('[data-link-index]').forEach(button => {
+      button.addEventListener('click', () => {
+        activeItemLinkIndex = Number(button.dataset.linkIndex);
+        renderItemEditor(activeSection().items?.[activeItemIndex] || {});
+      });
+    });
   }
 
   function renderAssetLibrary() {
@@ -537,7 +568,7 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
       bodyHtml: els.itemBodyHtml.value,
     };
     try {
-      item.links = JSON.parse(els.itemLinks.value || '[]');
+      item.links = normalizeCmsItemLinks(JSON.parse(els.itemLinks.value || '[]'));
     } catch {
       item.links = [];
     }
@@ -549,6 +580,41 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
     }
     if (item.bodyHtml) section.bodyHtml = item.bodyHtml;
     saveDraft();
+    render();
+  }
+
+  function saveStructuredItemLink() {
+    const link = {
+      label: els.itemLinkLabel.value,
+      url: els.itemLinkUrl.value,
+    };
+    if (!link.label.trim() && !link.url.trim()) {
+      setStatus('链接内容为空');
+      return;
+    }
+    saveItemFromInputs();
+    const item = activeSection().items?.[activeItemIndex];
+    if (!item) return;
+    const previousLength = normalizeCmsItemLinks(item.links).length;
+    item.links = upsertCmsItemLink(item.links, link, activeItemLinkIndex);
+    if (activeItemLinkIndex < 0 || activeItemLinkIndex >= previousLength) {
+      activeItemLinkIndex = item.links.length - 1;
+    }
+    saveDraft('文字链接已保存');
+    render();
+  }
+
+  function removeStructuredItemLink() {
+    if (activeItemLinkIndex < 0) {
+      setStatus('未选择文字链接');
+      return;
+    }
+    saveItemFromInputs();
+    const item = activeSection().items?.[activeItemIndex];
+    if (!item) return;
+    item.links = removeCmsItemLink(item.links, activeItemLinkIndex);
+    activeItemLinkIndex = -1;
+    saveDraft('文字链接已删除');
     render();
   }
 
@@ -700,6 +766,7 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
     item.id = `item-${next}`;
     section.items.push(item);
     activeItemIndex = section.items.length - 1;
+    activeItemLinkIndex = -1;
     saveDraft();
     render();
   }
@@ -709,6 +776,7 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
     if (!section.items.length) return;
     section.items.splice(activeItemIndex, 1);
     activeItemIndex = Math.max(0, activeItemIndex - 1);
+    activeItemLinkIndex = -1;
     saveDraft();
     render();
   }
@@ -719,6 +787,7 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
     if (next < 0 || next >= items.length) return;
     [items[activeItemIndex], items[next]] = [items[next], items[activeItemIndex]];
     activeItemIndex = next;
+    activeItemLinkIndex = -1;
     saveDraft();
     render();
   }
@@ -845,6 +914,8 @@ import { createCmsAssetItemPatch, createCmsAssetLibrary } from './assetLibrary.j
   document.getElementById('saveSectionBtn').addEventListener('click', saveSectionFromInputs);
   document.getElementById('addItemBtn').addEventListener('click', addItem);
   document.getElementById('saveItemBtn').addEventListener('click', saveItemFromInputs);
+  document.getElementById('addItemLinkBtn').addEventListener('click', saveStructuredItemLink);
+  document.getElementById('removeItemLinkBtn').addEventListener('click', removeStructuredItemLink);
   els.itemUpload.addEventListener('change', event => {
     const file = event.target.files?.[0];
     if (file) applyItemUpload(file);

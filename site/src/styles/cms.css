@@ -466,6 +466,44 @@ body.cms-page textarea {
   overflow-wrap: anywhere;
 }
 
+.cms-link-editor,
+.cms-link-list {
+  display: grid;
+  gap: 8px;
+}
+
+.cms-link-row {
+  min-height: 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid var(--cms-line);
+  border-radius: var(--cms-radius);
+  background: #fff;
+  color: var(--cms-ink);
+  padding: 7px 9px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cms-link-row.is-active {
+  border-color: var(--cms-accent);
+}
+
+.cms-link-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cms-link-row small,
+.cms-link-empty {
+  color: var(--cms-muted);
+  font-size: 12px;
+}
+
 .cms-rich-toolbar {
   display: flex;
   flex-wrap: wrap;
