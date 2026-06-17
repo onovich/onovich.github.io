@@ -14,6 +14,7 @@
     "cms:check": "node scripts/cms-check.mjs",
     "cms:publish:smoke": "node scripts/cms-publish-smoke.mjs",
     "cms:restore": "node scripts/restore-cms-backup.mjs",
+    "cms:site-preview": "node scripts/cms-site-preview.mjs",
     "cms:smoke": "node scripts/cms-smoke.mjs",
     "assets:check": "node scripts/assets-check.mjs",
     "visual:check": "node scripts/visual-layout-check.mjs",

@@ -798,6 +798,7 @@ const applyScriptSource = read('scripts/apply-cms-publish.mjs');
 const applyFileOpsSource = read('scripts/cms-apply-file-ops.mjs');
 const applySmokeSource = read('scripts/cms-apply-smoke.mjs');
 const publishSmokeSource = read('scripts/cms-publish-smoke.mjs');
+const sitePreviewSource = read('scripts/cms-site-preview.mjs');
 const restoreScriptSource = read('scripts/restore-cms-backup.mjs');
 const packageSource = read('package.json');
 
@@ -882,9 +883,14 @@ assert(cmsApplyPlanSource.includes("section.type === 'gallery'"), 'CMS apply pla
 assert(applySmokeSource.includes('CMS apply smoke passed'), 'CMS apply smoke must provide a reusable dry-run check');
 assert(publishSmokeSource.includes('createCmsPublishPackage'), 'CMS publish smoke must exercise real publish package creation');
 assert(publishSmokeSource.includes('cms-seed'), 'CMS publish smoke must read the built CMS seed');
+assert(sitePreviewSource.includes('cms-seed'), 'CMS site preview must read the generated CMS seed');
+assert(sitePreviewSource.includes('assertCmsPackage'), 'CMS site preview must validate the generated payload shape');
+assert(sitePreviewSource.includes('--json'), 'CMS site preview must support printing the generated JSON preview');
+assert(!sitePreviewSource.includes('writeFileSync'), 'CMS site preview must remain read-only');
 assert(packageSource.includes('"cms:apply:smoke"'), 'CMS apply smoke must be available as an npm script');
 assert(packageSource.includes('"cms:publish:smoke"'), 'CMS publish smoke must be available as an npm script');
 assert(packageSource.includes('"cms:restore"'), 'CMS restore command must be available as an npm script');
+assert(packageSource.includes('"cms:site-preview"'), 'CMS site preview must be available as an npm script');
 
 const codes = readJson('src/content/codes.json');
 const games = readJson('src/content/games.json');
