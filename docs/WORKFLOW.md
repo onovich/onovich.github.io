@@ -224,6 +224,16 @@ npm --prefix site run cms:restore -- .cms-backups/<timestamp> --dry-run
 
 恢复后重新运行 build / assets check，再决定是否提交。
 
+统一内容模型探索只做只读预览，不迁移 runtime rendering：
+
+```powershell
+npm --prefix site run build
+npm --prefix site run cms:site-preview
+npm --prefix site run cms:site-preview -- --json
+```
+
+`cms:site-preview` 从已构建的 `/cms` 页面抽取 `cms-seed`，用于预览未来 `site.json` payload；它不写入 `site/src/content/site.json`。
+
 ---
 
 ## H. 任务管理约定
