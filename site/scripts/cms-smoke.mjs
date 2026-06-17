@@ -143,6 +143,18 @@ try {
       libraryText: document.querySelector('#assetLibraryList')?.textContent || '',
     };
   });
+  await page.fill('#itemLinkLabelInput', 'Smoke link');
+  await page.fill('#itemLinkUrlInput', 'https://example.com/smoke-link');
+  await page.click('#addItemLinkBtn');
+  const afterStructuredLink = await page.evaluate(() => {
+    const links = JSON.parse(document.querySelector('#itemLinksInput')?.value || '[]');
+    return {
+      rows: document.querySelectorAll('#itemLinksList .cms-link-row').length,
+      text: document.querySelector('#itemLinksList')?.textContent || '',
+      links,
+      status: document.querySelector('#cmsStatus')?.textContent || '',
+    };
+  });
 
   await page.click('[data-tab="raw"]');
   await page.waitForTimeout(100);
@@ -254,6 +266,10 @@ try {
   assert(afterAssetReuse.src === '/images/uploads/smoke-upload.png', 'Asset library did not reuse the uploaded asset for the active item');
   assert(afterAssetReuse.width === '1' && afterAssetReuse.height === '1', 'Asset library reuse did not copy dimensions');
   assert(afterAssetReuse.reusedCount >= 2 && afterAssetReuse.libraryText.includes('使用 2 次'), 'Asset library did not update used-by counts after reuse');
+  assert(afterStructuredLink.rows === 1, 'Structured item link editor did not render the added link');
+  assert(afterStructuredLink.text.includes('Smoke link') && afterStructuredLink.text.includes('https://example.com/smoke-link'), 'Structured item link editor did not show link details');
+  assert(afterStructuredLink.links[0]?.label === 'Smoke link' && afterStructuredLink.links[0]?.url === 'https://example.com/smoke-link', 'Structured item link editor did not sync item links JSON');
+  assert(afterStructuredLink.status.includes('文字链接已保存'), 'Structured item link editor did not save status');
   assert(afterRaw.rawPanelActive && afterRaw.rawHasSchema, 'Raw JSON tab did not render state');
   assert(afterPaste.textPanelActive, 'Rich text tab did not activate');
   assert(afterPaste.html.includes('<strong>Safe</strong>'), 'Rich text paste did not preserve allowed formatting');
@@ -269,7 +285,7 @@ try {
   assert(afterWarningBeforeAck.text.includes('警告'), 'Publish review must show warning state');
   assert(afterWarningReview.acknowledged && !afterWarningReview.downloadDisabled, 'Warning acknowledgement must enable publish package download');
 
-  console.log(JSON.stringify({ before, afterAdd, afterUpload, afterAssetLibrary, afterAssetReuse, afterRaw, afterPaste, afterLink, afterErrorReview, afterWarningBeforeAck, afterWarningReview, dialogs, errors }, null, 2));
+  console.log(JSON.stringify({ before, afterAdd, afterUpload, afterAssetLibrary, afterAssetReuse, afterStructuredLink, afterRaw, afterPaste, afterLink, afterErrorReview, afterWarningBeforeAck, afterWarningReview, dialogs, errors }, null, 2));
 } finally {
   await browser.close();
   await closeServer();
