@@ -192,7 +192,41 @@ npm run assets:check
 
 ---
 
-## G. 任务管理约定
+## G. CMS 发布 / 回滚命令
+
+发布包先做 dry-run，只看将要写入的目标，不创建备份：
+
+```powershell
+npm --prefix site run cms:apply -- path\to\onovich-cms-publish.json --dry-run
+```
+
+正式应用发布包：
+
+```powershell
+npm --prefix site run cms:apply -- path\to\onovich-cms-publish.json
+```
+
+正式应用会输出备份目录和精确恢复命令：
+
+```txt
+CMS publish backup: .cms-backups/<timestamp>
+Restore command:
+  npm run cms:restore -- .cms-backups/<timestamp>
+CMS publish applied: N file(s) written.
+```
+
+从仓库根目录执行恢复时，用 `--prefix site`：
+
+```powershell
+npm --prefix site run cms:restore -- .cms-backups/<timestamp>
+npm --prefix site run cms:restore -- .cms-backups/<timestamp> --dry-run
+```
+
+恢复后重新运行 build / assets check，再决定是否提交。
+
+---
+
+## H. 任务管理约定
 
 - 用 `TaskList` / `TaskCreate` / `TaskUpdate` 维护当前 todo
 - 跨会话状态在 `HANDOFF.md`（人工维护，覆盖 7 天 memory 限制）
@@ -201,7 +235,7 @@ npm run assets:check
 
 ---
 
-## H. 常见反模式（不要做）
+## I. 常见反模式（不要做）
 
 | 反模式 | 替代 |
 |---|---|
@@ -216,7 +250,7 @@ npm run assets:check
 
 ---
 
-## I. Pre-push 视觉验证门禁（必须）
+## J. Pre-push 视觉验证门禁（必须）
 
 **任何**修改 BaseLayout、global.css、page 结构后，push 之前必须执行：
 
