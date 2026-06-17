@@ -1,5 +1,8 @@
 # Onovich CMS Architecture Guide
 
+> Binding short checklist: `docs/ARCHITECTURE_REFACTOR_CHECKLIST.md`.
+> This file is the detailed background; the checklist is the commit-time standard.
+
 ## 1. Architecture Goal
 
 The CMS should preserve the current Onovich site's Cargo-like character while making content updates simple.
@@ -506,6 +509,7 @@ Phase 4:
 
 ## 16. Implementation Rules
 
+- Before committing code, complete the self-check in `docs/ARCHITECTURE_REFACTOR_CHECKLIST.md`.
 - All unique page behavior must be either a template, section preset, or constrained parameter.
 - No ordinary CMS action should require editing CSS.
 - Adding a new page must start from a template.
@@ -531,4 +535,3 @@ Use names that match actual site behavior:
 - Contact drawer
 
 Avoid abstract labels such as "layout A" or "mode 2".
-

@@ -123,6 +123,8 @@ cd site && npm run build && npx http-server dist -p 8080
 
 远端：`git@github.com:onovich/onovich.github.io.git`（User Pages 仓库）
 
+代码提交前必须先完成架构自检：`docs/ARCHITECTURE_REFACTOR_CHECKLIST.md`。项目 Codex hook 会在检测到代码/config/hook 提交时要求显式确认；完成清单后再对提交命令设置 `ONOVICH_ARCH_SELF_CHECKED=1`。
+
 ```bash
 # 标准流程
 git status
@@ -135,6 +137,26 @@ git push                     # 不要 force！历史已经被覆盖一次了，�
 - `_old-site/` 已 gitignore，不会被加入提交
 - `_reference-site/` 是否提交要根据策略决定（建议提交，方便后人对照原站；体积可控，1MB 内）
 - 若改 workflow 后要触发部署，可改个无关字符 push 一下，或在 Actions 页面手动 `workflow_dispatch`
+- 不要提交 `.claude/settings.local.json`
+
+### 架构自检确认格式
+
+```txt
+Architecture self-check:
+- Source of truth:
+- Boundary:
+- Duplication:
+- Presets/data:
+- Assets:
+- Validation:
+```
+
+Windows 提交命令示例：
+
+```powershell
+$env:ONOVICH_ARCH_SELF_CHECKED='1'
+git commit -m "..."
+```
 
 ---
 

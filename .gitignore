@@ -8,6 +8,8 @@ site/.astro/
 # system
 .DS_Store
 Thumbs.db
+__pycache__/
+*.pyc
 
 # env
 .env
