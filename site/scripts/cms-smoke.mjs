@@ -123,6 +123,26 @@ try {
       uploadedItem,
     };
   });
+  const afterAssetLibrary = await page.evaluate(() => ({
+    rows: document.querySelectorAll('#assetLibraryList .cms-asset-row').length,
+    text: document.querySelector('#assetLibraryList')?.textContent || '',
+    reuseButtons: document.querySelectorAll('#assetLibraryList [data-asset-src]').length,
+  }));
+  await page.click('#addItemBtn');
+  await page.click('#assetLibraryList [data-asset-src="/images/uploads/smoke-upload.png"]');
+  await page.waitForFunction(() => document.querySelector('#itemSrcInput')?.value === '/images/uploads/smoke-upload.png');
+  const afterAssetReuse = await page.evaluate(() => {
+    const draft = JSON.parse(localStorage.getItem('onovich:cms:draft') || 'null');
+    const home = draft?.pages?.find(item => item.id === 'home');
+    const reusedItems = home?.sections?.flatMap(section => section.items || []).filter(item => item.src === '/images/uploads/smoke-upload.png') || [];
+    return {
+      src: document.querySelector('#itemSrcInput')?.value || '',
+      width: document.querySelector('#itemWidthInput')?.value || '',
+      height: document.querySelector('#itemHeightInput')?.value || '',
+      reusedCount: reusedItems.length,
+      libraryText: document.querySelector('#assetLibraryList')?.textContent || '',
+    };
+  });
 
   await page.click('[data-tab="raw"]');
   await page.waitForTimeout(100);
@@ -229,6 +249,11 @@ try {
   assert(afterUpload.width === '1' && afterUpload.height === '1', 'Upload UI did not read image dimensions');
   assert(afterUpload.asset?.mimeType === 'image/png' && afterUpload.asset?.dataUrl?.startsWith('data:image/png;base64,'), 'Upload UI did not store upload asset metadata');
   assert(afterUpload.uploadedItem?.src === afterUpload.src, 'Upload UI did not attach the uploaded image to the active item');
+  assert(afterAssetLibrary.rows === 1 && afterAssetLibrary.reuseButtons === 1, 'Asset library did not list uploaded assets');
+  assert(afterAssetLibrary.text.includes('images/uploads/smoke-upload.png'), 'Asset library did not show the upload target path');
+  assert(afterAssetReuse.src === '/images/uploads/smoke-upload.png', 'Asset library did not reuse the uploaded asset for the active item');
+  assert(afterAssetReuse.width === '1' && afterAssetReuse.height === '1', 'Asset library reuse did not copy dimensions');
+  assert(afterAssetReuse.reusedCount >= 2 && afterAssetReuse.libraryText.includes('使用 2 次'), 'Asset library did not update used-by counts after reuse');
   assert(afterRaw.rawPanelActive && afterRaw.rawHasSchema, 'Raw JSON tab did not render state');
   assert(afterPaste.textPanelActive, 'Rich text tab did not activate');
   assert(afterPaste.html.includes('<strong>Safe</strong>'), 'Rich text paste did not preserve allowed formatting');
@@ -244,7 +269,7 @@ try {
   assert(afterWarningBeforeAck.text.includes('警告'), 'Publish review must show warning state');
   assert(afterWarningReview.acknowledged && !afterWarningReview.downloadDisabled, 'Warning acknowledgement must enable publish package download');
 
-  console.log(JSON.stringify({ before, afterAdd, afterUpload, afterRaw, afterPaste, afterLink, afterErrorReview, afterWarningBeforeAck, afterWarningReview, dialogs, errors }, null, 2));
+  console.log(JSON.stringify({ before, afterAdd, afterUpload, afterAssetLibrary, afterAssetReuse, afterRaw, afterPaste, afterLink, afterErrorReview, afterWarningBeforeAck, afterWarningReview, dialogs, errors }, null, 2));
 } finally {
   await browser.close();
   await closeServer();
