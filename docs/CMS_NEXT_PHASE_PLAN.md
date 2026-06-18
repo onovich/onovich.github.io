@@ -447,6 +447,33 @@ Suggested commit:
 Document CMS release review completion
 ```
 
+### Session 5 Actual Results (2026-06-18)
+
+Session 5 is complete. No implementation TODOs remain for the CMS Release Confidence Layer.
+
+Validation results:
+
+- `npm --prefix site run cms:check`: PASS, 9 templates, 12 section presets, 8 photo detail albums.
+- `npm --prefix site run cms:smoke`: PASS, publish review opens, draft errors block download, warnings require acknowledgement, uploaded assets can be reused.
+- `npm --prefix site run cms:apply:smoke`: PASS.
+- `npm --prefix site run cms:publish:smoke`: PASS, 20 pages and 11 visible nav items.
+- `npm --prefix site run build`: PASS, 21 static pages built.
+- `<USER_HOME>\.codex\skills\project-ops-workflow\scripts\ops\Validate.cmd`: PASS, includes build and `assets:check` with 234/234 local image files.
+- `<USER_HOME>\.codex\skills\project-ops-workflow\scripts\ops\StartDevServer.cmd`: PASS, preview served at `http://127.0.0.1:4351/`.
+- `<USER_HOME>\.codex\skills\project-ops-workflow\scripts\ops\Smoke.cmd`: PASS, 75 layout assertions and 217/217 desktop images.
+- `<USER_HOME>\.codex\skills\project-ops-workflow\scripts\ops\StopDevServer.cmd`: PASS.
+
+Debug notes:
+
+- `cms:smoke` stdout was inspected after the run: the review text contained the expected error and warning summaries, download stayed disabled for errors and unacknowledged warnings, and became enabled only after warning acknowledgement.
+- `cms:apply:smoke` and `cms:publish:smoke` passed after the restore-command coverage had already been added in Session 4.
+- `docs/WORKFLOW.md` already documents apply, backup, restore, dry-run, and read-only site-preview commands, so no additional workflow edit was needed in Session 5.
+
+Handoff status:
+
+- The original post-release-confidence next phase was "Asset library panel". Current `main` already contains that follow-up, plus restore workflow docs, structured item link controls, and read-only CMS site preview.
+- Future CMS work should not reopen release-review basics unless validation regresses. Treat the release confidence layer as complete and use the existing validation matrix as the maintenance gate.
+
 ## Implementation Plan
 
 ### Step 1: Add Shared Review Helper

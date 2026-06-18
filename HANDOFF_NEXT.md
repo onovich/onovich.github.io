@@ -1,6 +1,6 @@
 # 下一任 Agent 接手说明（HANDOFF_NEXT）
 
-> 更新于 2026-06-10。目标：让后续 agent 不重复踩坑，直接从正确状态继续。
+> 更新于 2026-06-18。目标：让后续 agent 不重复踩坑，直接从正确状态继续。
 
 ---
 
@@ -15,6 +15,8 @@
 ### 本地工作区状态
 
 旧 Electron `admin/` 后台已移除，后续只沿站内 `/cms` 网页 CMS 演进。CMS 已拆出样式、浏览器 client、状态 helper、预览渲染、草稿校验、发布包构造、导入包解析、发布应用计划、资产路径校验、缺失资产阻止、富文本工具栏命令、富文本选区保存/恢复、粘贴清洗、允许标签白名单、富文本链接 UI、上传资源共享契约、上传 UI 和上传资源 apply 落盘；`cms:publish:smoke` 已能用真实构建 seed 跑发布包 dry-run；`cms:apply` 写入前会备份覆盖目标到 `site/.cms-backups/`，`cms:restore` 可按备份恢复。视觉 P0/P1 已收口；后续只沿非阻塞 `/cms` backlog 演进。提交前仍要注意：`.claude/settings.local.json` 是本地设置变化，不要随手提交。
+
+2026-06-18 状态更新：`docs/CMS_NEXT_PHASE_PLAN.md` 的 CMS Release Confidence Layer 已完成并完成第 5 轮收尾验证。发布 review 已在 `/cms` 内阻断错误、要求 warning acknowledgement，并显示上传、目标文件和 manifest 摘要；CLI apply 输出精确 restore 命令；`docs/WORKFLOW.md` 已有 apply / backup / restore / dry-run / read-only site-preview 参考。原计划的下一阶段 "Asset library panel" 也已在当前 `main` 后续提交中完成；后续不要把 release review 当作未完成 backlog，除非验证矩阵回归。
 
 ---
 
