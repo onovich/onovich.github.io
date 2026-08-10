@@ -1,4 +1,2 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://blog.onovich.com/Research/sitemap.xml
