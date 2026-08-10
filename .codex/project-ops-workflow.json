@@ -3,7 +3,7 @@
   "initializedMarker": "codex-project-ops-workflow: initialized",
   "initializedAt": "2026-06-10 19:00:00 +08:00",
   "projectName": "Onovich",
-  "repoRoot": "<PROJECT_ROOT>",
+  "repoRoot": ".",
   "validateSequence": [
     "build",
     "structureCheck"
