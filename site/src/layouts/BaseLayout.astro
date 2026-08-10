@@ -30,6 +30,7 @@ const navLinks = [
   { href: '/graphic',     label: 'GRAPHIC DESIGNS' },
   { href: '/photo',       label: 'PHOTOS' },
   { href: '/poem',        label: 'POEMS' },
+  { href: '/Research/',   label: 'RESEARCH' },
   { href: '/sns',         label: 'SNS' },
   { href: '/links',       label: 'LINKS' },
   { href: '/contact',     label: 'MESSAGE' },
@@ -37,8 +38,8 @@ const navLinks = [
 
 // Original site splits the home navigation into two H2 blocks separated by a
 // blank line: content categories (CODES…POEMS) and outbound links (SNS…MESSAGE).
-const navMain   = navLinks.slice(0, 8);
-const navSocial = navLinks.slice(8);
+const navMain   = navLinks.slice(0, 9);
+const navSocial = navLinks.slice(9);
 const isHome    = activePage === '/';
 const isContact = activePage === '/contact';
 const bodyClass = [
