@@ -8,7 +8,7 @@
  * Usage:
  *   node scripts/visual-guard.mjs --clone=http://localhost:4350
  *   node scripts/visual-guard.mjs --clone=http://localhost:4350 --full
- *   node scripts/visual-guard.mjs --layoutPages=home,codes,pixel --auditPages=galleries
+ *   node scripts/visual-guard.mjs --layoutPages=portfolio-core --auditPages=portfolio-galleries
  */
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -20,10 +20,10 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const args = parseVisualArgs();
 
 const sharedArgs = forwardArgs(['clone', 'original', 'targets']);
-const layoutPages = valueArg(args.layoutPages, args.pages, 'home,codes,pixel,photo-details');
-const layoutViewports = valueArg(args.layoutViewports, args.viewports, 'desktop');
-const auditPages = valueArg(args.auditPages, args.pages, 'galleries,photo-details');
-const auditViewports = valueArg(args.auditViewports, args.full ? 'mobile,desktop' : args.viewports, 'desktop');
+const layoutPages = valueArg(args.layoutPages, args.pages, 'portfolio-core');
+const layoutViewports = valueArg(args.layoutViewports, args.viewports, 'mobile,desktop');
+const auditPages = valueArg(args.auditPages, args.pages, 'portfolio-galleries');
+const auditViewports = valueArg(args.auditViewports, args.viewports, 'mobile,desktop');
 const imageTimeout = valueArg(args.imageTimeout, 25000);
 const scrollPasses = valueArg(args.scrollPasses, 3);
 const scrollDelay = valueArg(args.scrollDelay, 80);

@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArtGallery from './ArtGallery.astro';
+import { artPath, copy, type ArtCategoryKey, type Language } from '../content/portfolio';
+
+interface Props {
+  lang: Language;
+  category: ArtCategoryKey;
+}
+
+const { lang, category } = Astro.props;
+const alternateLanguage: Language = lang === 'en' ? 'zh-CN' : 'en';
+const text = copy[lang];
+const title = `${text.art[category]} — Onovich`;
+const description = text.pages.art.description;
+---
+<BaseLayout
+  lang={lang}
+  activePage="art"
+  title={title}
+  description={description}
+  canonicalPath={artPath(category, lang)}
+  alternatePath={artPath(category, alternateLanguage)}
+>
+  <ArtGallery lang={lang} category={category} />
+</BaseLayout>

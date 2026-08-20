@@ -1,160 +1,187 @@
 ---
-import '@fontsource/nunito/300.css';
-import '@fontsource/nunito/400.css';
-import '@fontsource/nunito/600.css';
 import '../styles/global.css';
+import {
+  copy,
+  pagePath,
+  siteUrl,
+  type Language,
+  type PageKey,
+} from '../content/portfolio';
 
 interface Props {
-  title?: string;
-  description?: string;
-  activePage?: string;
-  backHref?: string;
-  backLabel?: string;
+  lang: Language;
+  activePage: PageKey | null;
+  title: string;
+  description: string;
+  canonicalPath: string;
+  alternatePath: string;
+  socialImage?: string;
   pageClass?: string;
+  noindex?: boolean;
 }
+
 const {
-  title = 'Onovich',
-  description = 'Onovich — creates games on a sofa.',
-  activePage = '',
-  backHref = '/',
-  backLabel = 'HOME',
+  lang,
+  activePage,
+  title,
+  description,
+  canonicalPath,
+  alternatePath,
+  socialImage,
   pageClass = '',
+  noindex = false,
 } = Astro.props;
 
-const navLinks = [
-  { href: '/codes',       label: 'CODES' },
-  { href: '/game',        label: 'GAMES' },
-  { href: '/pixel',       label: 'PIXEL ARTS' },
-  { href: '/illustrator', label: 'ILLUSTRATIONS' },
-  { href: '/gif',         label: 'GIFS' },
-  { href: '/graphic',     label: 'GRAPHIC DESIGNS' },
-  { href: '/photo',       label: 'PHOTOS' },
-  { href: '/poem',        label: 'POEMS' },
-  { href: 'https://research.onovich.com/', label: 'RESEARCH' },
-  { href: '/sns',         label: 'SNS' },
-  { href: '/links',       label: 'LINKS' },
-  { href: '/contact',     label: 'MESSAGE' },
+const text = copy[lang];
+const canonicalUrl = new URL(canonicalPath, siteUrl).toString();
+const alternateUrl = new URL(alternatePath, siteUrl).toString();
+const englishPath = lang === 'en' ? canonicalPath : alternatePath;
+const chinesePath = lang === 'zh-CN' ? canonicalPath : alternatePath;
+const englishUrl = new URL(englishPath, siteUrl).toString();
+const chineseUrl = new URL(chinesePath, siteUrl).toString();
+const socialImagePath = socialImage ?? (lang === 'zh-CN'
+  ? '/images/social/onovich-zh.png'
+  : '/images/social/onovich-en.png');
+const socialImageUrl = new URL(socialImagePath, siteUrl).toString();
+
+const navItems: Array<{ key: PageKey; href: string; label: string }> = [
+  { key: 'home', href: pagePath('home', lang), label: text.nav.home },
+  { key: 'work', href: pagePath('work', lang), label: text.nav.work },
+  { key: 'art', href: pagePath('art', lang), label: text.nav.art },
+  { key: 'writing', href: pagePath('writing', lang), label: text.nav.writing },
+  { key: 'profile', href: pagePath('profile', lang), label: text.nav.profile },
+  { key: 'contact', href: pagePath('contact', lang), label: text.nav.contact },
 ];
 
-// Original site splits the home navigation into two H2 blocks separated by a
-// blank line: content categories (CODES…POEMS) and outbound links (SNS…MESSAGE).
-const navMain   = navLinks.slice(0, 9);
-const navSocial = navLinks.slice(9);
-const isHome    = activePage === '/';
-const isContact = activePage === '/contact';
-const bodyClass = [
-  isHome ? 'page-home' : isContact ? 'page-contact' : 'page-inner',
-  pageClass,
-].filter(Boolean).join(' ');
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Onovich',
+  url: siteUrl,
+  image: new URL('/images/profile/avatar.jpg', siteUrl).toString(),
+  jobTitle: lang === 'zh-CN' ? '游戏系统工程师' : 'Game systems engineer',
+  sameAs: [
+    'https://github.com/onovich',
+    'https://twitter.com/Umbra_Onovich',
+    'https://steamcommunity.com/id/onovich',
+  ],
+};
 ---
 <!doctype html>
-<html lang="zh-CN">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large'} />
+    <meta name="color-scheme" content="light" />
+
     <title>{title}</title>
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="en" href={englishUrl} />
+    <link rel="alternate" hreflang="zh-CN" href={chineseUrl} />
+    <link rel="alternate" hreflang="x-default" href={englishUrl} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Onovich" />
+    <meta property="og:locale" content={lang === 'zh-CN' ? 'zh_CN' : 'en_US'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
-  <body class={bodyClass}>
-    <!-- Floating hamburger button (top-right) -->
-    <button class="site-menu-button" id="siteMenuBtn" aria-label="Open menu">≡</button>
+  <body class:list={[`page-${activePage ?? 'not-found'}`, pageClass]}>
+    <a class="skip-link" href="#main">{text.skip}</a>
 
-    <!-- Slide-in dark menu panel -->
-    <aside class="site-menu" id="siteMenu" aria-hidden="true">
-      <div class="site-menu__close" id="siteMenuClose">×</div>
-      <nav>
-        <a href="/" class={`page-link ${activePage === '/' ? 'active' : ''}`}>Homepage</a>
-        <div class="break"></div>
-        {navLinks.map(link => (
-          <a
-            href={link.href}
-            class={`page-link ${activePage === link.href ? 'active' : ''}`}
-          >{link.label}</a>
-        ))}
-      </nav>
-    </aside>
-    <div class="site-menu__backdrop" id="siteMenuBackdrop"></div>
-
-    <main class="container">
-      <div class="container_width">
-        <bodycopy class="bodycopy content content_padding">
-          <div class="page_content home-grid">
-            <!-- LEFT COL — site nav (rendered on every page, mirrors original Cargo pinned overlay) -->
-            <div class="home-grid__col home-grid__col--nav">
-              <h1><a href="/">Onovich</a></h1>
-              <h2 class="home-nav">
-                {navMain.map((link, i) => (
-                  <>
-                    <a
-                      href={link.href}
-                      class={activePage === link.href ? 'active' : ''}
-                    >{link.label}</a>
-                    {i < navMain.length - 1 && <br />}
-                  </>
-                ))}
-              </h2>
-              <h2 class="home-nav home-nav--social">
-                {navSocial.map((link, i) => (
-                  <>
-                    <a
-                      href={link.href}
-                      class={activePage === link.href ? 'active' : ''}
-                    >{link.label}</a>
-                    {i < navSocial.length - 1 && <br />}
-                  </>
-                ))}
-              </h2>
-            </div>
-
-            <!-- RIGHT COL — page-specific content -->
-            <div class="home-grid__col home-grid__col--main">
-              {!isHome && !isContact && (
-                <div class="page-back">
-                  <a href={backHref}>&lt; {backLabel}</a>
-                </div>
-              )}
-              <slot />
-            </div>
-          </div>
-        </bodycopy>
+    <header class="mobile-header">
+      <a class="mobile-wordmark" href={pagePath('home', lang)}>Onovich</a>
+      <div class="mobile-header__actions">
+        <div class="language-switch language-switch--mobile" aria-label="Language">
+          <a href={englishPath} hreflang="en" lang="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+          <span aria-hidden="true">/</span>
+          <a href={chinesePath} hreflang="zh-CN" lang="zh-CN" aria-current={lang === 'zh-CN' ? 'true' : undefined}>中文</a>
+        </div>
+        <button class="menu-button" type="button" data-menu-open aria-expanded="false" aria-controls="mobile-index">{text.index}</button>
       </div>
-    </main>
+    </header>
 
-    <footer class="site-footer">
-      <span class="build-version">v2.3.0-astro · 2026-04-29</span>
-    </footer>
+    <aside class="mobile-index" id="mobile-index" data-mobile-index aria-hidden="true">
+      <button class="mobile-index__close" type="button" data-menu-close aria-label={text.close}>×</button>
+      <div class="mobile-index__inner">
+        <nav class="route-nav route-nav--mobile" aria-label="Mobile primary navigation">
+          {navItems.map(item => (
+            <a href={item.href} aria-current={activePage === item.key ? 'page' : undefined}>{item.label}</a>
+          ))}
+        </nav>
+        <a class="external-link external-link--mobile" href="https://github.com/onovich" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+      </div>
+    </aside>
+    <button class="mobile-index__backdrop" type="button" data-menu-close aria-label={text.close} tabindex="-1"></button>
+
+    <div class="site-frame">
+      <aside class="site-index" aria-label="Site index">
+        <a class="wordmark" href={pagePath('home', lang)}>Onovich</a>
+
+        <nav class="route-nav" aria-label="Primary navigation">
+          {navItems.map(item => (
+            <a href={item.href} aria-current={activePage === item.key ? 'page' : undefined}>{item.label}</a>
+          ))}
+        </nav>
+
+        <div class="index-utility">
+          <div class="language-switch" aria-label="Language">
+            <a href={englishPath} hreflang="en" lang="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+            <span aria-hidden="true">/</span>
+            <a href={chinesePath} hreflang="zh-CN" lang="zh-CN" aria-current={lang === 'zh-CN' ? 'true' : undefined}>中文</a>
+          </div>
+          <a class="external-link" href="https://github.com/onovich" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        </div>
+      </aside>
+
+      <main class="site-content" id="main">
+        <slot />
+      </main>
+
+      <footer class="site-footer">
+        <span>Onovich · <span data-year>{new Date().getFullYear()}</span></span>
+      </footer>
+    </div>
 
     <script>
-      import '../scripts/lightbox';
-      import '../scripts/media';
-      import '../scripts/navigation';
+      const body = document.body;
+      const menu = document.querySelector('[data-mobile-index]');
+      const openButton = document.querySelector('[data-menu-open]');
+      const closeButtons = document.querySelectorAll('[data-menu-close]');
 
-      const btn = document.getElementById('siteMenuBtn');
-      const menu = document.getElementById('siteMenu');
-      const close = document.getElementById('siteMenuClose');
-      const backdrop = document.getElementById('siteMenuBackdrop');
-
-      const open = () => {
-        document.body.classList.add('menu-open');
+      const openMenu = () => {
+        body.classList.add('menu-open');
         menu?.setAttribute('aria-hidden', 'false');
+        openButton?.setAttribute('aria-expanded', 'true');
       };
-      const shut = () => {
-        document.body.classList.remove('menu-open');
-        menu?.setAttribute('aria-hidden', 'true');
-      };
-      btn?.addEventListener('click', open);
-      close?.addEventListener('click', shut);
-      backdrop?.addEventListener('click', shut);
-      menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', shut));
 
-      // Cargo-style mobile body class: viewport <= 768
-      const setMobileClass = () => {
-        if (window.innerWidth <= 768) document.body.classList.add('mobile');
-        else document.body.classList.remove('mobile');
+      const closeMenu = () => {
+        body.classList.remove('menu-open');
+        menu?.setAttribute('aria-hidden', 'true');
+        openButton?.setAttribute('aria-expanded', 'false');
       };
-      setMobileClass();
-      window.addEventListener('resize', setMobileClass);
+
+      openButton?.addEventListener('click', openMenu);
+      closeButtons.forEach(button => button.addEventListener('click', closeMenu));
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') closeMenu();
+      });
+
     </script>
   </body>
 </html>

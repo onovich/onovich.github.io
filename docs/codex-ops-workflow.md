@@ -36,13 +36,9 @@ npm --prefix site run build
 npm --prefix site run assets:check
 ```
 
-`Build.cmd` runs the Astro build. The build includes `prebuild`, so `cms:check` runs first.
+`Build.cmd` runs the Astro build. The build includes `prebuild`, so the asset reference check runs first.
 
-`Test.cmd` runs the CMS logic check directly:
-
-```powershell
-npm --prefix site run cms:check
-```
+`Test.cmd` currently has no separate command; build, asset, browser, and visual checks cover the static portfolio.
 
 `Smoke.cmd` assumes the local static preview is available at `http://127.0.0.1:4351` and runs:
 

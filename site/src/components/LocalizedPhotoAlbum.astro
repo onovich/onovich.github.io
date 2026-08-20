@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PhotoAlbum from './PhotoAlbum.astro';
+import {
+  copy,
+  getPhotoAlbumBySlug,
+  photoAlbumPath,
+  type Language,
+} from '../content/portfolio';
+
+interface Props {
+  lang: Language;
+  slug: string;
+}
+
+const { lang, slug } = Astro.props;
+const alternateLanguage: Language = lang === 'en' ? 'zh-CN' : 'en';
+const photoAlbum = getPhotoAlbumBySlug(slug);
+
+if (!photoAlbum) {
+  throw new Error(`Unknown photography album: ${slug}`);
+}
+
+const { album } = photoAlbum;
+
+const description = lang === 'zh-CN'
+  ? `${album.title}，Onovich 的摄影作品。`
+  : `${album.title}, a photography album by Onovich.`;
+---
+<BaseLayout
+  lang={lang}
+  activePage="art"
+  title={`${album.title} — Onovich`}
+  description={description}
+  canonicalPath={photoAlbumPath(slug, lang)}
+  alternatePath={photoAlbumPath(slug, alternateLanguage)}
+>
+  <PhotoAlbum lang={lang} slug={slug} />
+</BaseLayout>
