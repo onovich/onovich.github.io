@@ -47,7 +47,7 @@ npm --prefix site run build
 npm --prefix site run assets:check
 ```
 
-`site` build runs `prebuild -> npm run cms:check` first, so commits are blocked if the CMS template/preset/content invariants drift. `assets:check` then blocks missing `/images/` references and large thumbnail candidates without `thumbSrc`.
+`site` build runs `prebuild -> npm run assets:check` first, so commits are blocked by missing `/images/` references. The validation wrapper then builds the bilingual static site and reruns the structure check.
 ## Staging Policy
 
 ask each time

@@ -1,0 +1,18 @@
+---
+import LocalizedArtCategory from '../../../components/LocalizedArtCategory.astro';
+import { artCategories, type ArtCategoryKey } from '../../../content/portfolio';
+
+export function getStaticPaths() {
+  return artCategories.map(category => ({
+    params: { category: category.key },
+    props: { category: category.key },
+  }));
+}
+
+interface Props {
+  category: ArtCategoryKey;
+}
+
+const { category } = Astro.props;
+---
+<LocalizedArtCategory lang="zh-CN" category={category} />

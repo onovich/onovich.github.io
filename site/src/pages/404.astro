@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  lang="en"
+  activePage={null}
+  title="Page not found — Onovich"
+  description="The page you were looking for could not be found."
+  canonicalPath="/404/"
+  alternatePath="/404/"
+  noindex={true}
+>
+  <section class="route-page not-found" aria-labelledby="not-found-title">
+    <header class="route-heading">
+      <h1 id="not-found-title">This page wandered off.</h1>
+    </header>
+    <p><a href="/">Return home →</a></p>
+  </section>
+</BaseLayout>

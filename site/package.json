@@ -7,28 +7,19 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "npm run cms:check",
+    "prebuild": "npm run assets:check",
     "build": "astro build",
-    "cms:apply": "node scripts/apply-cms-publish.mjs",
-    "cms:apply:smoke": "node scripts/cms-apply-smoke.mjs",
-    "cms:check": "node scripts/cms-check.mjs",
-    "cms:publish:smoke": "node scripts/cms-publish-smoke.mjs",
-    "cms:restore": "node scripts/restore-cms-backup.mjs",
-    "cms:site-preview": "node scripts/cms-site-preview.mjs",
-    "cms:smoke": "node scripts/cms-smoke.mjs",
     "assets:check": "node scripts/assets-check.mjs",
     "visual:check": "node scripts/visual-layout-check.mjs",
-    "visual:diff": "node scripts/visual-diff.mjs",
     "visual:guard": "node scripts/visual-guard.mjs",
     "visual:image-audit": "node scripts/visual-image-audit.mjs",
-    "visual:measure": "node scripts/visual-style-report.mjs",
+    "social:preview": "node scripts/capture-social-preview.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "@fontsource/nunito": "^5.2.7",
-    "astro": "^6.1.10",
-    "photoswipe": "^5.4.4"
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.2.2"
   },
   "devDependencies": {
     "playwright": "^1.59.1"

@@ -2,13 +2,13 @@
  * Fast visual layout guard for the site shell.
  *
  * This does not replace screenshot review. It catches the high-risk regression
- * where inner pages lose the left Onovich navigation or the right-side back
- * link before a human opens diff-screenshots/*.png.
+ * where a portfolio page loses its index, mobile header, active route state,
+ * or content alignment before human screenshot review.
  *
  * Usage:
  *   node scripts/visual-layout-check.mjs --clone=http://localhost:4350
- *   node scripts/visual-layout-check.mjs --clone=http://localhost:4350 --pages=home,codes,pixel --viewports=desktop
- *   node scripts/visual-layout-check.mjs --targets=original,clone --pages=codes --viewports=desktop
+ *   node scripts/visual-layout-check.mjs --clone=http://localhost:4350 --pages=portfolio-core --viewports=desktop
+ *   node scripts/visual-layout-check.mjs --clone=http://localhost:4350 --pages=portfolio-galleries --viewports=mobile,desktop
  */
 import { chromium } from 'playwright';
 
@@ -23,7 +23,7 @@ import {
 } from './visual-config.mjs';
 
 const args = parseVisualArgs();
-const PAGES = selectPages(args.pages || 'home,codes,pixel');
+const PAGES = selectPages(args.pages || 'portfolio-core');
 const VIEWPORTS = selectViewports(args.viewports || 'desktop');
 const TARGETS = selectTargets(args.targets, 'clone', args);
 
@@ -55,7 +55,7 @@ try {
         }
 
         const facts = await collectLayoutFacts(page, pageInfo);
-        const result = validateLayout({ target: config.name, pageInfo, viewport, facts });
+        const result = validatePortfolioLayout({ pageInfo, viewport, facts });
         checks += result.checked;
 
         if (result.errors.length > 0) {
@@ -68,8 +68,7 @@ try {
             pageInfo.slug,
             config.name,
             `nav=${formatRect(facts.navLink?.rect)}`,
-            `logo=${formatRect(facts.logo?.rect)}`,
-            facts.backLink?.rect ? `back=${formatRect(facts.backLink.rect)}` : ''
+            `logo=${formatRect(facts.logo?.rect)}`
           );
         }
       }
@@ -95,7 +94,6 @@ if (failures.length > 0) {
 async function collectLayoutFacts(page, pageInfo) {
   return page.evaluate((info) => {
     const navLabel = info.navLabel;
-    const backText = `< ${info.backLabel || 'HOME'}`;
     const normalize = (value) => value.replace(/\s+/g, ' ').trim();
     const rectOf = (element) => {
       if (!element) return null;
@@ -128,66 +126,80 @@ async function collectLayoutFacts(page, pageInfo) {
       return matches[0] || null;
     };
 
-    const logo = candidate(document.querySelectorAll('h1 a, [class*="logo"], h1'), 'Onovich');
-    const navLink = candidate(document.querySelectorAll('a'), navLabel);
-    const backLink = candidate(document.querySelectorAll('a'), backText, 'right');
-    const navColumn = document.querySelector('.home-grid__col--nav');
-    const mainColumn = document.querySelector('.home-grid__col--main');
+    const logo = candidate(
+      document.querySelectorAll('.wordmark, .mobile-wordmark'),
+      'Onovich'
+    );
+    const navLink = candidate(document.querySelectorAll('.route-nav a'), navLabel);
+    const navColumn = document.querySelector('.site-index');
+    const mainColumn = document.querySelector('.site-content');
+    const navRoot = document.querySelector('.site-index > .route-nav');
+    const mobileHeader = document.querySelector('.mobile-header');
+    const heading = document.querySelector('.site-content h1');
+    const contentStart = document.querySelector('.site-content > :first-child');
 
     return {
       bodyClass: document.body.className,
       title: document.title,
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
       logo: logo ? { text: logo.text, rect: logo.rect } : null,
       navLink: navLink ? {
         text: navLink.text,
         rect: navLink.rect,
-        active: navLink.element.classList.contains('active'),
+        active: navLink.element.getAttribute('aria-current') === 'page',
         href: navLink.element.getAttribute('href'),
       } : null,
-      backLink: backLink ? { text: backLink.text, rect: backLink.rect } : null,
       navColumn: navColumn && isVisible(navColumn) ? rectOf(navColumn) : null,
       mainColumn: mainColumn && isVisible(mainColumn) ? rectOf(mainColumn) : null,
+      navRoot: navRoot && isVisible(navRoot) ? rectOf(navRoot) : null,
+      mobileHeader: mobileHeader && isVisible(mobileHeader) ? rectOf(mobileHeader) : null,
+      heading: heading && isVisible(heading) ? rectOf(heading) : null,
+      contentStart: contentStart && isVisible(contentStart) ? rectOf(contentStart) : null,
     };
   }, pageInfo);
 }
 
-function validateLayout({ target, pageInfo, viewport, facts }) {
+function validatePortfolioLayout({ pageInfo, viewport, facts }) {
   const errors = [];
   const desktopLike = viewport.width >= 1024;
-  const leftLimit = desktopLike ? Math.max(220, viewport.width * 0.22) : Math.max(42, viewport.width * 0.22);
   let checked = 0;
 
-  checked += assertRect(errors, facts.logo?.rect, `missing visible Onovich logo`, (rect) => (
-    rect.x <= leftLimit ? '' : `Onovich logo is not in the left navigation area (x=${round(rect.x)}, limit=${round(leftLimit)})`
-  ));
+  checked += 1;
+  if (facts.overflow) errors.push('page has horizontal overflow');
 
+  checked += assertRect(errors, facts.heading, 'missing visible page heading', () => '');
+  checked += assertRect(errors, facts.logo?.rect, 'missing visible Onovich wordmark', () => '');
+
+  if (!desktopLike) {
+    checked += assertRect(errors, facts.mobileHeader, 'missing visible mobile header', () => '');
+    return { checked, errors };
+  }
+
+  const leftLimit = Math.max(220, viewport.width * 0.28);
   checked += assertRect(errors, facts.navLink?.rect, `missing visible ${pageInfo.navLabel} nav link`, (rect) => (
-    rect.x <= leftLimit ? '' : `${pageInfo.navLabel} nav link is not in the left navigation area (x=${round(rect.x)}, limit=${round(leftLimit)})`
+    rect.x <= leftLimit ? '' : `${pageInfo.navLabel} nav link is not in the left index (x=${round(rect.x)}, limit=${round(leftLimit)})`
   ));
+  checked += assertRect(errors, facts.navColumn, 'missing visible .site-index', () => '');
+  checked += assertRect(errors, facts.mainColumn, 'missing visible .site-content', () => '');
+  checked += assertRect(errors, facts.navRoot, 'missing visible desktop route navigation', () => '');
 
-  if (pageInfo.slug !== 'home' && desktopLike) {
-    const backText = `< ${pageInfo.backLabel || 'HOME'}`;
-    checked += assertRect(errors, facts.backLink?.rect, `missing visible ${backText} back link`, (rect) => (
-      rect.x >= viewport.width * 0.6 ? '' : `${backText} link is not aligned to the right content area (x=${round(rect.x)})`
-    ));
-  }
-
-  if (target === 'clone' && desktopLike) {
-    checked += assertRect(errors, facts.navColumn, 'clone is missing .home-grid__col--nav', () => '');
-    checked += assertRect(errors, facts.mainColumn, 'clone is missing .home-grid__col--main', () => '');
-
-    if (facts.navColumn && facts.mainColumn) {
-      checked += 1;
-      if (facts.mainColumn.x <= facts.navColumn.x + facts.navColumn.width * 0.8) {
-        errors.push(`clone main column overlaps the left navigation (nav=${formatRect(facts.navColumn)}, main=${formatRect(facts.mainColumn)})`);
-      }
-    }
-
-    if (pageInfo.slug !== 'home') {
-      checked += 1;
-      if (!facts.navLink?.active) errors.push(`${pageInfo.navLabel} nav link is not marked active in clone`);
+  if (facts.navColumn && facts.mainColumn) {
+    checked += 1;
+    if (facts.mainColumn.x < facts.navColumn.right - 0.5) {
+      errors.push(`main content overlaps the left index (nav=${formatRect(facts.navColumn)}, main=${formatRect(facts.mainColumn)})`);
     }
   }
+
+  if (facts.navRoot && facts.contentStart) {
+    checked += 1;
+    const delta = Math.abs(facts.navRoot.y - facts.contentStart.y);
+    if (delta > 12) {
+      errors.push(`main content is not optically aligned with the navigation top (delta=${round(delta)}px)`);
+    }
+  }
+
+  checked += 1;
+  if (!facts.navLink?.active) errors.push(`${pageInfo.navLabel} nav link is not marked active`);
 
   return { checked, errors };
 }
