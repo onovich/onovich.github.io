@@ -1,0 +1,18 @@
+---
+import LocalizedPhotoAlbum from '../../../components/LocalizedPhotoAlbum.astro';
+import { photoAlbumSlugs } from '../../../content/portfolio';
+
+export function getStaticPaths() {
+  return Object.values(photoAlbumSlugs).map(album => ({
+    params: { album },
+    props: { album },
+  }));
+}
+
+interface Props {
+  album: string;
+}
+
+const { album } = Astro.props;
+---
+<LocalizedPhotoAlbum lang="en" slug={album} />

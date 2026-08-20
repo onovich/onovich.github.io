@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = path.join(root, 'public');
 const srcContentDir = path.join(root, 'src', 'content');
+const portfolioFile = path.join(srcContentDir, 'portfolio.ts');
 const args = Object.fromEntries(
   process.argv.slice(2).map((arg) => {
     const [key, ...rest] = arg.replace(/^--/, '').split('=');
@@ -15,8 +16,6 @@ const args = Object.fromEntries(
 const largeThreshold = Number(args.largeBytes ?? 1_000_000);
 const maxWarnings = Number(args.maxWarnings ?? 20);
 const contentFiles = [
-  'codes.json',
-  'games.json',
   'pixel.json',
   'illustrations.json',
   'gifs.json',
@@ -37,6 +36,20 @@ for (const file of contentFiles) {
 
   const data = JSON.parse(fs.readFileSync(absolute, 'utf8'));
   collectAssetReferences(data, file);
+}
+
+if (!fs.existsSync(portfolioFile)) {
+  failures.push('portfolio.ts: missing production portfolio content file');
+} else {
+  const source = fs.readFileSync(portfolioFile, 'utf8');
+  for (const match of source.matchAll(/['"](\/images\/[^'"]+)['"]/g)) {
+    references.push({
+      key: 'portfolio asset',
+      value: match[1],
+      context: 'portfolio.ts',
+      item: null,
+    });
+  }
 }
 
 for (const ref of references) {

@@ -1,0 +1,176 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import {
+  copy,
+  pagePath,
+  projects,
+  type Language,
+  type PageKey,
+} from '../content/portfolio';
+
+interface Props {
+  lang: Language;
+  page: Exclude<PageKey, 'art'>;
+}
+
+const { lang, page } = Astro.props;
+const text = copy[lang];
+const descriptions = text.projectDescriptions;
+---
+{page === 'home' && (
+  <section class="route-page" aria-labelledby="home-title">
+    <header class="home-intro">
+      <div class="home-intro__copy">
+        <h1 id="home-title">{text.home.title}</h1>
+        <p class="home-intro__body">
+          {text.home.body.map(line => <span>{line}</span>)}
+        </p>
+      </div>
+      <img
+        class="identity-image identity-image--home"
+        src="/images/profile/avatar.jpg"
+        alt="Pixel-art frog astronaut avatar"
+        width="400"
+        height="400"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      />
+    </header>
+
+    <section class="home-work" aria-labelledby="home-work-title">
+      <h2 id="home-work-title" class="personal-heading">{text.home.lead}</h2>
+      <div class="project-grid project-grid--home">
+        <ProjectCard {...projects.ninja} description={descriptions.ninjaShort} />
+        <ProjectCard {...projects.golf} description={descriptions.golfShort} />
+        <ProjectCard {...projects.inscape} description={descriptions.inscape} />
+        <ProjectCard {...projects.prism} description={descriptions.prism} />
+      </div>
+      <div class="home-paths">
+        <a href={pagePath('work', lang)}>{text.home.moreWork} →</a>
+        <a href={pagePath('art', lang)}>{text.home.moreArt} →</a>
+      </div>
+    </section>
+  </section>
+)}
+
+{page === 'work' && (
+  <section class="route-page" aria-labelledby="work-title">
+    <header class="route-heading">
+      <h1 id="work-title">{text.work.title}</h1>
+    </header>
+
+    <section class="work-group" aria-labelledby="games-title">
+      <div class="group-heading">
+        <h2 id="games-title">{text.work.games}</h2>
+        <p>{text.work.gamesNote}</p>
+      </div>
+      <div class="project-grid">
+        <ProjectCard {...projects.ninja} description={descriptions.ninjaLong} />
+        <ProjectCard {...projects.golf} description={descriptions.golfLong} />
+      </div>
+    </section>
+
+    <section class="work-group" aria-labelledby="systems-title">
+      <div class="group-heading">
+        <h2 id="systems-title">{text.work.systems}</h2>
+        <p>{text.work.systemsNote}</p>
+      </div>
+      <div class="project-grid">
+        <ProjectCard {...projects.inscape} description={descriptions.inscape} />
+        <ProjectCard {...projects.prism} description={descriptions.prism} />
+        <ProjectCard {...projects.pulse} description={descriptions.pulse} />
+        <ProjectCard {...projects.ease} description={descriptions.ease} />
+        <ProjectCard {...projects.litio} description={descriptions.litio} />
+        <ProjectCard {...projects.beat} description={descriptions.beat} />
+      </div>
+    </section>
+
+    <section class="work-group" aria-labelledby="publishing-title">
+      <div class="group-heading">
+        <h2 id="publishing-title">{text.work.publishing}</h2>
+        <p>{text.work.publishingNote}</p>
+      </div>
+      <div class="project-grid">
+        <ProjectCard {...projects.repoCover} description={descriptions.repoCover} />
+        <ProjectCard {...projects.repoReadme} description={descriptions.repoReadme} />
+      </div>
+    </section>
+  </section>
+)}
+
+{page === 'writing' && (
+  <section class="route-page" aria-labelledby="writing-title">
+    <header class="route-heading">
+      <h1 id="writing-title">{text.writing.title}</h1>
+    </header>
+    <article class="writing-feature">
+      <div>
+        <p class="ui-kicker">{text.writing.publication}</p>
+        <h2>{text.writing.heading}</h2>
+        <p>{text.writing.status}</p>
+      </div>
+    </article>
+  </section>
+)}
+
+{page === 'profile' && (
+  <section class="route-page" aria-labelledby="profile-title">
+    <header class="route-heading">
+      <h1 id="profile-title">{text.profile.title}</h1>
+    </header>
+
+    <div class="profile-intro">
+      <img
+        class="identity-image identity-image--profile"
+        src="/images/profile/avatar.jpg"
+        alt="Pixel-art frog astronaut avatar"
+        width="400"
+        height="400"
+      />
+      <p class="profile-intro__bio">
+        {text.profile.bio.map(line => <span>{line}</span>)}
+      </p>
+    </div>
+
+    <section class="profile-section" aria-labelledby="profile-focus">
+      <h2 id="profile-focus">{text.profile.focus}</h2>
+      <div class="profile-list">
+        {text.profile.focusItems.map(item => <p>{item}</p>)}
+      </div>
+    </section>
+
+    <section class="profile-section" aria-labelledby="profile-experience">
+      <h2 id="profile-experience">{text.profile.experience}</h2>
+      <div class="experience-list">
+        {text.profile.experiences.map(([title, description]) => (
+          <article><h3>{title}</h3><p>{description}</p></article>
+        ))}
+      </div>
+    </section>
+  </section>
+)}
+
+{page === 'contact' && (
+  <section class="route-page" aria-labelledby="contact-title">
+    <header class="route-heading">
+      <h1 id="contact-title">{text.contact.title}</h1>
+    </header>
+
+    <div class="contact-layout contact-layout--links-only">
+      <div class="contact-copy">
+        <h2>
+          <span>{text.contact.line1}</span>
+          <span>{text.contact.line2}</span>
+        </h2>
+        <ul>
+          {text.contact.items.map(item => <li>{item}</li>)}
+        </ul>
+        <div class="contact-links">
+          <a href="https://github.com/onovich" target="_blank" rel="noopener noreferrer">{text.contact.github} ↗</a>
+          <a href="https://twitter.com/Umbra_Onovich" target="_blank" rel="noopener noreferrer">{text.contact.twitter} ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+)}

@@ -154,12 +154,12 @@ Code/config/hook paths detected:
 {shown}
 
 Before retrying the commit, confirm:
-- Source of truth: _reference-site/direct curl/Playwright, not _old-site/WebFetch/archive.
-- Boundary: page frame in BaseLayout; CMS shell/client/helpers/scripts are not mixed.
+- Source of truth: the approved bilingual portfolio and its shared content model, not an archived Cargo/CMS implementation.
+- Boundary: page frame and metadata stay in BaseLayout; localized routes bind shared components and structured content.
 - Duplication: shared components/helpers used instead of page-specific copies.
-- Presets/data: templates, presets, constrained params, and content JSON remain the main contract.
-- Assets: image refs exist, large thumbs use thumbSrc, old photos chain is not restored.
-- Validation: Validate.cmd, Smoke.cmd, and visual checks were chosen for the risk.
+- Presets/data: portfolio.ts and the retained artwork data files remain the content contract.
+- Assets: image refs exist and gallery thumbnails remain usable at desktop and mobile sizes.
+- Validation: Validate.cmd, Smoke.cmd, and human visual review were chosen for the risk.
 
 Then rerun the commit with ONOVICH_ARCH_SELF_CHECKED=1."""
 

@@ -1,0 +1,114 @@
+---
+import pixel from '../content/pixel.json';
+import illustrations from '../content/illustrations.json';
+import animations from '../content/gifs.json';
+import graphics from '../content/graphics.json';
+import photoAlbums from '../content/photoAlbums.json';
+import poemHtml from '../content/poem.html?raw';
+import ArtLightbox from './ArtLightbox.astro';
+import {
+  artCategories,
+  artPath,
+  copy,
+  pagePath,
+  photoAlbumPath,
+  photoAlbumSlugs,
+  type ArtCategoryKey,
+  type Language,
+  type PhotoAlbumId,
+} from '../content/portfolio';
+
+interface Props {
+  lang: Language;
+  category: ArtCategoryKey;
+}
+
+interface ArtItem {
+  id: string;
+  title?: string;
+  year?: string;
+  src: string;
+  thumbSrc?: string;
+  width?: number;
+  height?: number;
+}
+
+const { lang, category } = Astro.props;
+const text = copy[lang];
+const galleries: Partial<Record<ArtCategoryKey, ArtItem[]>> = {
+  pixel,
+  illustration: illustrations,
+  animation: animations,
+  graphic: graphics,
+};
+const items = galleries[category] ?? [];
+const countLabel = category === 'photography' ? text.art.albums : text.art.works;
+---
+<section class="route-page" aria-labelledby="art-title">
+  <header class="route-heading route-heading--art">
+    <h1 id="art-title">{text.art.title}</h1>
+  </header>
+
+  <nav class="art-subnav" aria-label={text.art.title}>
+    <a href={pagePath('art', lang)}>{text.art.all}</a>
+    {artCategories.map(item => (
+      <a href={artPath(item.key, lang)} aria-current={category === item.key ? 'page' : undefined}>
+        {text.art[item.key]}
+      </a>
+    ))}
+  </nav>
+
+  <div class="art-section-heading">
+    <h2>{text.art[category]}</h2>
+    <p>
+      {category === 'photography' ? photoAlbums.index.length : category === 'poetry' ? text.art.poemNote : items.length}
+      {category !== 'poetry' && ` ${countLabel}`}
+    </p>
+  </div>
+
+  {category === 'photography' ? (
+    <div class="album-grid">
+      {photoAlbums.index.map(album => (
+        <a class="album-card" href={photoAlbumPath(photoAlbumSlugs[album.id as PhotoAlbumId], lang)}>
+          <img src={album.src} alt={album.title} loading="lazy" decoding="async" />
+          <div class="album-card__caption">
+            <strong>{album.title}</strong>
+            <span>{album.year}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  ) : category === 'poetry' ? (
+    <article class="poem-view" set:html={poemHtml} />
+  ) : (
+    <div class="art-gallery">
+      {items.map(item => (
+        <figure class="art-item">
+          <button
+            type="button"
+            data-lightbox-src={item.src}
+            data-lightbox-caption={item.title ?? ''}
+            aria-label={`${text.art.open}: ${item.title ?? item.id}`}
+          >
+            <img
+              src={item.thumbSrc ?? item.src}
+              alt={item.title ?? ''}
+              width={item.width}
+              height={item.height}
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <figcaption>
+            <span>{item.title}</span>
+            <span>{item.year}</span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  )}
+</section>
+
+{category !== 'photography' && category !== 'poetry' && (
+  <ArtLightbox closeLabel={text.close} />
+)}

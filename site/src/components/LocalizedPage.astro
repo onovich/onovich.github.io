@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PortfolioPage from './PortfolioPage.astro';
+import { copy, pagePath, type Language, type PageKey } from '../content/portfolio';
+
+interface Props {
+  lang: Language;
+  page: Exclude<PageKey, 'art'>;
+}
+
+const { lang, page } = Astro.props;
+const alternateLanguage: Language = lang === 'en' ? 'zh-CN' : 'en';
+const metadata = copy[lang].pages[page];
+---
+<BaseLayout
+  lang={lang}
+  activePage={page}
+  title={metadata.title}
+  description={metadata.description}
+  canonicalPath={pagePath(page, lang)}
+  alternatePath={pagePath(page, alternateLanguage)}
+>
+  <PortfolioPage lang={lang} page={page} />
+</BaseLayout>

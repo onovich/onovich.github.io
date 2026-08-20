@@ -1,43 +1,36 @@
-# Astro Starter Kit: Minimal
+# Onovich.com
+
+The bilingual personal site for Onovich: games, game-development tools, art, notes, and profile.
+
+## Local development
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The production build is static Astro output:
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```sh
+npm run build
+npm run preview
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Routes
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+- English is served from `/`.
+- Chinese is served from `/zh/`.
+- Games and tools, art categories, photo albums, notes, profile, and contact each have stable language-specific URLs.
+- Former Cargo routes are preserved in `public/_redirects` for the Cloudflare Pages cutover.
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Content and visuals
 
-## 🧞 Commands
+- Shared copy and portfolio metadata live in `src/content/portfolio.ts`.
+- The production frame lives in `src/layouts/BaseLayout.astro`.
+- Project covers and art assets live under `public/images/`.
+- `npm run visual:guard -- --clone=http://127.0.0.1:4351` checks the current portfolio shell and gallery images in desktop and mobile viewports.
+- Run `npm run social:preview` while the site is available at `http://127.0.0.1:8130` to refresh the two 1280×640 social images. A different base URL may be passed as the final argument.
 
-All commands are run from the root of the project, from a terminal:
+## Deployment
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Cloudflare Pages settings and the staged Cargo cutover are documented in [`../docs/CLOUDFLARE_PAGES_CUTOVER.md`](../docs/CLOUDFLARE_PAGES_CUTOVER.md).
