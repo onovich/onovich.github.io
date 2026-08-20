@@ -1,14 +1,13 @@
 /**
  * Lightweight image load audit for clone/original visual pages.
  *
- * This uses the same Playwright navigation and lazy-image warmup as visual-diff,
- * but it does not save screenshots. Use it before screenshot-heavy reviews to
- * find which gallery pages still need poster/eager tuning.
+ * This uses Playwright navigation and lazy-image warmup without saving
+ * screenshots. Use it before screenshot-heavy reviews to find gallery pages
+ * that still need poster or eager-loading tuning.
  *
  * Usage:
  *   node scripts/visual-image-audit.mjs --clone=http://localhost:4350
- *   node scripts/visual-image-audit.mjs --pages=illustrator,gif --viewports=desktop,wide
- *   node scripts/visual-image-audit.mjs --pages=photo-details
+ *   node scripts/visual-image-audit.mjs --pages=portfolio-galleries --viewports=desktop,wide
  *   node scripts/visual-image-audit.mjs --targets=original,clone --failOnPending=false
  */
 import { chromium } from 'playwright';
@@ -25,7 +24,7 @@ import {
   targetUrl,
 } from './visual-config.mjs';
 
-const DEFAULT_GALLERY_PAGES = 'galleries,photo-details';
+const DEFAULT_GALLERY_PAGES = 'portfolio-galleries';
 
 const args = parseVisualArgs();
 const PAGES = selectPages(args.pages || DEFAULT_GALLERY_PAGES);

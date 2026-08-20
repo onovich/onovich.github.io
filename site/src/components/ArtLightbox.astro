@@ -1,0 +1,39 @@
+---
+interface Props {
+  closeLabel: string;
+}
+
+const { closeLabel } = Astro.props;
+---
+<dialog class="art-lightbox" data-art-lightbox>
+  <button type="button" data-lightbox-close aria-label={closeLabel}>×</button>
+  <img data-lightbox-image alt="" />
+  <p data-lightbox-caption></p>
+</dialog>
+
+<script>
+  const dialog = document.querySelector('[data-art-lightbox]');
+  const dialogImage = dialog?.querySelector('[data-lightbox-image]');
+  const dialogCaption = dialog?.querySelector('[data-lightbox-caption]');
+
+  document.querySelectorAll('[data-lightbox-src]').forEach(button => {
+    button.addEventListener('click', () => {
+      if (!(dialog instanceof HTMLDialogElement) || !(dialogImage instanceof HTMLImageElement)) return;
+      const source = button.getAttribute('data-lightbox-src');
+      const caption = button.getAttribute('data-lightbox-caption') ?? '';
+      if (!source) return;
+      dialogImage.src = source;
+      dialogImage.alt = caption;
+      if (dialogCaption) dialogCaption.textContent = caption;
+      dialog.showModal();
+    });
+  });
+
+  dialog?.querySelector('[data-lightbox-close]')?.addEventListener('click', () => {
+    if (dialog instanceof HTMLDialogElement) dialog.close();
+  });
+
+  dialog?.addEventListener('click', event => {
+    if (event.target === dialog && dialog instanceof HTMLDialogElement) dialog.close();
+  });
+</script>

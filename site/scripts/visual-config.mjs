@@ -1,60 +1,62 @@
-import path from 'node:path';
-
 export const DEFAULT_ORIGINAL_URL = 'https://onovich.com';
-export const DEFAULT_CLONE_URL = 'https://blog.onovich.com';
-
-export const VISUAL_OUT_DIR = path.resolve(
-  import.meta.dirname ?? path.dirname(new URL(import.meta.url).pathname),
-  '../../diff-screenshots'
-);
+export const DEFAULT_CLONE_URL = 'http://127.0.0.1:4351';
 
 export const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-export const PHOTO_DETAIL_PAGES = Array.from({ length: 8 }, (_, index) => {
-  const slug = `photo_${index + 1}`;
-  return { slug, original: `/${slug}`, clone: `/${slug}`, navLabel: 'PHOTOS', backLabel: 'PHOTO' };
-});
+const PHOTO_ALBUMS = ['tokyo', 'kamakura', 'fuji', 'hong-kong', 'shenzhen', 'shanghai', 'beijing'];
+const ART_CATEGORIES = ['pixel', 'illustration', 'animation', 'graphic', 'photography', 'poetry'];
 
-export const PAGES_BASE = [
-  { slug: 'home',        original: '/',             clone: '/',             navLabel: 'CODES' },
-  { slug: 'codes',       original: '/codes',        clone: '/codes',        navLabel: 'CODES' },
-  { slug: 'game',        original: '/game',         clone: '/game',         navLabel: 'GAMES' },
-  { slug: 'pixel',       original: '/pixel',        clone: '/pixel',        navLabel: 'PIXEL ARTS' },
-  { slug: 'illustrator', original: '/illustrator',  clone: '/illustrator',  navLabel: 'ILLUSTRATIONS' },
-  { slug: 'gif',         original: '/gif',          clone: '/gif',          navLabel: 'GIFS' },
-  { slug: 'graphic',     original: '/graphic',      clone: '/graphic',      navLabel: 'GRAPHIC DESIGNS' },
-  { slug: 'photo',       original: '/photo',        clone: '/photo',        navLabel: 'PHOTOS' },
-  { slug: 'poem',        original: '/poem',         clone: '/poem',         navLabel: 'POEMS' },
-  { slug: 'sns',         original: '/sns',          clone: '/sns',          navLabel: 'SNS' },
-  { slug: 'links',       original: '/links',        clone: '/links',        navLabel: 'LINKS' },
-  { slug: 'contact',     original: '/contact-form', clone: '/contact',      navLabel: 'MESSAGE' },
+const corePages = [
+  page('home', '/', 'HOME'),
+  page('work', '/games-and-tools/', 'GAMES & TOOLS'),
+  page('art', '/art/', 'ART'),
+  page('notes', '/development-notes/', 'DEV NOTES'),
+  page('profile', '/profile/', 'PROFILE'),
+  page('contact', '/contact/', 'CONTACT'),
+  page('zh-home', '/zh/', '首页'),
+  page('zh-work', '/zh/games-and-tools/', '游戏与工具'),
+  page('zh-art', '/zh/art/', '艺术创作'),
+  page('zh-notes', '/zh/development-notes/', '开发笔记'),
+  page('zh-profile', '/zh/profile/', '履历'),
+  page('zh-contact', '/zh/contact/', '联系'),
 ];
 
-export const PAGES_ALL = [
-  ...PAGES_BASE,
-  ...PHOTO_DETAIL_PAGES,
+const galleryPages = [
+  ...ART_CATEGORIES.map((category) => page(`art-${category}`, `/art/${category}/`, 'ART')),
+  ...ART_CATEGORIES.map((category) => page(`zh-art-${category}`, `/zh/art/${category}/`, '艺术创作')),
+  ...PHOTO_ALBUMS.map((album) => page(`photo-${album}`, `/art/photography/${album}/`, 'ART')),
+  ...PHOTO_ALBUMS.map((album) => page(`zh-photo-${album}`, `/zh/art/photography/${album}/`, '艺术创作')),
 ];
+
+export const PORTFOLIO_PAGES = [...corePages, ...galleryPages];
+export const PAGES_ALL = PORTFOLIO_PAGES;
 
 export const VIEWPORTS = [
-  { name: 'mobile',  width: 375,  height: 800 },
-  { name: 'tablet',  width: 768,  height: 1024 },
-  { name: 'laptop',  width: 1024, height: 768 },
+  { name: 'mobile', width: 375, height: 800 },
+  { name: 'tablet', width: 768, height: 1024 },
+  { name: 'laptop', width: 1024, height: 768 },
   { name: 'desktop', width: 1440, height: 900 },
-  { name: 'wide',    width: 1920, height: 1080 },
+  { name: 'wide', width: 1920, height: 1080 },
 ];
 
 const PAGE_ALIASES = new Map([
   ['index', 'home'],
   ['/', 'home'],
+  ['zh', 'zh-home'],
 ]);
 
 const PAGE_GROUPS = new Map([
-  ['gallery', ['codes', 'game', 'pixel', 'illustrator', 'gif', 'graphic', 'photo']],
-  ['galleries', ['codes', 'game', 'pixel', 'illustrator', 'gif', 'graphic', 'photo']],
-  ['photo-details', PHOTO_DETAIL_PAGES.map((page) => page.slug)],
-  ['photo-detail', PHOTO_DETAIL_PAGES.map((page) => page.slug)],
-  ['photo-albums', ['photo', ...PHOTO_DETAIL_PAGES.map((page) => page.slug)]],
+  ['portfolio-core', corePages.map((item) => item.slug)],
+  ['portfolio-galleries', galleryPages.map((item) => item.slug)],
+  ['portfolio-all', PORTFOLIO_PAGES.map((item) => item.slug)],
+  ['core', corePages.map((item) => item.slug)],
+  ['galleries', galleryPages.map((item) => item.slug)],
+  ['all', PORTFOLIO_PAGES.map((item) => item.slug)],
 ]);
+
+function page(slug, route, navLabel) {
+  return { slug, route, navLabel };
+}
 
 export function parseVisualArgs(argv = process.argv.slice(2)) {
   return Object.fromEntries(
@@ -79,12 +81,11 @@ export function selectPages(value) {
   const requested = expandPageGroups(splitListArg(value).map((slug) => PAGE_ALIASES.get(slug) || slug));
   if (requested.length === 0) return PAGES_ALL;
 
-  const pages = requested.map((slug) => {
-    const page = PAGES_ALL.find((item) => item.slug === slug);
-    if (!page) throw new Error(`Unknown visual page "${slug}".`);
-    return page;
+  return requested.map((slug) => {
+    const selected = PAGES_ALL.find((item) => item.slug === slug);
+    if (!selected) throw new Error(`Unknown visual page "${slug}".`);
+    return selected;
   });
-  return pages;
 }
 
 function expandPageGroups(slugs) {
@@ -107,8 +108,8 @@ export function selectTargets(value, defaultValue, urls = {}) {
   const clone = urls.clone || DEFAULT_CLONE_URL;
   const requested = splitListArg(value || defaultValue);
   const configs = {
-    original: { name: 'original', baseUrl: original, routeKey: 'original', waitMs: 1500 },
-    clone: { name: 'clone', baseUrl: clone, routeKey: 'clone', waitMs: 500 },
+    original: { name: 'original', baseUrl: original, routeKey: 'route', waitMs: 1500 },
+    clone: { name: 'clone', baseUrl: clone, routeKey: 'route', waitMs: 500 },
   };
 
   return requested.map((target) => {
@@ -186,7 +187,7 @@ async function waitForImages(page, timeout) {
   return page.evaluate(async (imageTimeout) => {
     const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
     const round = (value) => Math.round(value * 100) / 100;
-    const images = Array.from(document.images);
+    const images = Array.from(document.images).filter((img) => Boolean(img.currentSrc || img.getAttribute('src')));
     const isRenderable = (img) => img.complete && img.naturalWidth > 0 && img.naturalHeight > 0;
     const compactSrc = (src) => {
       if (!src) return '';
@@ -224,7 +225,6 @@ async function waitForImages(page, timeout) {
     window.scrollTo(0, 0);
 
     const unloaded = images.filter((img) => !isRenderable(img));
-
     return {
       total: images.length,
       loaded: images.filter(isRenderable).length,

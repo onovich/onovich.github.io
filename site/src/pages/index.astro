@@ -1,20 +1,4 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import LocalizedPage from '../components/LocalizedPage.astro';
 ---
-<BaseLayout title="Onovich" activePage="/">
-  <img
-    class="home-avatar"
-    src="/images/profile/avatar.jpg"
-    alt="Onovich"
-    width="400"
-    height="400"
-    loading="eager"
-    decoding="async"
-    fetchpriority="high"
-  />
-  <hr class="home-divider" />
-  <div class="home-bio">
-    <p>沼蛙奥诺维奇，在沙发上创作游戏。</p>
-    <p>天生的法兰左和 BTV（但不会潜水）。</p>
-  </div>
-</BaseLayout>
+<LocalizedPage lang="en" page="home" />

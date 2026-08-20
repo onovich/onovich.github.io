@@ -1,0 +1,62 @@
+---
+import ArtLightbox from './ArtLightbox.astro';
+import {
+  artPath,
+  copy,
+  getPhotoAlbumBySlug,
+  type Language,
+} from '../content/portfolio';
+
+interface Props {
+  lang: Language;
+  slug: string;
+}
+
+const { lang, slug } = Astro.props;
+const text = copy[lang];
+const photoAlbum = getPhotoAlbumBySlug(slug);
+
+if (!photoAlbum) {
+  throw new Error(`Unknown photography album: ${slug}`);
+}
+
+const { album } = photoAlbum;
+---
+<section class="route-page" aria-labelledby="album-title">
+  <header class="route-heading route-heading--art">
+    <h1 id="album-title">{album.title}</h1>
+  </header>
+
+  <nav class="art-subnav" aria-label={text.art.photography}>
+    <a href={artPath('photography', lang)}>← {text.art.backToPhotography}</a>
+  </nav>
+
+  <div class="art-section-heading">
+    <h2>{album.title}</h2>
+    <p>{album.year}</p>
+  </div>
+
+  <div class="art-gallery art-gallery--photography">
+    {album.items.map(item => (
+      <figure class="art-item">
+        <button
+          type="button"
+          data-lightbox-src={item.src}
+          data-lightbox-caption={album.title}
+          aria-label={`${text.art.open}: ${album.title}`}
+        >
+          <img
+            src={item.src}
+            alt={album.title}
+            width={item.width}
+            height={item.height}
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+      </figure>
+    ))}
+  </div>
+</section>
+
+<ArtLightbox closeLabel={text.close} />

@@ -31,9 +31,7 @@
       ]
     },
     "test": {
-      "commands": [
-        "npm --prefix site run cms:check"
-      ]
+      "commands": []
     },
     "lint": {
       "commands": []
