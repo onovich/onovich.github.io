@@ -19,6 +19,10 @@ Cloudflare Pages supports an explicit root directory for repositories where the 
 
 This replacement intentionally moves the project from Astro 6 to Astro 7 and adds the static sitemap integration. It is a build/SEO baseline change, not a presentation feature: `npm run build`, the asset check, the visual guard, and `npm audit --omit=dev` must all pass before the branch is considered ready for preview.
 
+## First preview activation
+
+Cloudflare Pages reacts to new Git events after its GitHub integration is connected. If a feature branch or its pull request existed before that connection was authorized, make a documentation-only follow-up commit on the feature branch after confirming that preview deployments include all non-production branches. This safely triggers the first preview without changing the site, `main`, DNS, or Cargo.
+
 ## Safe rollout
 
 1. Connect the GitHub repository to a new Cloudflare Pages project.
