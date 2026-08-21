@@ -19,6 +19,7 @@ const metadata = copy[lang].pages[page];
   description={metadata.description}
   canonicalPath={pagePath(page, lang)}
   alternatePath={pagePath(page, alternateLanguage)}
+  autoDetectLanguage={page === 'home' && lang === 'en'}
 >
   <PortfolioPage lang={lang} page={page} />
 </BaseLayout>

@@ -36,6 +36,9 @@ try {
     const ctx = await browser.newContext({
       viewport: { width: viewport.width, height: viewport.height },
       userAgent: USER_AGENT,
+      // The root route now respects browser language. Keep this layout baseline deterministic;
+      // localized routes are still exercised directly in the same run.
+      locale: 'en-US',
     });
     const page = await ctx.newPage();
 
