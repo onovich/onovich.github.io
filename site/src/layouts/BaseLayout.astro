@@ -18,6 +18,7 @@ interface Props {
   socialImage?: string;
   pageClass?: string;
   noindex?: boolean;
+  autoDetectLanguage?: boolean;
 }
 
 const {
@@ -30,6 +31,7 @@ const {
   socialImage,
   pageClass = '',
   noindex = false,
+  autoDetectLanguage = false,
 } = Astro.props;
 
 const text = copy[lang];
@@ -100,6 +102,37 @@ const structuredData = {
     <meta name="twitter:image" content={socialImageUrl} />
 
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    {autoDetectLanguage && (
+      <script is:inline>
+        (() => {
+          const preferenceKey = 'onovich-language';
+          let savedLanguage = '';
+
+          try {
+            savedLanguage = localStorage.getItem(preferenceKey) || '';
+          } catch {
+            // Privacy settings can disable local storage; browser detection remains available.
+          }
+
+          const browserLanguages = Array.isArray(navigator.languages) && navigator.languages.length > 0
+            ? navigator.languages
+            : [navigator.language];
+          const detectedLanguage = browserLanguages.find((language) =>
+            typeof language === 'string' && /^(zh|en)(?:[-_]|$)/i.test(language.trim())
+          );
+          const preferredSupportedLanguage = /^(zh-CN|en)$/i.test(savedLanguage)
+            ? savedLanguage
+            : detectedLanguage;
+
+          if (!preferredSupportedLanguage || !/^zh(?:[-_]|$)/i.test(preferredSupportedLanguage.trim())) return;
+
+          const target = new URL('/zh/', window.location.origin);
+          target.search = window.location.search;
+          target.hash = window.location.hash;
+          window.location.replace(target.href);
+        })();
+      </script>
+    )}
   </head>
   <body class:list={[`page-${activePage ?? 'not-found'}`, pageClass]}>
     <a class="skip-link" href="#main">{text.skip}</a>
@@ -108,9 +141,9 @@ const structuredData = {
       <a class="mobile-wordmark" href={pagePath('home', lang)}>Onovich</a>
       <div class="mobile-header__actions">
         <div class="language-switch language-switch--mobile" aria-label="Language">
-          <a href={englishPath} hreflang="en" lang="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+          <a href={englishPath} hreflang="en" lang="en" data-language-choice="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
           <span aria-hidden="true">/</span>
-          <a href={chinesePath} hreflang="zh-CN" lang="zh-CN" aria-current={lang === 'zh-CN' ? 'true' : undefined}>中文</a>
+          <a href={chinesePath} hreflang="zh-CN" lang="zh-CN" data-language-choice="zh-CN" aria-current={lang === 'zh-CN' ? 'true' : undefined}>中文</a>
         </div>
         <button class="menu-button" type="button" data-menu-open aria-expanded="false" aria-controls="mobile-index">{text.index}</button>
       </div>
@@ -141,9 +174,9 @@ const structuredData = {
 
         <div class="index-utility">
           <div class="language-switch" aria-label="Language">
-            <a href={englishPath} hreflang="en" lang="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+            <a href={englishPath} hreflang="en" lang="en" data-language-choice="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
             <span aria-hidden="true">/</span>
-            <a href={chinesePath} hreflang="zh-CN" lang="zh-CN" aria-current={lang === 'zh-CN' ? 'true' : undefined}>中文</a>
+            <a href={chinesePath} hreflang="zh-CN" lang="zh-CN" data-language-choice="zh-CN" aria-current={lang === 'zh-CN' ? 'true' : undefined}>中文</a>
           </div>
           <a class="external-link" href="https://github.com/onovich" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
         </div>
@@ -180,6 +213,19 @@ const structuredData = {
       closeButtons.forEach(button => button.addEventListener('click', closeMenu));
       document.addEventListener('keydown', event => {
         if (event.key === 'Escape') closeMenu();
+      });
+
+      document.querySelectorAll('[data-language-choice]').forEach((link) => {
+        link.addEventListener('click', () => {
+          try {
+            const choice = link.getAttribute('data-language-choice');
+            if (choice === 'en' || choice === 'zh-CN') {
+              localStorage.setItem('onovich-language', choice);
+            }
+          } catch {
+            // The destination URL still selects a language if storage is unavailable.
+          }
+        });
       });
 
     </script>
