@@ -104,7 +104,8 @@ const structuredData = {
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     <script is:inline>
       (() => {
-        if (window.location.hostname !== 'blog.onovich.com') return;
+        const namespaceHosts = new Set(['blog.onovich.com', 'game.onovich.com']);
+        if (!namespaceHosts.has(window.location.hostname)) return;
 
         const canonicalUrl = document.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? '';
         if (!canonicalUrl.startsWith('https://onovich.com/')) return;
