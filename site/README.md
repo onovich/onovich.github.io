@@ -33,4 +33,4 @@ npm run preview
 
 ## Deployment
 
-Cloudflare Pages settings and the staged Cargo cutover are documented in [`../docs/CLOUDFLARE_PAGES_CUTOVER.md`](../docs/CLOUDFLARE_PAGES_CUTOVER.md).
+Production is served from Cloudflare Pages at `https://onovich.com`. The remaining staged-cutover decision is whether `blog.onovich.com` becomes a separate future GameLetter deployment or is retired; the current GitHub Pages workflow and `CNAME` are retained until that decision is implemented. See [`../docs/CLOUDFLARE_PAGES_CUTOVER.md`](../docs/CLOUDFLARE_PAGES_CUTOVER.md).
