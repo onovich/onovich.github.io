@@ -830,10 +830,6 @@ html[lang="zh-CN"] .identity-image--home {
   color: var(--ink);
 }
 
-.contact-layout--links-only {
-  display: block;
-}
-
 .contact-links {
   display: flex;
   align-items: flex-start;
@@ -843,11 +839,16 @@ html[lang="zh-CN"] .identity-image--home {
 
 .contact-form {
   display: grid;
-  gap: 0.55rem;
+  align-content: start;
+  gap: 0.9rem;
+}
+
+.contact-form__field {
+  display: grid;
+  gap: 0.25rem;
 }
 
 .contact-form label {
-  margin-top: 0.7rem;
   color: var(--ink);
   font-size: 0.76rem;
 }
@@ -858,14 +859,18 @@ html[lang="zh-CN"] .identity-image--home {
   border: 0;
   border-bottom: 1px solid var(--rule-strong);
   border-radius: 0;
-  background: #fafaf8;
+  background: var(--color-soft);
+  color: var(--text);
+  font: inherit;
   padding: 0.7rem;
   resize: vertical;
 }
 
-.contact-form input:disabled,
-.contact-form textarea:disabled {
-  opacity: 0.62;
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: 2px solid var(--frog);
+  outline-offset: 2px;
+  border-bottom-color: var(--frog);
 }
 
 .contact-form button {
@@ -876,10 +881,26 @@ html[lang="zh-CN"] .identity-image--home {
   border: 1px solid var(--rule-strong);
   background: transparent;
   color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color var(--motion-fast) var(--ease-quiet), color var(--motion-fast) var(--ease-quiet);
 }
 
-.contact-form button:disabled {
-  opacity: 0.5;
+.contact-form button:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.contact-form button:focus-visible {
+  outline: 2px solid var(--frog);
+  outline-offset: 2px;
+}
+
+.contact-form__note {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.55;
 }
 
 .site-footer {

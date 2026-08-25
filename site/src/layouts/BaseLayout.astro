@@ -102,6 +102,18 @@ const structuredData = {
     <meta name="twitter:image" content={socialImageUrl} />
 
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    <script is:inline>
+      (() => {
+        if (window.location.hostname !== 'blog.onovich.com') return;
+
+        const canonicalUrl = document.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? '';
+        if (!canonicalUrl.startsWith('https://onovich.com/')) return;
+
+        const target = new URL(window.location.href);
+        target.hostname = 'onovich.com';
+        window.location.replace(target.href);
+      })();
+    </script>
     {autoDetectLanguage && (
       <script is:inline>
         (() => {
