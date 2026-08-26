@@ -10,7 +10,7 @@ The current implementation uses:
 - Resend's Free transactional-email plan for delivery to `onovich1110@gmail.com`;
 - Cloudflare Turnstile Free for bot protection.
 
-The recommended sender is `website@send.onovich.com`. The visitor's address is used as `Reply-To` so replies go back to the person who submitted the form.
+The recommended sender is `website@send.onovich.com`. The visitor's address is shown in the sender display name, while the actual `From` address remains the verified sender; it is also used as `Reply-To` so replies go back to the person who submitted the form. The visitor-provided subject is prefixed with `【网站联系表单】` to make the website source clear in the inbox.
 
 ## Required external configuration
 
@@ -33,6 +33,7 @@ Do not put either API key in Git, the frontend bundle, or chat. The public site 
 
 - The function validates the origin, field lengths, email shape, request size, and a hidden honeypot field.
 - Turnstile is validated server-side before Resend is called.
+- The Turnstile widget is rendered only after the visitor submits the form, then reset and hidden after the attempt finishes.
 - The function does not store submissions in this repository or a database; Resend handles delivery and its account retention policy applies.
 - The visible email link remains as a manual fallback if the service is unavailable.
 - The first production test should use a real but non-sensitive message and confirm receipt at `onovich1110@gmail.com`.

@@ -192,6 +192,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
           <input id="contact-email" name="email" type="email" autocomplete="email" required />
         </div>
         <div class="contact-form__field">
+          <label for="contact-subject">{text.contact.formSubject}</label>
+          <input id="contact-subject" name="subject" type="text" maxlength="160" autocomplete="off" required />
+        </div>
+        <div class="contact-form__field">
           <label for="contact-message">{text.contact.formMessage}</label>
           <textarea id="contact-message" name="message" rows="7" required></textarea>
         </div>
@@ -200,7 +204,15 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
           <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
         </div>
         {turnstileSiteKey && (
-          <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-action="contact"></div>
+          <div
+            class="contact-form__verification"
+            data-contact-verification
+            data-sitekey={turnstileSiteKey}
+            hidden
+            aria-hidden="true"
+          >
+            <div data-contact-turnstile></div>
+          </div>
         )}
         <button type="submit">{text.contact.formSubmit}</button>
         <p class="contact-form__note" id="contact-form-note" data-contact-status role="status" aria-live="polite" aria-atomic="true">
@@ -212,11 +224,107 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
 )}
 
 {turnstileSiteKey && (
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 )}
 
 <script>
   document.querySelectorAll('form[data-contact-form]').forEach(form => {
+    const verification = form.querySelector('[data-contact-verification]');
+    const turnstileContainer = verification?.querySelector('[data-contact-turnstile]');
+    const turnstileSiteKey = verification?.getAttribute('data-sitekey') ?? '';
+    let turnstileReady;
+    let turnstileWidgetId;
+    let resolveTurnstileToken;
+    let rejectTurnstileToken;
+
+    const hideVerification = (reset = true) => {
+      if (!(verification instanceof HTMLElement)) return;
+
+      const turnstile = window.turnstile;
+      if (reset && turnstileWidgetId !== undefined && turnstile && typeof turnstile.reset === 'function') {
+        turnstile.reset(turnstileWidgetId);
+      }
+
+      resolveTurnstileToken = undefined;
+      rejectTurnstileToken = undefined;
+      verification.hidden = true;
+      verification.setAttribute('aria-hidden', 'true');
+    };
+
+    const showVerification = () => {
+      if (!(verification instanceof HTMLElement)) return;
+
+      verification.hidden = false;
+      verification.setAttribute('aria-hidden', 'false');
+    };
+
+    const waitForTurnstile = () => {
+      if (window.turnstile) return Promise.resolve(window.turnstile);
+      if (turnstileReady) return turnstileReady;
+
+      turnstileReady = new Promise((resolve, reject) => {
+        const timeoutAt = Date.now() + 10_000;
+        const check = () => {
+          if (window.turnstile) {
+            resolve(window.turnstile);
+            return;
+          }
+
+          if (Date.now() >= timeoutAt) {
+            reject(new Error('Turnstile did not load'));
+            return;
+          }
+
+          window.setTimeout(check, 50);
+        };
+
+        check();
+      });
+
+      return turnstileReady;
+    };
+
+    const requestTurnstileToken = async () => {
+      if (!(verification instanceof HTMLElement) || !(turnstileContainer instanceof HTMLElement) || !turnstileSiteKey) {
+        return '';
+      }
+
+      showVerification();
+      const turnstile = await waitForTurnstile();
+      if (!turnstile || typeof turnstile.render !== 'function') {
+        throw new Error('Turnstile is unavailable');
+      }
+
+      return new Promise((resolve, reject) => {
+        resolveTurnstileToken = resolve;
+        rejectTurnstileToken = reject;
+
+        try {
+          if (turnstileWidgetId === undefined) {
+            turnstileWidgetId = turnstile.render(turnstileContainer, {
+              sitekey: turnstileSiteKey,
+              action: 'contact',
+              callback: token => {
+                if (resolveTurnstileToken) resolveTurnstileToken(token);
+              },
+              'expired-callback': () => {
+                if (rejectTurnstileToken) rejectTurnstileToken(new Error('Turnstile token expired'));
+              },
+              'error-callback': () => {
+                if (rejectTurnstileToken) rejectTurnstileToken(new Error('Turnstile verification failed'));
+              },
+            });
+          } else if (typeof turnstile.reset === 'function') {
+            turnstile.reset(turnstileWidgetId);
+          }
+        } catch (error) {
+          resolveTurnstileToken = undefined;
+          rejectTurnstileToken = undefined;
+          reject(error);
+        }
+      });
+    };
+
     form.addEventListener('submit', async event => {
       event.preventDefault();
 
@@ -228,9 +336,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
       const payload = {
         name: String(formData.get('name') ?? '').trim(),
         email: String(formData.get('email') ?? '').trim(),
+        subject: String(formData.get('subject') ?? '').trim(),
         message: String(formData.get('message') ?? '').trim(),
         website: String(formData.get('website') ?? '').trim(),
-        turnstileToken: String(formData.get('cf-turnstile-response') ?? '').trim(),
+        turnstileToken: '',
       };
 
       const sending = form.getAttribute('data-contact-sending') ?? 'Sending…';
@@ -242,6 +351,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
       status.dataset.state = 'pending';
 
       try {
+        payload.turnstileToken = await requestTurnstileToken();
+        hideVerification(false);
         const response = await fetch(form.getAttribute('action') ?? '/api/contact', {
           method: 'POST',
           headers: {
@@ -257,12 +368,11 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
         form.reset();
         status.textContent = success;
         status.dataset.state = 'success';
-        const turnstile = window.turnstile;
-        if (turnstile && typeof turnstile.reset === 'function') turnstile.reset();
       } catch {
         status.textContent = error;
         status.dataset.state = 'error';
       } finally {
+        hideVerification();
         submitButton.disabled = false;
       }
 
