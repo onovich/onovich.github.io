@@ -16,6 +16,7 @@ interface Props {
 const { lang, page } = Astro.props;
 const text = copy[lang];
 const descriptions = text.projectDescriptions;
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
 ---
 {page === 'home' && (
   <section class="route-page" aria-labelledby="home-title">
@@ -175,11 +176,12 @@ const descriptions = text.projectDescriptions;
 
       <form
         class="contact-form"
-        action="mailto:onovich1110@gmail.com"
+        action="/api/contact"
         method="post"
-        enctype="text/plain"
         data-contact-form
-        data-contact-subject={text.contact.formSubject}
+        data-contact-sending={text.contact.formSending}
+        data-contact-success={text.contact.formSuccess}
+        data-contact-error={text.contact.formError}
       >
         <div class="contact-form__field">
           <label for="contact-name">{text.contact.formName}</label>
@@ -193,26 +195,77 @@ const descriptions = text.projectDescriptions;
           <label for="contact-message">{text.contact.formMessage}</label>
           <textarea id="contact-message" name="message" rows="7" required></textarea>
         </div>
+        <div class="contact-form__trap" aria-hidden="true">
+          <label for="contact-website">Website</label>
+          <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        {turnstileSiteKey && (
+          <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-action="contact"></div>
+        )}
         <button type="submit">{text.contact.formSubmit}</button>
-        <p class="contact-form__note" id="contact-form-note">{text.contact.formNote}</p>
+        <p class="contact-form__note" id="contact-form-note" data-contact-status role="status" aria-live="polite" aria-atomic="true">
+          {text.contact.formNote}
+        </p>
       </form>
     </div>
   </section>
 )}
 
+{turnstileSiteKey && (
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+)}
+
 <script>
   document.querySelectorAll('form[data-contact-form]').forEach(form => {
-    form.addEventListener('submit', event => {
+    form.addEventListener('submit', async event => {
       event.preventDefault();
 
-      const formData = new FormData(form);
-      const name = String(formData.get('name') ?? '').trim();
-      const email = String(formData.get('email') ?? '').trim();
-      const message = String(formData.get('message') ?? '').trim();
-      const subject = form.getAttribute('data-contact-subject') ?? 'Website contact';
-      const body = [`Name: ${name}`, `Email: ${email}`, '', 'Message:', message].join('\n');
+      const submitButton = form.querySelector('button[type="submit"]');
+      const status = form.querySelector('[data-contact-status]') ?? form.querySelector('.contact-form__note');
+      if (!(submitButton instanceof HTMLButtonElement) || !(status instanceof HTMLElement)) return;
 
-      window.location.href = `mailto:onovich1110@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const formData = new FormData(form);
+      const payload = {
+        name: String(formData.get('name') ?? '').trim(),
+        email: String(formData.get('email') ?? '').trim(),
+        message: String(formData.get('message') ?? '').trim(),
+        website: String(formData.get('website') ?? '').trim(),
+        turnstileToken: String(formData.get('cf-turnstile-response') ?? '').trim(),
+      };
+
+      const sending = form.getAttribute('data-contact-sending') ?? 'Sending…';
+      const success = form.getAttribute('data-contact-success') ?? 'Message sent.';
+      const error = form.getAttribute('data-contact-error') ?? 'The message could not be sent.';
+
+      submitButton.disabled = true;
+      status.textContent = sending;
+      status.dataset.state = 'pending';
+
+      try {
+        const response = await fetch(form.getAttribute('action') ?? '/api/contact', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+        const result = await response.json().catch(() => null);
+
+        if (!response.ok || !result?.ok) throw new Error('Contact form request failed');
+
+        form.reset();
+        status.textContent = success;
+        status.dataset.state = 'success';
+        const turnstile = window.turnstile;
+        if (turnstile && typeof turnstile.reset === 'function') turnstile.reset();
+      } catch {
+        status.textContent = error;
+        status.dataset.state = 'error';
+      } finally {
+        submitButton.disabled = false;
+      }
+
     });
   });
 </script>

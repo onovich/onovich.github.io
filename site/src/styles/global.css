@@ -896,6 +896,20 @@ html[lang="zh-CN"] .identity-image--home {
   outline-offset: 2px;
 }
 
+.contact-form button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.contact-form__trap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 .contact-form__note {
   margin: 0.15rem 0 0;
   color: var(--muted);
