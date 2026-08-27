@@ -1,17 +1,15 @@
 ---
-import pixel from '../content/pixel.json';
-import illustrations from '../content/illustrations.json';
-import animations from '../content/gifs.json';
-import graphics from '../content/graphics.json';
-import photoAlbums from '../content/photoAlbums.json';
+import { animations, graphics, illustrations, pixel } from '../content/editable-art';
 import {
   artCategories,
   artPath,
   copy,
   pagePath,
+  photoAlbums,
   type ArtCategoryKey,
   type Language,
 } from '../content/portfolio';
+import { editable } from '../content/editor';
 
 interface Props {
   lang: Language;
@@ -19,6 +17,7 @@ interface Props {
 
 const { lang } = Astro.props;
 const text = copy[lang];
+const copyKey = `copy.${lang}`;
 const counts: Record<ArtCategoryKey, number> = {
   pixel: pixel.length,
   illustration: illustrations.length,
@@ -30,13 +29,13 @@ const counts: Record<ArtCategoryKey, number> = {
 ---
 <section class="route-page" aria-labelledby="art-title">
   <header class="route-heading route-heading--art">
-    <h1 id="art-title">{text.art.title}</h1>
+    <h1 id="art-title" {...editable(`${copyKey}.art.title`)}>{text.art.title}</h1>
   </header>
 
   <nav class="art-subnav" aria-label={text.art.title}>
-    <a href={pagePath('art', lang)} aria-current="page">{text.art.all}</a>
+    <a href={pagePath('art', lang)} aria-current="page" {...editable(`${copyKey}.art.all`)}>{text.art.all}</a>
     {artCategories.map(category => (
-      <a href={artPath(category.key, lang)}>{text.art[category.key]}</a>
+      <a href={artPath(category.key, lang)} {...editable(`${copyKey}.art.${category.key}`)}>{text.art[category.key]}</a>
     ))}
   </nav>
 
@@ -44,16 +43,16 @@ const counts: Record<ArtCategoryKey, number> = {
     {artCategories.map(category => (
       <a class="art-category" href={artPath(category.key, lang)}>
         {category.key === 'poetry' ? (
-          <div class="art-category__preview art-category__preview--text">{text.art.poetryPreview}</div>
+          <div class="art-category__preview art-category__preview--text" {...editable(`${copyKey}.art.poetryPreview`)}>{text.art.poetryPreview}</div>
         ) : (
           <div class="art-category__preview">
             <img src={category.preview} alt={category.previewAlt} loading="lazy" decoding="async" />
           </div>
         )}
         <div class="art-category__caption">
-          <strong>{text.art[category.key]}</strong>
+          <strong {...editable(`${copyKey}.art.${category.key}`)}>{text.art[category.key]}</strong>
           <span>
-            {counts[category.key]} {category.key === 'photography' ? text.art.albums : text.art.works}
+            {counts[category.key]} <span {...editable(`${copyKey}.art.${category.key === 'photography' ? 'albums' : 'works'}`)}>{category.key === 'photography' ? text.art.albums : text.art.works}</span>
           </span>
         </div>
       </a>

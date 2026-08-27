@@ -1,20 +1,24 @@
 ---
+import { editable } from '../content/editor';
+
 interface Props {
   name: string;
   href: string;
   image: string;
   alt: string;
   description: string;
+  editorNameKey?: string;
+  editorDescriptionKey?: string;
 }
 
-const { name, href, image, alt, description } = Astro.props;
+const { name, href, image, alt, description, editorNameKey, editorDescriptionKey } = Astro.props;
 ---
 <article class="project">
   <a class="project-media" href={href} target="_blank" rel="noopener noreferrer">
     <img src={image} alt={alt} loading="lazy" decoding="async" />
   </a>
   <div class="project-caption">
-    <h3><a href={href} target="_blank" rel="noopener noreferrer">{name} ↗</a></h3>
-    <p>{description}</p>
+    <h3><a href={href} target="_blank" rel="noopener noreferrer"><span {...editable(editorNameKey ?? '')}>{name}</span> ↗</a></h3>
+    <p {...editable(editorDescriptionKey ?? '')}>{description}</p>
   </div>
 </article>

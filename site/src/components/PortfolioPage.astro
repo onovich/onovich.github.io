@@ -7,6 +7,7 @@ import {
   type Language,
   type PageKey,
 } from '../content/portfolio';
+import { editable } from '../content/editor';
 
 interface Props {
   lang: Language;
@@ -16,15 +17,16 @@ interface Props {
 const { lang, page } = Astro.props;
 const text = copy[lang];
 const descriptions = text.projectDescriptions;
+const copyKey = `copy.${lang}`;
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
 ---
 {page === 'home' && (
   <section class="route-page" aria-labelledby="home-title">
     <header class="home-intro">
       <div class="home-intro__copy">
-        <h1 id="home-title">{text.home.title}</h1>
+        <h1 id="home-title" {...editable(`${copyKey}.home.title`)}>{text.home.title}</h1>
         <p class="home-intro__body">
-          {text.home.body.map(line => <span>{line}</span>)}
+          {text.home.body.map((line, index) => <span {...editable(`${copyKey}.home.body.${index}`)}>{line}</span>)}
         </p>
       </div>
       <img
@@ -40,16 +42,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
     </header>
 
     <section class="home-work" aria-labelledby="home-work-title">
-      <h2 id="home-work-title" class="personal-heading">{text.home.lead}</h2>
+      <h2 id="home-work-title" class="personal-heading" {...editable(`${copyKey}.home.lead`)}>{text.home.lead}</h2>
       <div class="project-grid project-grid--home">
-        <ProjectCard {...projects.ninja} description={descriptions.ninjaShort} />
-        <ProjectCard {...projects.golf} description={descriptions.golfShort} />
-        <ProjectCard {...projects.inscape} description={descriptions.inscape} />
-        <ProjectCard {...projects.prism} description={descriptions.prism} />
+        <ProjectCard {...projects.ninja} description={descriptions.ninjaShort} editorNameKey="projects.ninja.name" editorDescriptionKey={`${copyKey}.projectDescriptions.ninjaShort`} />
+        <ProjectCard {...projects.golf} description={descriptions.golfShort} editorNameKey="projects.golf.name" editorDescriptionKey={`${copyKey}.projectDescriptions.golfShort`} />
+        <ProjectCard {...projects.inscape} description={descriptions.inscape} editorNameKey="projects.inscape.name" editorDescriptionKey={`${copyKey}.projectDescriptions.inscape`} />
+        <ProjectCard {...projects.prism} description={descriptions.prism} editorNameKey="projects.prism.name" editorDescriptionKey={`${copyKey}.projectDescriptions.prism`} />
       </div>
       <div class="home-paths">
-        <a href={pagePath('work', lang)}>{text.home.moreWork} →</a>
-        <a href={pagePath('art', lang)}>{text.home.moreArt} →</a>
+        <a href={pagePath('work', lang)}><span {...editable(`${copyKey}.home.moreWork`)}>{text.home.moreWork}</span> →</a>
+        <a href={pagePath('art', lang)}><span {...editable(`${copyKey}.home.moreArt`)}>{text.home.moreArt}</span> →</a>
       </div>
     </section>
   </section>
@@ -58,43 +60,43 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
 {page === 'work' && (
   <section class="route-page" aria-labelledby="work-title">
     <header class="route-heading">
-      <h1 id="work-title">{text.work.title}</h1>
+      <h1 id="work-title" {...editable(`${copyKey}.work.title`)}>{text.work.title}</h1>
     </header>
 
     <section class="work-group" aria-labelledby="games-title">
       <div class="group-heading">
-        <h2 id="games-title">{text.work.games}</h2>
-        <p>{text.work.gamesNote}</p>
+        <h2 id="games-title" {...editable(`${copyKey}.work.games`)}>{text.work.games}</h2>
+        <p {...editable(`${copyKey}.work.gamesNote`)}>{text.work.gamesNote}</p>
       </div>
       <div class="project-grid">
-        <ProjectCard {...projects.ninja} description={descriptions.ninjaLong} />
-        <ProjectCard {...projects.golf} description={descriptions.golfLong} />
+        <ProjectCard {...projects.ninja} description={descriptions.ninjaLong} editorNameKey="projects.ninja.name" editorDescriptionKey={`${copyKey}.projectDescriptions.ninjaLong`} />
+        <ProjectCard {...projects.golf} description={descriptions.golfLong} editorNameKey="projects.golf.name" editorDescriptionKey={`${copyKey}.projectDescriptions.golfLong`} />
       </div>
     </section>
 
     <section class="work-group" aria-labelledby="systems-title">
       <div class="group-heading">
-        <h2 id="systems-title">{text.work.systems}</h2>
-        <p>{text.work.systemsNote}</p>
+        <h2 id="systems-title" {...editable(`${copyKey}.work.systems`)}>{text.work.systems}</h2>
+        <p {...editable(`${copyKey}.work.systemsNote`)}>{text.work.systemsNote}</p>
       </div>
       <div class="project-grid">
-        <ProjectCard {...projects.inscape} description={descriptions.inscape} />
-        <ProjectCard {...projects.prism} description={descriptions.prism} />
-        <ProjectCard {...projects.pulse} description={descriptions.pulse} />
-        <ProjectCard {...projects.ease} description={descriptions.ease} />
-        <ProjectCard {...projects.litio} description={descriptions.litio} />
-        <ProjectCard {...projects.beat} description={descriptions.beat} />
+        <ProjectCard {...projects.inscape} description={descriptions.inscape} editorNameKey="projects.inscape.name" editorDescriptionKey={`${copyKey}.projectDescriptions.inscape`} />
+        <ProjectCard {...projects.prism} description={descriptions.prism} editorNameKey="projects.prism.name" editorDescriptionKey={`${copyKey}.projectDescriptions.prism`} />
+        <ProjectCard {...projects.pulse} description={descriptions.pulse} editorNameKey="projects.pulse.name" editorDescriptionKey={`${copyKey}.projectDescriptions.pulse`} />
+        <ProjectCard {...projects.ease} description={descriptions.ease} editorNameKey="projects.ease.name" editorDescriptionKey={`${copyKey}.projectDescriptions.ease`} />
+        <ProjectCard {...projects.litio} description={descriptions.litio} editorNameKey="projects.litio.name" editorDescriptionKey={`${copyKey}.projectDescriptions.litio`} />
+        <ProjectCard {...projects.beat} description={descriptions.beat} editorNameKey="projects.beat.name" editorDescriptionKey={`${copyKey}.projectDescriptions.beat`} />
       </div>
     </section>
 
     <section class="work-group" aria-labelledby="publishing-title">
       <div class="group-heading">
-        <h2 id="publishing-title">{text.work.publishing}</h2>
-        <p>{text.work.publishingNote}</p>
+        <h2 id="publishing-title" {...editable(`${copyKey}.work.publishing`)}>{text.work.publishing}</h2>
+        <p {...editable(`${copyKey}.work.publishingNote`)}>{text.work.publishingNote}</p>
       </div>
       <div class="project-grid">
-        <ProjectCard {...projects.repoCover} description={descriptions.repoCover} />
-        <ProjectCard {...projects.repoReadme} description={descriptions.repoReadme} />
+        <ProjectCard {...projects.repoCover} description={descriptions.repoCover} editorNameKey="projects.repoCover.name" editorDescriptionKey={`${copyKey}.projectDescriptions.repoCover`} />
+        <ProjectCard {...projects.repoReadme} description={descriptions.repoReadme} editorNameKey="projects.repoReadme.name" editorDescriptionKey={`${copyKey}.projectDescriptions.repoReadme`} />
       </div>
     </section>
   </section>
@@ -103,13 +105,13 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
 {page === 'writing' && (
   <section class="route-page" aria-labelledby="writing-title">
     <header class="route-heading">
-      <h1 id="writing-title">{text.writing.title}</h1>
+      <h1 id="writing-title" {...editable(`${copyKey}.writing.title`)}>{text.writing.title}</h1>
     </header>
     <article class="writing-feature">
       <div>
-        <p class="ui-kicker">{text.writing.publication}</p>
-        <h2>{text.writing.heading}</h2>
-        <p>{text.writing.status}</p>
+        <p class="ui-kicker" {...editable(`${copyKey}.writing.publication`)}>{text.writing.publication}</p>
+        <h2 {...editable(`${copyKey}.writing.heading`)}>{text.writing.heading}</h2>
+        <p {...editable(`${copyKey}.writing.status`)}>{text.writing.status}</p>
       </div>
     </article>
   </section>
@@ -118,7 +120,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
 {page === 'profile' && (
   <section class="route-page" aria-labelledby="profile-title">
     <header class="route-heading">
-      <h1 id="profile-title">{text.profile.title}</h1>
+      <h1 id="profile-title" {...editable(`${copyKey}.profile.title`)}>{text.profile.title}</h1>
     </header>
 
     <div class="profile-intro">
@@ -130,22 +132,22 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
         height="400"
       />
       <p class="profile-intro__bio">
-        {text.profile.bio.map(line => <span>{line}</span>)}
+        {text.profile.bio.map((line, index) => <span {...editable(`${copyKey}.profile.bio.${index}`)}>{line}</span>)}
       </p>
     </div>
 
     <section class="profile-section" aria-labelledby="profile-focus">
-      <h2 id="profile-focus">{text.profile.focus}</h2>
+      <h2 id="profile-focus" {...editable(`${copyKey}.profile.focus`)}>{text.profile.focus}</h2>
       <div class="profile-list">
-        {text.profile.focusItems.map(item => <p>{item}</p>)}
+        {text.profile.focusItems.map((item, index) => <p {...editable(`${copyKey}.profile.focusItems.${index}`)}>{item}</p>)}
       </div>
     </section>
 
     <section class="profile-section" aria-labelledby="profile-experience">
-      <h2 id="profile-experience">{text.profile.experience}</h2>
+      <h2 id="profile-experience" {...editable(`${copyKey}.profile.experience`)}>{text.profile.experience}</h2>
       <div class="experience-list">
-        {text.profile.experiences.map(([title, description]) => (
-          <article><h3>{title}</h3><p>{description}</p></article>
+        {text.profile.experiences.map(([title, description], index) => (
+          <article><h3 {...editable(`${copyKey}.profile.experiences.${index}.0`)}>{title}</h3><p {...editable(`${copyKey}.profile.experiences.${index}.1`)}>{description}</p></article>
         ))}
       </div>
     </section>
@@ -155,22 +157,22 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
 {page === 'contact' && (
   <section class="route-page" aria-labelledby="contact-title">
     <header class="route-heading">
-      <h1 id="contact-title">{text.contact.title}</h1>
+      <h1 id="contact-title" {...editable(`${copyKey}.contact.title`)}>{text.contact.title}</h1>
     </header>
 
     <div class="contact-layout">
       <div class="contact-copy">
         <h2>
-          <span>{text.contact.line1}</span>
-          <span>{text.contact.line2}</span>
+          <span {...editable(`${copyKey}.contact.line1`)}>{text.contact.line1}</span>
+          <span {...editable(`${copyKey}.contact.line2`)}>{text.contact.line2}</span>
         </h2>
         <ul>
-          {text.contact.items.map(item => <li>{item}</li>)}
+          {text.contact.items.map((item, index) => <li {...editable(`${copyKey}.contact.items.${index}`)}>{item}</li>)}
         </ul>
         <div class="contact-links">
-          <a href="mailto:onovich1110@gmail.com">{text.contact.email}</a>
-          <a href="https://github.com/onovich" target="_blank" rel="noopener noreferrer">{text.contact.github} ↗</a>
-          <a href="https://twitter.com/Umbra_Onovich" target="_blank" rel="noopener noreferrer">{text.contact.twitter} ↗</a>
+          <a href="mailto:onovich1110@gmail.com" {...editable(`${copyKey}.contact.email`)}>{text.contact.email}</a>
+          <a href="https://github.com/onovich" target="_blank" rel="noopener noreferrer"><span {...editable(`${copyKey}.contact.github`)}>{text.contact.github}</span> ↗</a>
+          <a href="https://twitter.com/Umbra_Onovich" target="_blank" rel="noopener noreferrer"><span {...editable(`${copyKey}.contact.twitter`)}>{text.contact.twitter}</span> ↗</a>
         </div>
       </div>
 
@@ -184,19 +186,19 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
         data-contact-error={text.contact.formError}
       >
         <div class="contact-form__field">
-          <label for="contact-name">{text.contact.formName}</label>
+          <label for="contact-name" {...editable(`${copyKey}.contact.formName`)}>{text.contact.formName}</label>
           <input id="contact-name" name="name" type="text" autocomplete="name" required />
         </div>
         <div class="contact-form__field">
-          <label for="contact-email">{text.contact.formEmail}</label>
+          <label for="contact-email" {...editable(`${copyKey}.contact.formEmail`)}>{text.contact.formEmail}</label>
           <input id="contact-email" name="email" type="email" autocomplete="email" required />
         </div>
         <div class="contact-form__field">
-          <label for="contact-subject">{text.contact.formSubject}</label>
+          <label for="contact-subject" {...editable(`${copyKey}.contact.formSubject`)}>{text.contact.formSubject}</label>
           <input id="contact-subject" name="subject" type="text" maxlength="160" autocomplete="off" required />
         </div>
         <div class="contact-form__field">
-          <label for="contact-message">{text.contact.formMessage}</label>
+          <label for="contact-message" {...editable(`${copyKey}.contact.formMessage`)}>{text.contact.formMessage}</label>
           <textarea id="contact-message" name="message" rows="7" required></textarea>
         </div>
         <div class="contact-form__trap" aria-hidden="true">
@@ -214,9 +216,9 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
             <div data-contact-turnstile></div>
           </div>
         )}
-        <button type="submit">{text.contact.formSubmit}</button>
+        <button type="submit"><span {...editable(`${copyKey}.contact.formSubmit`)}>{text.contact.formSubmit}</span></button>
         <p class="contact-form__note" id="contact-form-note" data-contact-status role="status" aria-live="polite" aria-atomic="true">
-          {text.contact.formNote}
+          <span {...editable(`${copyKey}.contact.formNote`)}>{text.contact.formNote}</span>
         </p>
       </form>
     </div>

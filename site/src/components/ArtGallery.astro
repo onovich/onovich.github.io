@@ -1,9 +1,5 @@
 ---
-import pixel from '../content/pixel.json';
-import illustrations from '../content/illustrations.json';
-import animations from '../content/gifs.json';
-import graphics from '../content/graphics.json';
-import photoAlbums from '../content/photoAlbums.json';
+import { animations, graphics, illustrations, pixel } from '../content/editable-art';
 import poemHtml from '../content/poem.html?raw';
 import ArtLightbox from './ArtLightbox.astro';
 import {
@@ -13,10 +9,12 @@ import {
   pagePath,
   photoAlbumPath,
   photoAlbumSlugs,
+  photoAlbums,
   type ArtCategoryKey,
   type Language,
   type PhotoAlbumId,
 } from '../content/portfolio';
+import { editable, editorText } from '../content/editor';
 
 interface Props {
   lang: Language;
@@ -35,6 +33,8 @@ interface ArtItem {
 
 const { lang, category } = Astro.props;
 const text = copy[lang];
+const copyKey = `copy.${lang}`;
+const renderedPoem = editorText('poem.html', poemHtml);
 const galleries: Partial<Record<ArtCategoryKey, ArtItem[]>> = {
   pixel,
   illustration: illustrations,
@@ -46,23 +46,23 @@ const countLabel = category === 'photography' ? text.art.albums : text.art.works
 ---
 <section class="route-page" aria-labelledby="art-title">
   <header class="route-heading route-heading--art">
-    <h1 id="art-title">{text.art.title}</h1>
+    <h1 id="art-title" {...editable(`${copyKey}.art.title`)}>{text.art.title}</h1>
   </header>
 
   <nav class="art-subnav" aria-label={text.art.title}>
-    <a href={pagePath('art', lang)}>{text.art.all}</a>
+    <a href={pagePath('art', lang)} {...editable(`${copyKey}.art.all`)}>{text.art.all}</a>
     {artCategories.map(item => (
-      <a href={artPath(item.key, lang)} aria-current={category === item.key ? 'page' : undefined}>
+      <a href={artPath(item.key, lang)} aria-current={category === item.key ? 'page' : undefined} {...editable(`${copyKey}.art.${item.key}`)}>
         {text.art[item.key]}
       </a>
     ))}
   </nav>
 
   <div class="art-section-heading">
-    <h2>{text.art[category]}</h2>
+    <h2 {...editable(`${copyKey}.art.${category}`)}>{text.art[category]}</h2>
     <p>
       {category === 'photography' ? photoAlbums.index.length : category === 'poetry' ? text.art.poemNote : items.length}
-      {category !== 'poetry' && ` ${countLabel}`}
+      {category !== 'poetry' && <> <span {...editable(`${copyKey}.art.${category === 'photography' ? 'albums' : 'works'}`)}>{countLabel}</span></>}
     </p>
   </div>
 
@@ -72,14 +72,14 @@ const countLabel = category === 'photography' ? text.art.albums : text.art.works
         <a class="album-card" href={photoAlbumPath(photoAlbumSlugs[album.id as PhotoAlbumId], lang)}>
           <img src={album.src} alt={album.title} loading="lazy" decoding="async" />
           <div class="album-card__caption">
-            <strong>{album.title}</strong>
-            <span>{album.year}</span>
+            <strong {...editable(`photoAlbums.${album.id}.title`)}>{album.title}</strong>
+            <span {...editable(`photoAlbums.${album.id}.year`)}>{album.year}</span>
           </div>
         </a>
       ))}
     </div>
   ) : category === 'poetry' ? (
-    <article class="poem-view" set:html={poemHtml} />
+    <article class="poem-view" set:html={renderedPoem} {...editable('poem.html', 'html')} />
   ) : (
     <div class="art-gallery">
       {items.map(item => (
@@ -100,8 +100,8 @@ const countLabel = category === 'photography' ? text.art.albums : text.art.works
             />
           </button>
           <figcaption>
-            <span>{item.title}</span>
-            <span>{item.year}</span>
+            <span {...(typeof item.title === 'string' ? editable(`art.${category}.${item.id}.title`) : {})}>{item.title}</span>
+            <span {...(typeof item.year === 'string' ? editable(`art.${category}.${item.id}.year`) : {})}>{item.year}</span>
           </figcaption>
         </figure>
       ))}

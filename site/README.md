@@ -16,6 +16,16 @@ npm run build
 npm run preview
 ```
 
+## Local content editor
+
+Run the editor-only local server when you want to update rendered site copy. It is locked to `127.0.0.1`:
+
+```sh
+npm run dev:editor
+```
+
+Open the displayed local URL, choose **Edit this page**, edit text in place, then choose **Save locally** or **Discard unsaved**. Saving updates `src/content/editor-overrides.json`; review that file with `git diff` and commit/push it through the normal Git workflow. The editor toolbar and save endpoint are enabled only by `dev:editor` and are not emitted in the production site.
+
 ## Routes
 
 - English is served from `/`.

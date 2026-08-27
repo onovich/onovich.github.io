@@ -6,6 +6,7 @@ import {
   getPhotoAlbumBySlug,
   type Language,
 } from '../content/portfolio';
+import { editable } from '../content/editor';
 
 interface Props {
   lang: Language;
@@ -14,6 +15,7 @@ interface Props {
 
 const { lang, slug } = Astro.props;
 const text = copy[lang];
+const copyKey = `copy.${lang}`;
 const photoAlbum = getPhotoAlbumBySlug(slug);
 
 if (!photoAlbum) {
@@ -24,16 +26,16 @@ const { album } = photoAlbum;
 ---
 <section class="route-page" aria-labelledby="album-title">
   <header class="route-heading route-heading--art">
-    <h1 id="album-title">{album.title}</h1>
+    <h1 id="album-title" {...editable(`photoAlbums.${album.slug}.title`)}>{album.title}</h1>
   </header>
 
   <nav class="art-subnav" aria-label={text.art.photography}>
-    <a href={artPath('photography', lang)}>← {text.art.backToPhotography}</a>
+    <a href={artPath('photography', lang)}>← <span {...editable(`${copyKey}.art.backToPhotography`)}>{text.art.backToPhotography}</span></a>
   </nav>
 
   <div class="art-section-heading">
-    <h2>{album.title}</h2>
-    <p>{album.year}</p>
+    <h2 {...editable(`photoAlbums.${album.slug}.title`)}>{album.title}</h2>
+    <p {...editable(`photoAlbums.${album.slug}.year`)}>{album.year}</p>
   </div>
 
   <div class="art-gallery art-gallery--photography">

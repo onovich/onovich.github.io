@@ -7,6 +7,9 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "dev:editor": "node scripts/dev-editor.mjs",
+    "editor:test": "node --test scripts/local-editor-core.test.mjs scripts/local-editor-server.test.mjs",
+    "editor:smoke": "node scripts/local-editor-ui-smoke.mjs",
     "prebuild": "npm run assets:check",
     "build": "astro build",
     "assets:check": "node scripts/assets-check.mjs",

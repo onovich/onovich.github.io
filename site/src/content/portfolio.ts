@@ -1,4 +1,5 @@
-import photoAlbums from './photoAlbums.json';
+import photoAlbumsData from './photoAlbums.json';
+import { applyEditorTextOverrides, editorText } from './editor';
 
 export type Language = 'en' | 'zh-CN';
 export type PageKey = 'home' | 'work' | 'art' | 'writing' | 'profile' | 'contact';
@@ -52,6 +53,19 @@ export const photoAlbumSlugs = {
 
 export type PhotoAlbumId = keyof typeof photoAlbumSlugs;
 
+function withEditableAlbumText<T extends { title: string; year: string }>(album: T, id: string): T {
+  return {
+    ...album,
+    title: editorText(`photoAlbums.${id}.title`, album.title),
+    year: editorText(`photoAlbums.${id}.year`, album.year),
+  };
+}
+
+export const photoAlbums = {
+  index: photoAlbumsData.index.map(album => withEditableAlbumText(album, album.id)),
+  albums: photoAlbumsData.albums.map(album => withEditableAlbumText(album, album.slug)),
+};
+
 export function getPhotoAlbumBySlug(slug: string) {
   const entry = Object.entries(photoAlbumSlugs).find(([, value]) => value === slug);
   if (!entry) return null;
@@ -61,7 +75,7 @@ export function getPhotoAlbumBySlug(slug: string) {
   return album ? { albumId, album } : null;
 }
 
-export const projects = {
+const baseProjects = {
   ninja: {
     name: 'Ninja Ming',
     href: 'https://store.steampowered.com/app/3234330/Ninja_Ming/',
@@ -124,7 +138,9 @@ export const projects = {
   },
 } as const;
 
-export const copy = {
+export const projects = applyEditorTextOverrides(baseProjects, 'projects') as typeof baseProjects;
+
+const baseCopy = {
   en: {
     skip: 'Skip to content',
     index: 'INDEX',
@@ -397,7 +413,9 @@ export const copy = {
   },
 } as const;
 
-export const artCategories: ReadonlyArray<{
+export const copy = applyEditorTextOverrides(baseCopy, 'copy') as typeof baseCopy;
+
+const baseArtCategories: ReadonlyArray<{
   key: ArtCategoryKey;
   preview: string;
   previewAlt: string;
@@ -409,3 +427,8 @@ export const artCategories: ReadonlyArray<{
   { key: 'photography', preview: '/images/photo-albums/photo/photo-01.jpg', previewAlt: 'Tokyo street photograph' },
   { key: 'poetry', preview: '', previewAlt: '' },
 ];
+
+export const artCategories = baseArtCategories.map(category => ({
+  ...category,
+  previewAlt: editorText(`artCategories.${category.key}.previewAlt`, category.previewAlt),
+})) as typeof baseArtCategories;

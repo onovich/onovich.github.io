@@ -7,6 +7,8 @@ import {
   type Language,
   type PageKey,
 } from '../content/portfolio';
+import { editable, editorText, localEditorEnabled } from '../content/editor';
+import LocalContentEditor from '../components/LocalContentEditor.astro';
 
 interface Props {
   lang: Language;
@@ -35,6 +37,10 @@ const {
 } = Astro.props;
 
 const text = copy[lang];
+const wordmark = editorText('site.wordmark', 'Onovich');
+const githubLink = editorText('site.githubLink', 'GitHub ↗');
+const englishLabel = editorText('site.language.en', 'EN');
+const chineseLabel = editorText('site.language.zh', '中文');
 const canonicalUrl = new URL(canonicalPath, siteUrl).toString();
 const alternateUrl = new URL(alternatePath, siteUrl).toString();
 const englishPath = lang === 'en' ? canonicalPath : alternatePath;
@@ -58,7 +64,7 @@ const navItems: Array<{ key: PageKey; href: string; label: string }> = [
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: 'Onovich',
+  name: wordmark,
   url: siteUrl,
   image: new URL('/images/profile/avatar.jpg', siteUrl).toString(),
   jobTitle: lang === 'zh-CN' ? '游戏系统工程师' : 'Game systems engineer',
@@ -148,17 +154,17 @@ const structuredData = {
     )}
   </head>
   <body class:list={[`page-${activePage ?? 'not-found'}`, pageClass]}>
-    <a class="skip-link" href="#main">{text.skip}</a>
+    <a class="skip-link" href="#main" {...editable(`copy.${lang}.skip`)}>{text.skip}</a>
 
     <header class="mobile-header">
-      <a class="mobile-wordmark" href={pagePath('home', lang)}>Onovich</a>
+      <a class="mobile-wordmark" href={pagePath('home', lang)} {...editable('site.wordmark')}>{wordmark}</a>
       <div class="mobile-header__actions">
         <div class="language-switch language-switch--mobile" aria-label="Language">
-          <a href={englishPath} hreflang="en" lang="en" data-language-choice="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+          <a href={englishPath} hreflang="en" lang="en" data-language-choice="en" aria-current={lang === 'en' ? 'true' : undefined} {...editable('site.language.en')}>{englishLabel}</a>
           <span aria-hidden="true">/</span>
-          <a href={chinesePath} hreflang="zh-CN" lang="zh-CN" data-language-choice="zh-CN" aria-current={lang === 'zh-CN' ? 'true' : undefined}>中文</a>
+          <a href={chinesePath} hreflang="zh-CN" lang="zh-CN" data-language-choice="zh-CN" aria-current={lang === 'zh-CN' ? 'true' : undefined} {...editable('site.language.zh')}>{chineseLabel}</a>
         </div>
-        <button class="menu-button" type="button" data-menu-open aria-expanded="false" aria-controls="mobile-index">{text.index}</button>
+        <button class="menu-button" type="button" data-menu-open aria-expanded="false" aria-controls="mobile-index"><span {...editable(`copy.${lang}.index`)}>{text.index}</span></button>
       </div>
     </header>
 
@@ -167,31 +173,31 @@ const structuredData = {
       <div class="mobile-index__inner">
         <nav class="route-nav route-nav--mobile" aria-label="Mobile primary navigation">
           {navItems.map(item => (
-            <a href={item.href} aria-current={activePage === item.key ? 'page' : undefined}>{item.label}</a>
+            <a href={item.href} aria-current={activePage === item.key ? 'page' : undefined} {...editable(`copy.${lang}.nav.${item.key}`)}>{item.label}</a>
           ))}
         </nav>
-        <a class="external-link external-link--mobile" href="https://github.com/onovich" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        <a class="external-link external-link--mobile" href="https://github.com/onovich" target="_blank" rel="noopener noreferrer" {...editable('site.githubLink')}>{githubLink}</a>
       </div>
     </aside>
     <button class="mobile-index__backdrop" type="button" data-menu-close aria-label={text.close} tabindex="-1"></button>
 
     <div class="site-frame">
       <aside class="site-index" aria-label="Site index">
-        <a class="wordmark" href={pagePath('home', lang)}>Onovich</a>
+        <a class="wordmark" href={pagePath('home', lang)} {...editable('site.wordmark')}>{wordmark}</a>
 
         <nav class="route-nav" aria-label="Primary navigation">
           {navItems.map(item => (
-            <a href={item.href} aria-current={activePage === item.key ? 'page' : undefined}>{item.label}</a>
+            <a href={item.href} aria-current={activePage === item.key ? 'page' : undefined} {...editable(`copy.${lang}.nav.${item.key}`)}>{item.label}</a>
           ))}
         </nav>
 
         <div class="index-utility">
           <div class="language-switch" aria-label="Language">
-            <a href={englishPath} hreflang="en" lang="en" data-language-choice="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+            <a href={englishPath} hreflang="en" lang="en" data-language-choice="en" aria-current={lang === 'en' ? 'true' : undefined} {...editable('site.language.en')}>{englishLabel}</a>
             <span aria-hidden="true">/</span>
-            <a href={chinesePath} hreflang="zh-CN" lang="zh-CN" data-language-choice="zh-CN" aria-current={lang === 'zh-CN' ? 'true' : undefined}>中文</a>
+            <a href={chinesePath} hreflang="zh-CN" lang="zh-CN" data-language-choice="zh-CN" aria-current={lang === 'zh-CN' ? 'true' : undefined} {...editable('site.language.zh')}>{chineseLabel}</a>
           </div>
-          <a class="external-link" href="https://github.com/onovich" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+          <a class="external-link" href="https://github.com/onovich" target="_blank" rel="noopener noreferrer" {...editable('site.githubLink')}>{githubLink}</a>
         </div>
       </aside>
 
@@ -200,7 +206,7 @@ const structuredData = {
       </main>
 
       <footer class="site-footer">
-        <span>Onovich · <span data-year>{new Date().getFullYear()}</span></span>
+        <span><span {...editable('site.wordmark')}>{wordmark}</span> · <span data-year>{new Date().getFullYear()}</span></span>
       </footer>
     </div>
 
@@ -242,5 +248,6 @@ const structuredData = {
       });
 
     </script>
+    {localEditorEnabled && <LocalContentEditor lang={lang} />}
   </body>
 </html>

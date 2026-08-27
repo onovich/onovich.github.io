@@ -1,0 +1,341 @@
+---
+import type { Language } from '../content/portfolio';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const labels = lang === 'zh-CN'
+  ? {
+      start: '编辑此页',
+      editing: '正在编辑',
+      save: '保存到本地文件',
+      discard: '丢弃未保存变更',
+      ready: '点击带虚线边框的文字即可编辑。',
+      saved: '已保存。页面即将刷新。',
+      saving: '正在保存…',
+      unchanged: '暂无变更',
+      changeOne: '1 项变更',
+      changesPrefix: '',
+      changesSuffix: ' 项变更',
+      error: '无法保存本地内容。',
+      hint: '内容会写入 editor-overrides.json；Git 提交仍由你手动完成。',
+    }
+  : {
+      start: 'Edit this page',
+      editing: 'Editing',
+      save: 'Save locally',
+      discard: 'Discard unsaved changes',
+      ready: 'Click any dashed text to edit it.',
+      saved: 'Saved. Reloading this page…',
+      saving: 'Saving…',
+      unchanged: 'No changes',
+      changeOne: '1 change',
+      changesPrefix: '',
+      changesSuffix: ' changes',
+      error: 'The local content could not be saved.',
+      hint: 'Changes are written to editor-overrides.json; Git publishing stays manual.',
+    };
+---
+<aside class="local-editor" data-local-editor aria-label={lang === 'zh-CN' ? '本地内容编辑器' : 'Local content editor'}>
+  <div class="local-editor__bar">
+    <button class="local-editor__toggle" type="button" data-editor-toggle>
+      <span data-editor-toggle-label>{labels.start}</span>
+    </button>
+    <div class="local-editor__actions" data-editor-actions hidden>
+      <span class="local-editor__count" data-editor-count>{labels.unchanged}</span>
+      <button class="local-editor__button" type="button" data-editor-discard disabled>{labels.discard}</button>
+      <button class="local-editor__button local-editor__button--save" type="button" data-editor-save disabled>{labels.save}</button>
+    </div>
+  </div>
+  <p class="local-editor__status" data-editor-status aria-live="polite">{labels.hint}</p>
+</aside>
+
+<style>
+  .local-editor {
+    position: fixed;
+    right: var(--space-4);
+    bottom: var(--space-4);
+    z-index: 600;
+    width: min(28rem, calc(100vw - (var(--space-4) * 2)));
+    border: 1px solid var(--rule-strong);
+    background: var(--paper);
+    box-shadow: 0 0.5rem 1.5rem rgba(24, 26, 23, 0.12);
+    font-size: 0.8125rem;
+    font-weight: var(--weight-regular);
+  }
+
+  .local-editor__bar,
+  .local-editor__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .local-editor__bar {
+    min-height: 2.75rem;
+    padding: var(--space-2);
+  }
+
+  .local-editor__actions {
+    min-width: 0;
+    margin-left: auto;
+  }
+
+  .local-editor button {
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-none);
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    line-height: 1.2;
+  }
+
+  .local-editor__toggle,
+  .local-editor__button {
+    padding: 0.45rem 0.6rem;
+  }
+
+  .local-editor__toggle {
+    background: var(--night) !important;
+    border-color: var(--night) !important;
+    color: var(--paper) !important;
+  }
+
+  .local-editor__button--save {
+    border-color: var(--frog) !important;
+    background: var(--frog) !important;
+    color: var(--night) !important;
+  }
+
+  .local-editor button:hover:not(:disabled) {
+    border-color: var(--frog);
+  }
+
+  .local-editor button:disabled {
+    border-color: var(--rule);
+    background: var(--disabled);
+    color: var(--muted);
+  }
+
+  .local-editor__count {
+    max-width: 8rem;
+    overflow: hidden;
+    color: var(--muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .local-editor__status {
+    margin: 0;
+    padding: 0 var(--space-2) var(--space-2);
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  :global(body.local-editor-active [data-editor-key]) {
+    cursor: text;
+    outline: 1px dashed var(--frog);
+    outline-offset: 0.18rem;
+  }
+
+  :global(body.local-editor-active [data-editor-key]:focus) {
+    outline: 2px solid var(--frog);
+    outline-offset: 0.18rem;
+  }
+
+  :global(body.local-editor-active a[data-editor-key]) {
+    text-decoration: underline dotted var(--frog);
+    text-underline-offset: 0.2em;
+  }
+
+  @media (max-width: 42rem) {
+    .local-editor {
+      right: var(--space-2);
+      bottom: var(--space-2);
+      width: calc(100vw - var(--space-4));
+    }
+
+    .local-editor__bar {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .local-editor__actions {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .local-editor__count {
+      margin-right: auto;
+      max-width: none;
+    }
+  }
+</style>
+
+<script define:vars={{ labels }}>
+  const editor = document.querySelector('[data-local-editor]');
+
+  if (editor instanceof HTMLElement) {
+    const toggle = editor.querySelector('[data-editor-toggle]');
+    const toggleLabel = editor.querySelector('[data-editor-toggle-label]');
+    const actions = editor.querySelector('[data-editor-actions]');
+    const saveButton = editor.querySelector('[data-editor-save]');
+    const discardButton = editor.querySelector('[data-editor-discard]');
+    const count = editor.querySelector('[data-editor-count]');
+    const status = editor.querySelector('[data-editor-status]');
+
+    const originals = new Map();
+    const changes = new Map();
+    let editing = false;
+    let saving = false;
+
+    const targets = () => Array.from(document.querySelectorAll('[data-editor-key]')).filter((element) => !editor.contains(element));
+    const keyFor = (element) => element.getAttribute('data-editor-key') ?? '';
+    const isHtml = (element) => element.getAttribute('data-editor-format') === 'html';
+    const readValue = (element) => isHtml(element) ? element.innerHTML : (element.textContent ?? '');
+    const writeValue = (element, value) => {
+      if (isHtml(element)) element.innerHTML = value;
+      else element.textContent = value;
+    };
+
+    const updateControls = () => {
+      const changed = changes.size;
+      if (count instanceof HTMLElement) {
+        count.textContent = changed === 0
+          ? labels.unchanged
+          : changed === 1
+            ? labels.changeOne
+            : `${labels.changesPrefix}${changed}${labels.changesSuffix}`;
+      }
+      if (saveButton instanceof HTMLButtonElement) saveButton.disabled = changed === 0 || saving;
+      if (discardButton instanceof HTMLButtonElement) discardButton.disabled = changed === 0 || saving;
+    };
+
+    const setStatus = (value) => {
+      if (status instanceof HTMLElement) status.textContent = value;
+    };
+
+    const syncKey = (key, value, source) => {
+      targets().forEach((element) => {
+        if (element !== source && keyFor(element) === key) writeValue(element, value);
+      });
+
+      if (originals.get(key) === value) changes.delete(key);
+      else changes.set(key, value);
+      updateControls();
+    };
+
+    const stopEditing = ({ restore }) => {
+      if (restore) {
+        targets().forEach((element) => {
+          const key = keyFor(element);
+          if (originals.has(key)) writeValue(element, originals.get(key));
+        });
+      }
+
+      targets().forEach((element) => {
+        element.removeAttribute('contenteditable');
+        element.removeAttribute('spellcheck');
+      });
+      document.body.classList.remove('local-editor-active');
+      originals.clear();
+      changes.clear();
+      editing = false;
+      if (actions instanceof HTMLElement) actions.hidden = true;
+      if (toggleLabel instanceof HTMLElement) toggleLabel.textContent = labels.start;
+      setStatus(labels.hint);
+      updateControls();
+    };
+
+    const startEditing = () => {
+      editing = true;
+      targets().forEach((element) => {
+        const key = keyFor(element);
+        if (!originals.has(key)) originals.set(key, readValue(element));
+        element.setAttribute('contenteditable', 'true');
+        element.setAttribute('spellcheck', 'true');
+      });
+      document.body.classList.add('local-editor-active');
+      if (actions instanceof HTMLElement) actions.hidden = false;
+      if (toggleLabel instanceof HTMLElement) toggleLabel.textContent = labels.editing;
+      setStatus(labels.ready);
+      updateControls();
+    };
+
+    toggle?.addEventListener('click', () => {
+      if (!editing) startEditing();
+    });
+
+    document.addEventListener('input', (event) => {
+      if (!editing || !(event.target instanceof HTMLElement)) return;
+      const target = event.target.closest('[data-editor-key]');
+      if (!(target instanceof HTMLElement)) return;
+      syncKey(keyFor(target), readValue(target), target);
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!editing || !(event.target instanceof Element)) return;
+      const target = event.target.closest('[data-editor-key]');
+      if (!(target instanceof HTMLElement)) return;
+      if (target.closest('a, button')) event.preventDefault();
+      target.focus();
+    }, true);
+
+    document.addEventListener('paste', (event) => {
+      if (!editing || !(event.target instanceof HTMLElement)) return;
+      const target = event.target.closest('[data-editor-key]');
+      if (!(target instanceof HTMLElement)) return;
+      const text = event.clipboardData?.getData('text/plain');
+      if (typeof text !== 'string') return;
+      event.preventDefault();
+      document.execCommand('insertText', false, text);
+    });
+
+    discardButton?.addEventListener('click', () => stopEditing({ restore: true }));
+
+    saveButton?.addEventListener('click', async () => {
+      if (saving || changes.size === 0) return;
+
+      saving = true;
+      updateControls();
+      setStatus(labels.saving);
+
+      try {
+        const response = await fetch('/__onovich-editor/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ changes: Object.fromEntries(changes) }),
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.ok) throw new Error(result?.error || labels.error);
+
+        setStatus(labels.saved);
+        window.setTimeout(() => window.location.reload(), 250);
+      } catch (error) {
+        setStatus(error instanceof Error ? error.message : labels.error);
+        saving = false;
+        updateControls();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (!editing) return;
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+        event.preventDefault();
+        saveButton?.click();
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        discardButton?.click();
+      }
+    });
+
+    window.addEventListener('beforeunload', (event) => {
+      if (changes.size === 0) return;
+      event.preventDefault();
+      event.returnValue = '';
+    });
+  }
+</script>
