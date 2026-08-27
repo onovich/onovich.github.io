@@ -16,6 +16,9 @@ __pycache__/
 .env
 .env.*
 
+# local assistant configuration
+.claude/
+
 # logs
 *.log
 npm-debug.log*
