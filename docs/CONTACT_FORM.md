@@ -43,14 +43,14 @@ This is an outbound-only contact form. An MX record or Resend's **Enable Receivi
 
 ### Optional email hardening
 
-DMARC is not required for the form to send mail because the Resend domain is already verified with SPF and DKIM. If we add the optional monitoring policy later, create this record in the `onovich.com` Cloudflare DNS zone:
+DMARC is not required for the form to send mail because the Resend domain is already verified with SPF and DKIM. The optional monitoring policy was added on 2026-08-27 in the `onovich.com` Cloudflare DNS zone:
 
 - Type: `TXT`
 - Name: `_dmarc.send`
 - Content: `v=DMARC1; p=none;`
 - TTL: `Auto`
 
-Keep `p=none` while observing authentication reports. Do not move directly to `quarantine` or `reject` without confirming that all legitimate senders for `send.onovich.com` pass SPF/DKIM alignment.
+Keep `p=none` while observing authentication reports. Do not move directly to `quarantine` or `reject` without confirming that all legitimate senders for `send.onovich.com` pass SPF/DKIM alignment. No MX record or Resend receiving setup was added because this form is outbound-only.
 
 ## Safety behavior
 

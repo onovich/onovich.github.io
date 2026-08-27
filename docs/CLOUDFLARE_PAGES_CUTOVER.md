@@ -101,8 +101,11 @@ Verified on 2026-08-27:
 - [x] The production contact form passes Turnstile and delivers to `onovich1110@gmail.com`.
 - [x] The received subject starts with `【网站联系表单】` and includes the visitor-provided subject.
 - [x] The visitor's email is available for direct replies.
-- [ ] Optional DMARC monitoring for `send.onovich.com` may be added as documented in `docs/CONTACT_FORM.md`; it is not a deployment blocker.
+- [x] Optional DMARC monitoring for `send.onovich.com` is configured with `p=none`, as documented in `docs/CONTACT_FORM.md`.
+- [x] The stale `cargo-domain=purchased` DNS TXT record has been removed after the production cutover.
 - [ ] Cargo renewal can be disabled after the observation window; keep the old account until any remaining assets or records are confirmed recoverable.
+
+The remaining Cloudflare recommendation about a partially exposed origin is expected for the DNS-only GitHub Pages CNAME records. Do not proxy those records solely to dismiss the recommendation, because that can interfere with GitHub Pages routing and certificate validation.
 
 ## Retiring Cargo
 
