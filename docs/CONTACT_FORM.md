@@ -29,6 +29,29 @@ The recommended sender is `website@send.onovich.com`. The visitor's address is s
 
 Do not put either API key in Git, the frontend bundle, or chat. The public site key may be present in the generated HTML; the Turnstile secret and Resend key must remain Cloudflare secrets.
 
+## Production closeout
+
+Verified on 2026-08-27 after the production deployment:
+
+- [x] The English and Chinese contact pages load through `onovich.com`.
+- [x] A real production submission passed Turnstile and reached `onovich1110@gmail.com`.
+- [x] The received subject uses the `【网站联系表单】` prefix and includes the visitor's subject.
+- [x] The visitor's address is visible in the sender display and is usable as `Reply-To`.
+- [x] Name, email, subject, and message fields arrive in the email body.
+
+This is an outbound-only contact form. An MX record or Resend's **Enable Receiving** option is not required unless the owner later wants to receive mail at `send.onovich.com`.
+
+### Optional email hardening
+
+DMARC is not required for the form to send mail because the Resend domain is already verified with SPF and DKIM. If we add the optional monitoring policy later, create this record in the `onovich.com` Cloudflare DNS zone:
+
+- Type: `TXT`
+- Name: `_dmarc.send`
+- Content: `v=DMARC1; p=none;`
+- TTL: `Auto`
+
+Keep `p=none` while observing authentication reports. Do not move directly to `quarantine` or `reject` without confirming that all legitimate senders for `send.onovich.com` pass SPF/DKIM alignment.
+
 ## Safety behavior
 
 - The function validates the origin, field lengths, email shape, request size, and a hidden honeypot field.
@@ -36,4 +59,4 @@ Do not put either API key in Git, the frontend bundle, or chat. The public site 
 - The Turnstile widget is rendered only after the visitor submits the form, then reset and hidden after the attempt finishes.
 - The function does not store submissions in this repository or a database; Resend handles delivery and its account retention policy applies.
 - The visible email link remains as a manual fallback if the service is unavailable.
-- The first production test should use a real but non-sensitive message and confirm receipt at `onovich1110@gmail.com`.
+- The production delivery test is complete; future tests should use real but non-sensitive messages and confirm receipt at `onovich1110@gmail.com`.

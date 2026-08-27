@@ -32,7 +32,7 @@ Verified on 2026-08-26:
 - [x] The GitHub Pages certificate for `game.onovich.com` is approved and HTTPS enforcement is enabled.
 - [x] Cloudflare's active `blog → game namespace` rule redirects `blog.onovich.com/*` to `game.onovich.com/${1}` with the query string preserved; `/2DProGolf/` and the old root were verified after following redirects.
 
-Local release gates also passed on 2026-08-25: `Validate.cmd`, `Smoke.cmd` (168 layout assertions and 740/740 image loads), and `npm audit --omit=dev` (0 vulnerabilities).
+Local release gates also passed on 2026-08-25: `Validate.cmd`, `Smoke.cmd` (168 layout assertions and 740/740 image loads), and `npm audit --omit=dev` (0 vulnerabilities). PR #8 was merged into `main` on 2026-08-27, and the production contact-form delivery test then passed.
 
 Cloudflare Pages supports an explicit root directory for repositories where the web project is nested, and its Astro preset uses `npm run build` with `dist` output.
 
@@ -94,6 +94,16 @@ When `blog.onovich.com` is moved off GitHub Pages, redirect that hostname with a
 - The contact page exposes only channels the owner intends to monitor. Add a direct email address or form only after choosing a real delivery endpoint and spam policy.
 - No unrelated subdomain, MX record, or TXT verification record changes.
 
+## Final external closeout
+
+Verified on 2026-08-27:
+
+- [x] The production contact form passes Turnstile and delivers to `onovich1110@gmail.com`.
+- [x] The received subject starts with `【网站联系表单】` and includes the visitor-provided subject.
+- [x] The visitor's email is available for direct replies.
+- [ ] Optional DMARC monitoring for `send.onovich.com` may be added as documented in `docs/CONTACT_FORM.md`; it is not a deployment blocker.
+- [ ] Cargo renewal can be disabled after the observation window; keep the old account until any remaining assets or records are confirmed recoverable.
+
 ## Retiring Cargo
 
-Do not cancel Cargo before the new domain is live. Keep the old site available during a short observation window, check redirects and search-console coverage, and retain an export or account-level backup. After the replacement has remained stable, disable the Cargo subscription renewal; do not delete the old account or site until its assets and content are confirmed recoverable.
+The replacement is live and its representative redirects and contact delivery have been verified. Keep the old Cargo site available only for the agreed short observation window, then disable the Cargo subscription renewal. Do not delete the old account or site until any remaining assets, records, and search-console coverage are confirmed recoverable. After renewal is disabled, the stale `cargo-domain=purchased` DNS TXT record can be removed from Cloudflare as a separate cleanup step.
