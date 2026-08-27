@@ -7,6 +7,7 @@ interface Env {
 interface ContactPayload {
   name?: unknown;
   email?: unknown;
+  subject?: unknown;
   message?: unknown;
   website?: unknown;
   turnstileToken?: unknown;
@@ -22,6 +23,7 @@ const CONTACT_RECIPIENT = 'onovich1110@gmail.com';
 const DEFAULT_SENDER = 'website@send.onovich.com';
 const MAX_REQUEST_BYTES = 32_000;
 const MAX_NAME_LENGTH = 120;
+const MAX_SUBJECT_LENGTH = 160;
 const MAX_MESSAGE_LENGTH = 5_000;
 const MAX_EMAIL_LENGTH = 254;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
@@ -112,6 +114,7 @@ export const onRequestPost = async ({ request, env }: PagesFunctionContext): Pro
 
   const name = textValue(payload.name, MAX_NAME_LENGTH, true);
   const email = textValue(payload.email, MAX_EMAIL_LENGTH, true);
+  const subject = textValue(payload.subject, MAX_SUBJECT_LENGTH, true);
   const message = textValue(payload.message, MAX_MESSAGE_LENGTH);
   const website = textValue(payload.website, 200, true);
   const turnstileToken = textValue(payload.turnstileToken, 2_048, true);
@@ -119,7 +122,7 @@ export const onRequestPost = async ({ request, env }: PagesFunctionContext): Pro
   // Silently accept the honeypot so simple bots do not learn the rejection rule.
   if (website) return jsonResponse({ ok: true });
 
-  if (!name || !email || !message || !EMAIL_PATTERN.test(email)) {
+  if (!name || !email || !subject || !message || !EMAIL_PATTERN.test(email)) {
     return jsonResponse({ ok: false, error: 'invalid_fields' }, 422);
   }
 
@@ -132,6 +135,7 @@ export const onRequestPost = async ({ request, env }: PagesFunctionContext): Pro
     return jsonResponse({ ok: false, error: 'verification_failed' }, 403);
   }
 
+  const sender = env.CONTACT_FROM_EMAIL || DEFAULT_SENDER;
   let emailResponse: Response;
   try {
     emailResponse = await fetch('https://api.resend.com/emails', {
@@ -141,13 +145,14 @@ export const onRequestPost = async ({ request, env }: PagesFunctionContext): Pro
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: env.CONTACT_FROM_EMAIL || DEFAULT_SENDER,
+        from: `网站联系表单（${email.replace(/["<>\\]/gu, '')}） <${sender}>`,
         to: [CONTACT_RECIPIENT],
         reply_to: email,
-        subject: 'Website contact from the Onovich portfolio',
+        subject: `【网站联系表单】${subject}`,
         text: [
           `Name: ${name}`,
           `Email: ${email}`,
+          `Subject: ${subject}`,
           '',
           'Message:',
           message,
