@@ -44,8 +44,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
     <section class="home-work" aria-labelledby="home-work-title">
       <h2 id="home-work-title" class="personal-heading" {...editable(`${copyKey}.home.lead`)}>{text.home.lead}</h2>
       <div class="project-grid project-grid--home">
-        <ProjectCard {...projects.ninja} description={descriptions.ninjaShort} editorNameKey="projects.ninja.name" editorDescriptionKey={`${copyKey}.projectDescriptions.ninjaShort`} />
-        <ProjectCard {...projects.golf} description={descriptions.golfShort} editorNameKey="projects.golf.name" editorDescriptionKey={`${copyKey}.projectDescriptions.golfShort`} />
+        <ProjectCard {...projects.ninja} description={descriptions.ninja} editorNameKey="projects.ninja.name" editorDescriptionKey={`${copyKey}.projectDescriptions.ninja`} />
+        <ProjectCard {...projects.golf} description={descriptions.golf} editorNameKey="projects.golf.name" editorDescriptionKey={`${copyKey}.projectDescriptions.golf`} />
         <ProjectCard {...projects.inscape} description={descriptions.inscape} editorNameKey="projects.inscape.name" editorDescriptionKey={`${copyKey}.projectDescriptions.inscape`} />
         <ProjectCard {...projects.prism} description={descriptions.prism} editorNameKey="projects.prism.name" editorDescriptionKey={`${copyKey}.projectDescriptions.prism`} />
       </div>
@@ -69,8 +69,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY;
         <p {...editable(`${copyKey}.work.gamesNote`)}>{text.work.gamesNote}</p>
       </div>
       <div class="project-grid">
-        <ProjectCard {...projects.ninja} description={descriptions.ninjaLong} editorNameKey="projects.ninja.name" editorDescriptionKey={`${copyKey}.projectDescriptions.ninjaLong`} />
-        <ProjectCard {...projects.golf} description={descriptions.golfLong} editorNameKey="projects.golf.name" editorDescriptionKey={`${copyKey}.projectDescriptions.golfLong`} />
+        <ProjectCard {...projects.ninja} description={descriptions.ninja} editorNameKey="projects.ninja.name" editorDescriptionKey={`${copyKey}.projectDescriptions.ninja`} />
+        <ProjectCard {...projects.golf} description={descriptions.golf} editorNameKey="projects.golf.name" editorDescriptionKey={`${copyKey}.projectDescriptions.golf`} />
       </div>
     </section>
 
