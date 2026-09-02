@@ -11,7 +11,7 @@ export const editorValues: Record<string, string> = rawValues && typeof rawValue
   ? Object.fromEntries(Object.entries(rawValues).filter((entry): entry is [string, string] => typeof entry[1] === 'string'))
   : {};
 
-export const localEditorEnabled = import.meta.env.DEV && import.meta.env.ONOVICH_EDITOR === '1';
+export const localEditorEnabled = import.meta.env.DEV && import.meta.env.VITE_ONOVICH_EDITOR === '1';
 
 export function editorText(key: string, fallback: string): string {
   return Object.prototype.hasOwnProperty.call(editorValues, key) ? editorValues[key] : fallback;

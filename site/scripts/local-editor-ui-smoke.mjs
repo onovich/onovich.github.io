@@ -9,6 +9,20 @@ const overridesPath = fileURLToPath(new URL('../src/content/editor-overrides.jso
 const originalOverrides = await readFile(overridesPath, 'utf8');
 const browser = await chromium.launch({ headless: true });
 
+async function waitForSavedValue(key, value) {
+  const deadline = Date.now() + 5_000;
+  while (Date.now() < deadline) {
+    try {
+      const saved = JSON.parse(await readFile(overridesPath, 'utf8'));
+      if (saved.values?.[key] === value) return saved;
+    } catch {
+      // A local write may be visible between file replacement steps; retry it.
+    }
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+  throw new Error(`Timed out waiting for ${key} to be saved.`);
+}
+
 try {
   const page = await browser.newPage();
   page.setDefaultTimeout(5_000);
@@ -58,12 +72,12 @@ try {
     return button instanceof HTMLButtonElement && !button.disabled;
   });
   await saveButton.click({ noWaitAfter: true });
-  await page.waitForTimeout(500);
 
-  const saved = JSON.parse(await readFile(overridesPath, 'utf8'));
-  assert.equal(saved.values['copy.en.work.title'], 'Local editor smoke title');
+  await waitForSavedValue('copy.en.work.title', 'Local editor smoke title');
   await page.waitForFunction(
-    () => document.querySelector('[data-editor-key="copy.en.work.title"]')?.textContent === 'Local editor smoke title',
+    () => document.querySelector('[data-editor-toggle-label]')?.textContent === 'Edit this page'
+      && document.querySelector('[data-editor-key="copy.en.work.title"]')?.getAttribute('contenteditable') !== 'true'
+      && document.querySelector('[data-editor-key="copy.en.work.title"]')?.textContent === 'Local editor smoke title',
   );
 } finally {
   await writeFile(overridesPath, originalOverrides, 'utf8');

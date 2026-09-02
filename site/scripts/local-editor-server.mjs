@@ -81,7 +81,6 @@ export function localEditorPlugin({ overridesPath = DEFAULT_OVERRIDES_PATH, enab
             const rawBody = await readBody(request);
             const payload = JSON.parse(rawBody);
             const result = await saveEditorChanges(overridesPath, payload);
-            server.ws.send({ type: 'full-reload', path: '*' });
             sendJson(response, 200, { ok: true, ...result });
           } catch (error) {
             const message = error instanceof Error ? error.message : 'Could not save local editor changes.';

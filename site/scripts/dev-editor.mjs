@@ -14,6 +14,7 @@ const child = spawn(process.execPath, [astroCli, 'dev', '--host', '127.0.0.1', .
   env: {
     ...process.env,
     ONOVICH_EDITOR: '1',
+    VITE_ONOVICH_EDITOR: '1',
   },
 });
 

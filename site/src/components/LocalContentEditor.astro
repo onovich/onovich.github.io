@@ -321,6 +321,9 @@ const labels = lang === 'zh-CN'
         const result = await response.json().catch(() => null);
         if (!response.ok || !result?.ok) throw new Error(result?.error || labels.error);
 
+        changes.clear();
+        saving = false;
+        updateControls();
         setStatus(labels.saved);
         window.setTimeout(() => window.location.reload(), 250);
       } catch (error) {
@@ -343,7 +346,7 @@ const labels = lang === 'zh-CN'
     });
 
     window.addEventListener('beforeunload', (event) => {
-      if (changes.size === 0) return;
+      if (changes.size === 0 || saving) return;
       event.preventDefault();
       event.returnValue = '';
     });
