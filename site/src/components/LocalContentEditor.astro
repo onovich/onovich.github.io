@@ -9,7 +9,8 @@ const { lang } = Astro.props;
 const labels = lang === 'zh-CN'
   ? {
       start: '编辑此页',
-      editing: '正在编辑',
+      exit: '退出编辑',
+      exitConfirm: '有未保存的变更。退出并丢弃它们吗？',
       save: '保存到本地文件',
       discard: '丢弃未保存变更',
       ready: '点击带虚线边框的文字即可编辑。',
@@ -24,7 +25,8 @@ const labels = lang === 'zh-CN'
     }
   : {
       start: 'Edit this page',
-      editing: 'Editing',
+      exit: 'Exit editing',
+      exitConfirm: 'You have unsaved changes. Exit and discard them?',
       save: 'Save locally',
       discard: 'Discard unsaved changes',
       ready: 'Click any dashed text to edit it.',
@@ -259,13 +261,21 @@ const labels = lang === 'zh-CN'
       });
       document.body.classList.add('local-editor-active');
       if (actions instanceof HTMLElement) actions.hidden = false;
-      if (toggleLabel instanceof HTMLElement) toggleLabel.textContent = labels.editing;
+      if (toggleLabel instanceof HTMLElement) toggleLabel.textContent = labels.exit;
       setStatus(labels.ready);
       updateControls();
     };
 
+    const exitEditing = () => {
+      if (saving) return;
+      const restore = changes.size > 0;
+      if (restore && !window.confirm(labels.exitConfirm)) return;
+      stopEditing({ restore });
+    };
+
     toggle?.addEventListener('click', () => {
-      if (!editing) startEditing();
+      if (editing) exitEditing();
+      else startEditing();
     });
 
     document.addEventListener('input', (event) => {
@@ -328,7 +338,7 @@ const labels = lang === 'zh-CN'
       }
       if (event.key === 'Escape') {
         event.preventDefault();
-        discardButton?.click();
+        exitEditing();
       }
     });
 
