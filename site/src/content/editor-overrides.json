@@ -10,6 +10,7 @@
     "copy.zh-CN.projectDescriptions.litio": "二进制序列化库",
     "copy.zh-CN.projectDescriptions.beat": "节拍检测工具",
     "copy.zh-CN.projectDescriptions.repoCover": "为 Github 仓库生成封面",
-    "copy.zh-CN.projectDescriptions.repoReadme": "润色 Github Readme"
+    "copy.zh-CN.projectDescriptions.repoReadme": "润色 Github Readme",
+    "copy.zh-CN.contact.formNote": "留言会直接从网页发送。如果发送失败，请稍后尝试。"
   }
 }
