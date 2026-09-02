@@ -19,11 +19,30 @@ try {
   await title.waitFor();
   await page.waitForFunction(() => document.querySelector('[data-editor-key="copy.en.work.title"]')?.getAttribute('contenteditable') === 'true');
 
+  await page.getByRole('button', { name: 'Exit editing' }).click();
+  await page.waitForFunction(() => document.querySelector('[data-editor-key="copy.en.work.title"]')?.getAttribute('contenteditable') !== 'true');
+  assert.equal(await page.getByRole('button', { name: 'Edit this page' }).count(), 1);
+
+  await page.getByRole('button', { name: 'Edit this page' }).click();
+  await page.waitForFunction(() => document.querySelector('[data-editor-key="copy.en.work.title"]')?.getAttribute('contenteditable') === 'true');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => document.querySelector('[data-editor-key="copy.en.work.title"]')?.getAttribute('contenteditable') !== 'true');
+  assert.equal(await page.getByRole('button', { name: 'Edit this page' }).count(), 1);
+
+  await page.getByRole('button', { name: 'Edit this page' }).click();
+  await page.waitForFunction(() => document.querySelector('[data-editor-key="copy.en.work.title"]')?.getAttribute('contenteditable') === 'true');
+
   await title.evaluate((element) => {
     element.textContent = 'Discarded local draft';
     element.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
   });
-  await page.getByRole('button', { name: 'Discard unsaved changes' }).click();
+  const exitDialog = page.waitForEvent('dialog');
+  const exitClick = page.getByRole('button', { name: 'Exit editing' }).click();
+  const dialog = await exitDialog;
+  assert.equal(dialog.message(), 'You have unsaved changes. Exit and discard them?');
+  await dialog.accept();
+  await exitClick;
+  await page.waitForFunction(() => document.querySelector('[data-editor-key="copy.en.work.title"]')?.getAttribute('contenteditable') !== 'true');
   assert.equal(await title.textContent(), 'Games & Tools');
 
   await page.getByRole('button', { name: 'Edit this page' }).click();
