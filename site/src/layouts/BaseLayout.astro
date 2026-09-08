@@ -48,9 +48,12 @@ const chinesePath = lang === 'zh-CN' ? canonicalPath : alternatePath;
 const englishUrl = new URL(englishPath, siteUrl).toString();
 const chineseUrl = new URL(chinesePath, siteUrl).toString();
 const socialImagePath = socialImage ?? (lang === 'zh-CN'
-  ? '/images/social/onovich-zh.png'
-  : '/images/social/onovich-en.png');
+  ? '/images/social/onovich-zh-v2.png'
+  : '/images/social/onovich-en-v2.png');
 const socialImageUrl = new URL(socialImagePath, siteUrl).toString();
+const socialImageAlt = lang === 'zh-CN'
+  ? 'Onovich 的个人作品集：游戏、游戏系统、开发工具与艺术创作。'
+  : 'Onovich’s personal portfolio of games, game systems, development tools, and art.';
 
 const navItems: Array<{ key: PageKey; href: string; label: string }> = [
   { key: 'home', href: pagePath('home', lang), label: text.nav.home },
@@ -83,6 +86,8 @@ const structuredData = {
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large'} />
     <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="apple-mobile-web-app-title" content={wordmark} />
 
     <title>{title}</title>
     <link rel="canonical" href={canonicalUrl} />
@@ -90,8 +95,13 @@ const structuredData = {
     <link rel="alternate" hreflang="zh-CN" href={chineseUrl} />
     <link rel="alternate" hreflang="x-default" href={englishUrl} />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/favicon-avatar-32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon-avatar-16.png" sizes="16x16" />
+    <link rel="icon" type="image/x-icon" href="/favicon-avatar.ico" sizes="any" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon-avatar.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#759d18" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Onovich" />
@@ -102,10 +112,12 @@ const structuredData = {
     <meta property="og:image" content={socialImageUrl} />
     <meta property="og:image:width" content="1280" />
     <meta property="og:image:height" content="640" />
+    <meta property="og:image:alt" content={socialImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImageUrl} />
+    <meta name="twitter:image:alt" content={socialImageAlt} />
 
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     <script is:inline>

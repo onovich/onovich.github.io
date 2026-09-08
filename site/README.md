@@ -38,8 +38,10 @@ Open the displayed local URL, choose **Edit this page**, edit text in place, the
 - Shared copy and portfolio metadata live in `src/content/portfolio.ts`.
 - The production frame lives in `src/layouts/BaseLayout.astro`.
 - Project covers and art assets live under `public/images/`.
+- Browser, Apple, Android/PWA, and Safari pinned-tab icons are all derived from `public/images/profile/avatar.jpg`.
+- The active language-level social cards are the editable `public/images/social/onovich-*-v2.svg` sources and their matching PNGs; the design evidence and review sheets are recorded in [`../docs/SOCIAL_PREVIEW_LEDGER.md`](../docs/SOCIAL_PREVIEW_LEDGER.md).
 - `npm run visual:guard -- --clone=http://127.0.0.1:4351` checks the current portfolio shell and gallery images in desktop and mobile viewports.
-- Run `npm run social:preview` while the site is available at `http://127.0.0.1:8130` to refresh the two 1280×640 social images. A different base URL may be passed as the final argument.
+- `npm run social:preview` is retained to refresh the v1 home-page screenshot baseline only; it does not replace the active v2 social cards. A different base URL may be passed as the final argument.
 
 ## Deployment
 
