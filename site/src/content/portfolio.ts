@@ -82,11 +82,11 @@ const baseProjects = {
     image: '/images/games/ninja-ming-cover.png',
     alt: 'Ninja Ming key art',
   },
-  golf: {
-    name: '2DProGolf',
-    href: 'https://github.com/onovich/2DProGolf',
-    image: '/images/covers/2dprogolf.png',
-    alt: '2DProGolf project cover',
+  unregisteredScene: {
+    name: 'Unregistered Scene',
+    href: 'https://store.steampowered.com/app/4583060/',
+    image: '/images/covers/unregistered-scene.webp',
+    alt: 'Unregistered Scene — game key art',
   },
   inscape: {
     name: 'Inscape',
@@ -201,7 +201,7 @@ const baseCopy = {
     },
     projectDescriptions: {
       ninja: 'Released game · co-development · 1Poss Studio',
-      golf: 'Terrain, route planning, and golf',
+      unregisteredScene: 'Released demo · solo creation & development',
       inscape: 'Narrative editor · R&D',
       prism: 'Stylized modeling tool · R&D',
       pulse: 'Mini 2D physics engine · Unity / C#',
@@ -334,7 +334,7 @@ const baseCopy = {
     },
     projectDescriptions: {
       ninja: '已发行游戏 · 与 1Poss Studio 合作开发',
-      golf: '地形、路线规划与高尔夫',
+      unregisteredScene: '已发行 Demo · 独立制作与研发',
       inscape: '剧情编辑器 · 研发',
       prism: '风格化建模工具 · 研发',
       pulse: '迷你 2D 物理引擎 · Unity / C#',
