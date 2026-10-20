@@ -420,6 +420,10 @@ html[lang="zh-CN"] .identity-image--home {
   transition: transform 260ms cubic-bezier(0.2, 0, 0, 1), opacity 180ms ease;
 }
 
+.project-media--contain img {
+  object-fit: contain;
+}
+
 .project-media:hover img {
   opacity: 0.92;
   transform: scale(1.012);

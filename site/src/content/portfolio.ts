@@ -85,7 +85,8 @@ const baseProjects = {
   unregisteredScene: {
     name: 'Unregistered Scene',
     href: 'https://store.steampowered.com/app/4583060/',
-    image: '/images/covers/unregistered-scene.webp',
+    image: '/images/covers/unregistered-scene-steam-en.jpg',
+    imageFit: 'contain',
     alt: 'Unregistered Scene — game key art',
   },
   inscape: {
