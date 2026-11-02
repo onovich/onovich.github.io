@@ -2,13 +2,8 @@
   "version": 1,
   "values": {
     "copy.zh-CN.projectDescriptions.unregisteredScene": "已发行 Demo · 独立制作与研发",
-    "copy.zh-CN.projectDescriptions.inscape": " 剧情编辑器",
     "copy.zh-CN.projectDescriptions.ninja": "已发行游戏·参与研发",
-    "copy.zh-CN.projectDescriptions.prism": "风格化建模工具",
-    "copy.zh-CN.projectDescriptions.pulse": "迷你 2D 物理引擎",
-    "copy.zh-CN.projectDescriptions.ease": "零 GC缓动插值动画器",
     "copy.zh-CN.projectDescriptions.litio": "二进制序列化库",
-    "copy.zh-CN.projectDescriptions.beat": "节拍检测工具",
     "copy.zh-CN.projectDescriptions.repoCover": "为 Github 仓库生成封面",
     "copy.zh-CN.projectDescriptions.repoReadme": "润色 Github Readme",
     "copy.zh-CN.contact.formNote": "留言会直接从网页发送。如果发送失败，请稍后尝试。"
